@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { allHadiths as hadiths } from "@/data/hadiths";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
 import { ShieldCheck } from "lucide-react";
@@ -22,6 +22,12 @@ export const Route = createFileRoute("/hadiths")({
 });
 
 function HadithsPage() {
+  const { location } = useRouterState();
+
+  if (location.pathname !== "/hadiths") {
+    return <Outlet />;
+  }
+
   return (
     <div className="container mx-auto px-4 py-12 md:py-16">
       <div className="text-center mb-10">
