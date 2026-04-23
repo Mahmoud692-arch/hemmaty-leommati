@@ -131,13 +131,11 @@ function UserBadges() {
 
   useEffect(() => {
     if (!user) return;
-    import("@/integrations/supabase/client").then(({ supabase }) => {
-      supabase
-        .from("user_badges")
-        .select("badge_key")
-        .eq("user_id", user.id)
-        .then(({ data }) => setEarned(data?.map((d) => d.badge_key) ?? []));
-    });
+    supabase
+      .from("user_badges")
+      .select("badge_key")
+      .eq("user_id", user.id)
+      .then(({ data }) => setEarned(data?.map((d) => d.badge_key) ?? []));
   }, [user]);
 
   return (
@@ -158,5 +156,3 @@ function UserBadges() {
     </div>
   );
 }
-
-import { useState } from "react";
