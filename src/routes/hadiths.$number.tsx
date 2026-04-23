@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { hadiths } from "@/data/hadiths";
+import { allHadiths as hadiths } from "@/data/hadiths";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { POINTS } from "@/lib/journey";

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { hadiths } from "@/data/hadiths";
+import { allHadiths as hadiths } from "@/data/hadiths";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
 import { ShieldCheck } from "lucide-react";
 

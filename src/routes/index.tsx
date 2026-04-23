@@ -3,7 +3,7 @@ import QuoteCard from "@/components/QuoteCard";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
 import { Button } from "@/components/ui/button";
 import { articles } from "@/data/articles";
-import { hadiths } from "@/data/hadiths";
+import { allHadiths as hadiths } from "@/data/hadiths";
 import { LEVELS } from "@/lib/journey";
 import { BookOpen, Trophy, Heart, ArrowLeft, Star } from "lucide-react";
 
