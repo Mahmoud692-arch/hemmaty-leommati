@@ -150,7 +150,7 @@ function HadithPage() {
             <BookOpen className="h-5 w-5 text-[var(--gold)]" /> معاني الكلمات
           </h2>
           <ul className="space-y-2">
-            {hadith.vocabulary.map((v) => (
+            {hadith.vocabulary.map((v: { word: string; meaning: string }) => (
               <li key={v.word} className="flex flex-wrap gap-2 text-sm">
                 <span className="font-bold text-primary">{v.word}:</span>
                 <span className="text-muted-foreground">{v.meaning}</span>
@@ -166,7 +166,7 @@ function HadithPage() {
             <Lightbulb className="h-5 w-5 text-[var(--gold)]" /> الفوائد
           </h2>
           <ul className="space-y-2">
-            {hadith.benefits.map((b, i) => (
+            {hadith.benefits.map((b: string, i: number) => (
               <li key={i} className="flex gap-2 text-foreground/90">
                 <span className="text-[var(--gold)] font-bold">{i + 1}.</span> {b}
               </li>
