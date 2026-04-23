@@ -4,8 +4,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ===== خطوط عربية فاخرة ===== */
-@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@300;400;600;700;900&family=Reem+Kufi:wght@400;500;600;700&family=Aref+Ruqaa:wght@400;700&display=swap');
+/* خطوط عربية فاخرة محمَّلة عبر <link> في __root.tsx */
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
