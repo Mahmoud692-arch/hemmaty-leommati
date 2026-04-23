@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { getLevel, getNextLevel, getLevelProgress, BADGES, LEVELS } from "@/lib/journey";
 import { Progress } from "@/components/ui/progress";
 import { Trophy, BookOpen, Scroll, Flame, Star, ArrowLeft } from "lucide-react";

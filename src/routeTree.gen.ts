@@ -9,21 +9,51 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as QuestionsRouteImport } from './routes/questions'
+import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as HadithsRouteImport } from './routes/hadiths'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ArticlesRouteImport } from './routes/articles'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HadithsNumberRouteImport } from './routes/hadiths.$number'
 import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
 
+const QuestionsRoute = QuestionsRouteImport.update({
+  id: '/questions',
+  path: '/questions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JourneyRoute = JourneyRouteImport.update({
+  id: '/journey',
+  path: '/journey',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HadithsRoute = HadithsRouteImport.update({
   id: '/hadiths',
   path: '/hadiths',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ArticlesRoute = ArticlesRouteImport.update({
   id: '/articles',
   path: '/articles',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -50,16 +80,26 @@ const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/articles': typeof ArticlesRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof DashboardRoute
   '/hadiths': typeof HadithsRouteWithChildren
+  '/journey': typeof JourneyRoute
+  '/questions': typeof QuestionsRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/articles': typeof ArticlesRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof DashboardRoute
   '/hadiths': typeof HadithsRouteWithChildren
+  '/journey': typeof JourneyRoute
+  '/questions': typeof QuestionsRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
 }
@@ -67,8 +107,13 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/articles': typeof ArticlesRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof DashboardRoute
   '/hadiths': typeof HadithsRouteWithChildren
+  '/journey': typeof JourneyRoute
+  '/questions': typeof QuestionsRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
 }
@@ -77,24 +122,39 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/admin'
     | '/articles'
+    | '/auth'
+    | '/dashboard'
     | '/hadiths'
+    | '/journey'
+    | '/questions'
     | '/articles/$slug'
     | '/hadiths/$number'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/admin'
     | '/articles'
+    | '/auth'
+    | '/dashboard'
     | '/hadiths'
+    | '/journey'
+    | '/questions'
     | '/articles/$slug'
     | '/hadiths/$number'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/admin'
     | '/articles'
+    | '/auth'
+    | '/dashboard'
     | '/hadiths'
+    | '/journey'
+    | '/questions'
     | '/articles/$slug'
     | '/hadiths/$number'
   fileRoutesById: FileRoutesById
@@ -102,12 +162,31 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRoute
   ArticlesRoute: typeof ArticlesRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  DashboardRoute: typeof DashboardRoute
   HadithsRoute: typeof HadithsRouteWithChildren
+  JourneyRoute: typeof JourneyRoute
+  QuestionsRoute: typeof QuestionsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/questions': {
+      id: '/questions'
+      path: '/questions'
+      fullPath: '/questions'
+      preLoaderRoute: typeof QuestionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/journey': {
+      id: '/journey'
+      path: '/journey'
+      fullPath: '/journey'
+      preLoaderRoute: typeof JourneyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/hadiths': {
       id: '/hadiths'
       path: '/hadiths'
@@ -115,11 +194,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HadithsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/articles': {
       id: '/articles'
       path: '/articles'
       fullPath: '/articles'
       preLoaderRoute: typeof ArticlesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -179,8 +279,13 @@ const HadithsRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRoute,
   ArticlesRoute: ArticlesRouteWithChildren,
+  AuthRoute: AuthRoute,
+  DashboardRoute: DashboardRoute,
   HadithsRoute: HadithsRouteWithChildren,
+  JourneyRoute: JourneyRoute,
+  QuestionsRoute: QuestionsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
