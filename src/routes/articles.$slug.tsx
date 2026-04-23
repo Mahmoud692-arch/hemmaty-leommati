@@ -108,14 +108,24 @@ function ArticlePage() {
 
       <OrnamentalDivider />
 
-      <div className="prose prose-lg max-w-none text-foreground
-        prose-headings:font-[var(--font-display)] prose-headings:text-foreground
-        prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h2:text-primary
-        prose-p:leading-loose prose-p:text-foreground/90
-        prose-strong:text-foreground prose-strong:font-semibold
-        prose-ul:my-4 prose-li:my-1
-        prose-blockquote:border-r-4 prose-blockquote:border-[var(--gold)] prose-blockquote:pr-4 prose-blockquote:bg-accent/20 prose-blockquote:py-2 prose-blockquote:rounded-r-lg">
-        <ReactMarkdown>{article.content}</ReactMarkdown>
+      <div className="article-content text-foreground/90 leading-loose space-y-4">
+        <ReactMarkdown
+          components={{
+            h2: ({ children }) => <h2 className="font-display text-2xl mt-10 mb-4 text-primary">{children}</h2>,
+            h3: ({ children }) => <h3 className="font-display text-xl mt-6 mb-3">{children}</h3>,
+            p: ({ children }) => <p className="leading-loose my-3">{children}</p>,
+            ul: ({ children }) => <ul className="list-disc pr-6 space-y-1.5 my-3">{children}</ul>,
+            ol: ({ children }) => <ol className="list-decimal pr-6 space-y-1.5 my-3">{children}</ol>,
+            blockquote: ({ children }) => (
+              <blockquote className="border-r-4 border-[var(--gold)] pr-4 bg-accent/20 py-2 rounded-r-lg my-4 italic">
+                {children}
+              </blockquote>
+            ),
+            strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
+          }}
+        >
+          {article.content}
+        </ReactMarkdown>
       </div>
 
       <OrnamentalDivider />

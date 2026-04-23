@@ -56,14 +56,14 @@ function AboutPage() {
         </div>
       </div>
 
-      <section className="my-12 prose prose-lg max-w-none text-foreground prose-headings:font-[var(--font-display)] prose-headings:text-foreground">
-        <h2>قصّتنا</h2>
+      <section className="my-12 space-y-4 text-foreground/90 leading-loose">
+        <h2 className="font-display text-2xl mt-6 mb-3">قصّتنا</h2>
         <p>
           انطلقت "هِمَّتي لِأمّتي" من إيمانٍ بأن الشباب المسلم يستحقّ محتوًى دينيًا قويًا في عصرٍ امتلأ بالضوضاء.
           نحن لسنا منصّةً تُلقي عليك المعلومات، بل رفيقُ طريقٍ يأخذ بيدك خطوةً خطوة في رحلةٍ إيمانيةٍ منظّمة.
         </p>
-        <h2>ما يميّزنا</h2>
-        <ul>
+        <h2 className="font-display text-2xl mt-6 mb-3">ما يميّزنا</h2>
+        <ul className="list-disc pr-6 space-y-1.5">
           <li>محتوى عميقٌ ومُراجَعٌ علميًا ودينيًا.</li>
           <li>تجربةٌ تفاعليّة عبر نظام النقاط والمستويات.</li>
           <li>ربطٌ دائمٌ بين النصّ الشرعي والتطبيق العملي.</li>
