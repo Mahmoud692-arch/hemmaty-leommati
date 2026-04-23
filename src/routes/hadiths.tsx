@@ -7,9 +7,15 @@ export const Route = createFileRoute("/hadiths")({
   head: () => ({
     meta: [
       { title: "الأربعون النووية — هِمَّتي لِأمّتي" },
-      { name: "description", content: "أحاديث الأربعين النووية كاملةً، مع شرحٍ مبسّط وفوائد عملية." },
+      {
+        name: "description",
+        content: "أحاديث الأربعين النووية كاملةً، مع شرحٍ مبسّط وفوائد عملية.",
+      },
       { property: "og:title", content: "الأربعون النووية" },
-      { property: "og:description", content: "أحاديث الأربعين النووية كاملةً، مع شرحٍ مبسّط وفوائد عملية." },
+      {
+        property: "og:description",
+        content: "أحاديث الأربعين النووية كاملةً، مع شرحٍ مبسّط وفوائد عملية.",
+      },
     ],
   }),
   component: HadithsPage,

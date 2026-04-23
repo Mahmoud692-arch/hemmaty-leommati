@@ -22,7 +22,13 @@ export default function QuoteCard() {
           </span>
           <Sparkles className="h-4 w-4" />
         </div>
-        <p className={q.type === "ayah" ? "quran-text font-[var(--font-quran)] text-foreground" : "text-2xl font-[var(--font-display)] text-foreground leading-loose"}>
+        <p
+          className={
+            q.type === "ayah"
+              ? "quran-text font-[var(--font-quran)] text-foreground"
+              : "text-2xl font-[var(--font-display)] text-foreground leading-loose"
+          }
+        >
           {q.text}
         </p>
         <div className="ornamental-divider my-6 max-w-xs mx-auto" />

@@ -11,7 +11,10 @@ export const Route = createFileRoute("/journey")({
       { title: "الرحلة الإيمانية — هِمَّتي لِأمّتي" },
       { name: "description", content: "أربعة مستويات تأخذك من البداية إلى التأثير في الأمة." },
       { property: "og:title", content: "الرحلة الإيمانية" },
-      { property: "og:description", content: "أربعة مستويات تأخذك من البداية إلى التأثير في الأمة." },
+      {
+        property: "og:description",
+        content: "أربعة مستويات تأخذك من البداية إلى التأثير في الأمة.",
+      },
     ],
   }),
   component: JourneyPage,
@@ -25,7 +28,8 @@ function JourneyPage() {
         <Trophy className="h-12 w-12 mx-auto text-[var(--gold)] mb-3" />
         <h1 className="font-display text-4xl md:text-5xl mb-3">الرحلة الإيمانية</h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          منهجٌ مُتدرّج مكوّن من أربعة مستويات: تتدرّج فيها بالقراءة والتفاعل، تكسب نقاطًا وشارات، وتسير من بداية الالتزام إلى التأثير.
+          منهجٌ مُتدرّج مكوّن من أربعة مستويات: تتدرّج فيها بالقراءة والتفاعل، تكسب نقاطًا وشارات،
+          وتسير من بداية الالتزام إلى التأثير.
         </p>
         <OrnamentalDivider />
       </div>
@@ -54,9 +58,13 @@ function JourneyPage() {
 
       <div className="text-center mt-10">
         {user ? (
-          <Link to="/dashboard"><Button size="lg">شاهد لوحة إنجازك</Button></Link>
+          <Link to="/dashboard">
+            <Button size="lg">شاهد لوحة إنجازك</Button>
+          </Link>
         ) : (
-          <Link to="/auth"><Button size="lg">ابدأ رحلتك الآن</Button></Link>
+          <Link to="/auth">
+            <Button size="lg">ابدأ رحلتك الآن</Button>
+          </Link>
         )}
       </div>
     </div>

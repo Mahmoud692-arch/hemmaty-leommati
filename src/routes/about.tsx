@@ -6,9 +6,15 @@ export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "عن الموقع — هِمَّتي لِأمّتي" },
-      { name: "description", content: "تعرّف على رسالة منصّة هِمَّتي لِأمّتي ووسائل التواصل معنا." },
+      {
+        name: "description",
+        content: "تعرّف على رسالة منصّة هِمَّتي لِأمّتي ووسائل التواصل معنا.",
+      },
       { property: "og:title", content: "عن الموقع — هِمَّتي لِأمّتي" },
-      { property: "og:description", content: "تعرّف على رسالة منصّة هِمَّتي لِأمّتي ووسائل التواصل معنا." },
+      {
+        property: "og:description",
+        content: "تعرّف على رسالة منصّة هِمَّتي لِأمّتي ووسائل التواصل معنا.",
+      },
     ],
   }),
   component: AboutPage,
@@ -38,29 +44,36 @@ function AboutPage() {
             <Target className="h-6 w-6 text-[var(--gold)]" />
           </div>
           <h3 className="font-display text-lg mb-2">رسالتنا</h3>
-          <p className="text-sm text-muted-foreground">نشر الوعي الديني وتربية همّة الشباب على الالتزام والثبات.</p>
+          <p className="text-sm text-muted-foreground">
+            نشر الوعي الديني وتربية همّة الشباب على الالتزام والثبات.
+          </p>
         </div>
         <div className="card-elegant rounded-2xl p-6 text-center">
           <div className="w-12 h-12 mx-auto rounded-full bg-[var(--gold)]/15 flex items-center justify-center mb-3">
             <Compass className="h-6 w-6 text-[var(--gold)]" />
           </div>
           <h3 className="font-display text-lg mb-2">منهجنا</h3>
-          <p className="text-sm text-muted-foreground">محتوًى مُراجَع شرعيًا، بأسلوبٍ سهلٍ مع تطبيقاتٍ عملية في الحياة.</p>
+          <p className="text-sm text-muted-foreground">
+            محتوًى مُراجَع شرعيًا، بأسلوبٍ سهلٍ مع تطبيقاتٍ عملية في الحياة.
+          </p>
         </div>
         <div className="card-elegant rounded-2xl p-6 text-center">
           <div className="w-12 h-12 mx-auto rounded-full bg-[var(--gold)]/15 flex items-center justify-center mb-3">
             <Heart className="h-6 w-6 text-[var(--gold)]" />
           </div>
           <h3 className="font-display text-lg mb-2">هدفنا</h3>
-          <p className="text-sm text-muted-foreground">أن تخرج من زيارتك أقربَ إلى الله، أنفعَ لنفسك ولأمّتك.</p>
+          <p className="text-sm text-muted-foreground">
+            أن تخرج من زيارتك أقربَ إلى الله، أنفعَ لنفسك ولأمّتك.
+          </p>
         </div>
       </div>
 
       <section className="my-12 space-y-4 text-foreground/90 leading-loose">
         <h2 className="font-display text-2xl mt-6 mb-3">قصّتنا</h2>
         <p>
-          انطلقت "هِمَّتي لِأمّتي" من إيمانٍ بأن الشباب المسلم يستحقّ محتوًى دينيًا قويًا في عصرٍ امتلأ بالضوضاء.
-          نحن لسنا منصّةً تُلقي عليك المعلومات، بل رفيقُ طريقٍ يأخذ بيدك خطوةً خطوة في رحلةٍ إيمانيةٍ منظّمة.
+          انطلقت "هِمَّتي لِأمّتي" من إيمانٍ بأن الشباب المسلم يستحقّ محتوًى دينيًا قويًا في عصرٍ
+          امتلأ بالضوضاء. نحن لسنا منصّةً تُلقي عليك المعلومات، بل رفيقُ طريقٍ يأخذ بيدك خطوةً خطوة
+          في رحلةٍ إيمانيةٍ منظّمة.
         </p>
         <h2 className="font-display text-2xl mt-6 mb-3">ما يميّزنا</h2>
         <ul className="list-disc pr-6 space-y-1.5">

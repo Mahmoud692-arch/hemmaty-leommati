@@ -23,7 +23,11 @@ function DashboardPage() {
   }, [user, loading, navigate]);
 
   if (loading || !profile) {
-    return <div className="container mx-auto px-4 py-20 text-center text-muted-foreground">جاري التحميل...</div>;
+    return (
+      <div className="container mx-auto px-4 py-20 text-center text-muted-foreground">
+        جاري التحميل...
+      </div>
+    );
   }
 
   const level = getLevel(profile.total_points);
@@ -33,7 +37,9 @@ function DashboardPage() {
   return (
     <div className="container mx-auto px-4 py-10 max-w-5xl">
       <div className="text-center mb-8">
-        <h1 className="font-display text-3xl md:text-4xl">السلام عليكم، {profile.full_name.split(" ")[0]} 🌙</h1>
+        <h1 className="font-display text-3xl md:text-4xl">
+          السلام عليكم، {profile.full_name.split(" ")[0]} 🌙
+        </h1>
         <p className="text-muted-foreground mt-2">هذه لوحة إنجازك في رحلتك الإيمانية</p>
         <OrnamentalDivider />
       </div>
@@ -43,7 +49,9 @@ function DashboardPage() {
         <div className="absolute inset-0 arabic-pattern opacity-20" />
         <div className="relative z-10 grid md:grid-cols-3 gap-6 items-center">
           <div className="text-center md:text-right">
-            <div className="text-xs text-[var(--gold)] tracking-widest uppercase mb-1">المستوى الحالي</div>
+            <div className="text-xs text-[var(--gold)] tracking-widest uppercase mb-1">
+              المستوى الحالي
+            </div>
             <div className="font-display text-3xl md:text-4xl">{level.title}</div>
             <div className="text-sm text-muted-foreground">{level.subtitle}</div>
           </div>
@@ -51,7 +59,9 @@ function DashboardPage() {
             <div className="flex items-center justify-between text-sm mb-2">
               <span className="font-semibold">{profile.total_points} نقطة</span>
               {nextLv ? (
-                <span className="text-muted-foreground">المستوى التالي: {nextLv.title} ({nextLv.minPoints})</span>
+                <span className="text-muted-foreground">
+                  المستوى التالي: {nextLv.title} ({nextLv.minPoints})
+                </span>
               ) : (
                 <span className="text-[var(--gold)] font-semibold">أعلى مستوى! 🏆</span>
               )}
@@ -64,8 +74,18 @@ function DashboardPage() {
       {/* Stats */}
       <section className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 my-8">
         {[
-          { icon: BookOpen, label: "مقالات مقروءة", value: profile.articles_read, color: "text-primary" },
-          { icon: Scroll, label: "أحاديث مقروءة", value: profile.hadiths_read, color: "text-[var(--gold)]" },
+          {
+            icon: BookOpen,
+            label: "مقالات مقروءة",
+            value: profile.articles_read,
+            color: "text-primary",
+          },
+          {
+            icon: Scroll,
+            label: "أحاديث مقروءة",
+            value: profile.hadiths_read,
+            color: "text-[var(--gold)]",
+          },
           { icon: Trophy, label: "اختبارات", value: profile.quizzes_passed, color: "text-primary" },
           { icon: Flame, label: "نقاط", value: profile.total_points, color: "text-[var(--gold)]" },
         ].map((s) => {
@@ -100,7 +120,9 @@ function DashboardPage() {
                 className={`card-elegant rounded-2xl p-5 ${reached ? "border-[var(--gold)]/40" : "opacity-60"}`}
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${reached ? "bg-[var(--gradient-gold)] text-[var(--gold-foreground)]" : "bg-muted text-muted-foreground"}`}>
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${reached ? "bg-[var(--gradient-gold)] text-[var(--gold-foreground)]" : "bg-muted text-muted-foreground"}`}
+                  >
                     {lv.level}
                   </div>
                   <div>

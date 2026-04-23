@@ -23,7 +23,10 @@ export const Route = createFileRoute("/questions")({
   head: () => ({
     meta: [
       { title: "أسئلة المستخدمين — هِمَّتي لِأمّتي" },
-      { name: "description", content: "اطرح سؤالك الديني أو الحياتي وتلقّى ردًّا موثوقًا من إدارة الموقع." },
+      {
+        name: "description",
+        content: "اطرح سؤالك الديني أو الحياتي وتلقّى ردًّا موثوقًا من إدارة الموقع.",
+      },
     ],
   }),
   component: QuestionsPage,
@@ -82,7 +85,9 @@ function QuestionsPage() {
       <div className="text-center">
         <MessageCircleQuestion className="h-12 w-12 mx-auto text-[var(--gold)] mb-3" />
         <h1 className="font-display text-4xl mb-3">أسئلة المستخدمين</h1>
-        <p className="text-muted-foreground">اطرح سؤالك ولن يُنشر إلا بعد مراجعة الإدارة والإجابة عليه.</p>
+        <p className="text-muted-foreground">
+          اطرح سؤالك ولن يُنشر إلا بعد مراجعة الإدارة والإجابة عليه.
+        </p>
         <OrnamentalDivider />
       </div>
 
@@ -98,7 +103,9 @@ function QuestionsPage() {
           />
           <div className="flex items-center gap-2 mt-3">
             <Checkbox id="anon" checked={anon} onCheckedChange={(v) => setAnon(!!v)} />
-            <label htmlFor="anon" className="text-sm cursor-pointer">إخفاء هويتي</label>
+            <label htmlFor="anon" className="text-sm cursor-pointer">
+              إخفاء هويتي
+            </label>
           </div>
           <Button type="submit" disabled={loading} className="mt-4">
             {loading ? "جاري الإرسال..." : "إرسال السؤال"}
@@ -107,7 +114,9 @@ function QuestionsPage() {
       ) : (
         <div className="card-elegant rounded-2xl p-6 my-8 text-center">
           <p className="text-muted-foreground mb-3">سجّل دخولك لطرح سؤال.</p>
-          <Link to="/auth"><Button>تسجيل الدخول</Button></Link>
+          <Link to="/auth">
+            <Button>تسجيل الدخول</Button>
+          </Link>
         </div>
       )}
 
@@ -125,7 +134,9 @@ function QuestionsPage() {
               {q.answer && (
                 <>
                   <div className="text-sm text-[var(--gold)] mb-1">الإجابة:</div>
-                  <p className="text-foreground/90 leading-relaxed whitespace-pre-line">{q.answer}</p>
+                  <p className="text-foreground/90 leading-relaxed whitespace-pre-line">
+                    {q.answer}
+                  </p>
                 </>
               )}
             </div>

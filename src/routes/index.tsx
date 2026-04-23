@@ -13,7 +13,8 @@ export const Route = createFileRoute("/")({
       { title: "هِمَّتي لِأمّتي — منصةُ الإيمانِ والعمل" },
       {
         name: "description",
-        content: "ابدأ رحلتك الإيمانية: مقالات عميقة، أربعون النووي كاملة، اقتباسات مُلهمة، ولوحة إنجاز شخصية.",
+        content:
+          "ابدأ رحلتك الإيمانية: مقالات عميقة، أربعون النووي كاملة، اقتباسات مُلهمة، ولوحة إنجاز شخصية.",
       },
     ],
   }),
@@ -37,16 +38,24 @@ function HomePage() {
             هِمَّتي <span className="gold-text">لِأمّتي</span>
           </h1>
           <p className="text-lg md:text-xl text-[var(--cream)]/80 max-w-2xl mx-auto leading-relaxed mb-8">
-            رحلةٌ إيمانيةٌ تأخذ بيدك من البداية إلى التأثير، عبر مقالات عميقة، وأحاديث صحيحة، ولوحة إنجازٍ تُحفّزك على الاستمرار.
+            رحلةٌ إيمانيةٌ تأخذ بيدك من البداية إلى التأثير، عبر مقالات عميقة، وأحاديث صحيحة، ولوحة
+            إنجازٍ تُحفّزك على الاستمرار.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link to="/articles">
-              <Button size="lg" className="bg-[var(--gold)] text-[var(--gold-foreground)] hover:bg-[var(--gold)]/90 shadow-[var(--shadow-gold)]">
+              <Button
+                size="lg"
+                className="bg-[var(--gold)] text-[var(--gold-foreground)] hover:bg-[var(--gold)]/90 shadow-[var(--shadow-gold)]"
+              >
                 ابدأ القراءة <ArrowLeft className="h-4 w-4 mr-2" />
               </Button>
             </Link>
             <Link to="/auth">
-              <Button size="lg" variant="outline" className="border-[var(--cream)]/30 text-[var(--cream)] hover:bg-white/10">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-[var(--cream)]/30 text-[var(--cream)] hover:bg-white/10"
+              >
                 أنشئ حسابك
               </Button>
             </Link>
@@ -92,7 +101,9 @@ function HomePage() {
         </div>
         <div className="text-center mt-8">
           <Link to="/journey">
-            <Button variant="outline">اعرف المزيد عن الرحلة <ArrowLeft className="h-4 w-4 mr-2" /></Button>
+            <Button variant="outline">
+              اعرف المزيد عن الرحلة <ArrowLeft className="h-4 w-4 mr-2" />
+            </Button>
           </Link>
         </div>
       </section>
@@ -123,7 +134,9 @@ function HomePage() {
                 <h3 className="font-display text-xl mt-4 mb-2 group-hover:text-primary transition-colors">
                   {a.title}
                 </h3>
-                <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">{a.excerpt}</p>
+                <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+                  {a.excerpt}
+                </p>
                 <div className="mt-4 text-xs text-muted-foreground flex items-center gap-2">
                   <BookOpen className="h-3 w-3" /> {a.readTime} دقائق قراءة
                 </div>
@@ -154,9 +167,14 @@ function HomePage() {
                 <div className="w-10 h-10 rounded-full bg-[var(--gradient-gold)] flex items-center justify-center text-sm font-bold text-[var(--gold-foreground)]">
                   {h.number}
                 </div>
-                <h3 className="font-display text-lg group-hover:text-primary transition-colors">{h.title}</h3>
+                <h3 className="font-display text-lg group-hover:text-primary transition-colors">
+                  {h.title}
+                </h3>
               </div>
-              <p className="text-sm text-muted-foreground line-clamp-2 quran-text" style={{ fontSize: "0.95rem", lineHeight: 1.9 }}>
+              <p
+                className="text-sm text-muted-foreground line-clamp-2 quran-text"
+                style={{ fontSize: "0.95rem", lineHeight: 1.9 }}
+              >
                 {h.arabic.split("«")[1]?.split("»")[0] ?? h.arabic.slice(0, 120)}...
               </p>
             </Link>
@@ -164,7 +182,9 @@ function HomePage() {
         </div>
         <div className="text-center mt-8">
           <Link to="/hadiths">
-            <Button variant="outline">جميع الأحاديث <ArrowLeft className="h-4 w-4 mr-2" /></Button>
+            <Button variant="outline">
+              جميع الأحاديث <ArrowLeft className="h-4 w-4 mr-2" />
+            </Button>
           </Link>
         </div>
       </section>
@@ -180,7 +200,10 @@ function HomePage() {
               أنشئ حسابك مجانًا، وابدأ في جمع نقاطك وشاراتك، وتدرّج في مستويات الرحلة الإيمانية.
             </p>
             <Link to="/auth">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 shadow-[var(--shadow-elegant)]">
+              <Button
+                size="lg"
+                className="bg-primary hover:bg-primary/90 shadow-[var(--shadow-elegant)]"
+              >
                 <Trophy className="h-4 w-4 ml-2" /> ابدأ الآن مجانًا
               </Button>
             </Link>

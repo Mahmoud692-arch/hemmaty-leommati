@@ -9,7 +9,10 @@ export const Route = createFileRoute("/articles")({
       { title: "المقالات — هِمَّتي لِأمّتي" },
       { name: "description", content: "مقالاتٌ تربويةٌ عميقة مُراجَعة شرعيًا وعلميًا قبل النشر." },
       { property: "og:title", content: "المقالات — هِمَّتي لِأمّتي" },
-      { property: "og:description", content: "مقالاتٌ تربويةٌ عميقة مُراجَعة شرعيًا وعلميًا قبل النشر." },
+      {
+        property: "og:description",
+        content: "مقالاتٌ تربويةٌ عميقة مُراجَعة شرعيًا وعلميًا قبل النشر.",
+      },
     ],
   }),
   component: ArticlesPage,
@@ -47,7 +50,9 @@ function ArticlesPage() {
               {a.excerpt}
             </p>
             <div className="mt-4 pt-4 border-t border-border text-xs text-muted-foreground flex items-center justify-between">
-              <span className="flex items-center gap-1.5"><BookOpen className="h-3 w-3" /> {a.readTime} دقائق</span>
+              <span className="flex items-center gap-1.5">
+                <BookOpen className="h-3 w-3" /> {a.readTime} دقائق
+              </span>
               <span>{new Date(a.date).toLocaleDateString("ar-EG")}</span>
             </div>
           </Link>

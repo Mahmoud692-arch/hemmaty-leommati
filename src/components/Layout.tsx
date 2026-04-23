@@ -1,6 +1,19 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
-import { Moon, Sun, Menu, X, BookOpen, Home, Info, User, LogOut, Shield, MessageCircleQuestion, Trophy } from "lucide-react";
+import {
+  Moon,
+  Sun,
+  Menu,
+  X,
+  BookOpen,
+  Home,
+  Info,
+  User,
+  LogOut,
+  Shield,
+  MessageCircleQuestion,
+  Trophy,
+} from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
@@ -87,7 +100,9 @@ export default function Layout({ children }: { children: ReactNode }) {
                   <div className="w-7 h-7 rounded-full bg-[var(--gradient-gold)] flex items-center justify-center text-xs font-bold text-[var(--gold-foreground)]">
                     {profile?.full_name?.[0] ?? "م"}
                   </div>
-                  <span className="font-medium">{profile?.full_name?.split(" ")[0] ?? "حسابي"}</span>
+                  <span className="font-medium">
+                    {profile?.full_name?.split(" ")[0] ?? "حسابي"}
+                  </span>
                 </Link>
                 {isAdmin && (
                   <Link to="/admin">
@@ -108,7 +123,12 @@ export default function Layout({ children }: { children: ReactNode }) {
               </Link>
             )}
 
-            <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen((o) => !o)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              onClick={() => setOpen((o) => !o)}
+            >
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
           </div>
@@ -134,11 +154,17 @@ export default function Layout({ children }: { children: ReactNode }) {
               <div className="border-t border-border my-2" />
               {user ? (
                 <>
-                  <Link to="/dashboard" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-accent/40">
+                  <Link
+                    to="/dashboard"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-accent/40"
+                  >
                     <User className="h-4 w-4" /> لوحة الإنجاز
                   </Link>
                   {isAdmin && (
-                    <Link to="/admin" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-accent/40">
+                    <Link
+                      to="/admin"
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-accent/40"
+                    >
                       <Shield className="h-4 w-4" /> لوحة الإدارة
                     </Link>
                   )}
@@ -150,7 +176,10 @@ export default function Layout({ children }: { children: ReactNode }) {
                   </button>
                 </>
               ) : (
-                <Link to="/auth" className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary text-primary-foreground">
+                <Link
+                  to="/auth"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary text-primary-foreground"
+                >
                   <User className="h-4 w-4" /> تسجيل الدخول / حساب جديد
                 </Link>
               )}
@@ -172,18 +201,61 @@ export default function Layout({ children }: { children: ReactNode }) {
           <div>
             <h4 className="font-semibold mb-3">روابط سريعة</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/articles" className="hover:text-primary">المقالات</Link></li>
-              <li><Link to="/hadiths" className="hover:text-primary">الأربعون النووية</Link></li>
-              <li><Link to="/journey" className="hover:text-primary">الرحلة الإيمانية</Link></li>
-              <li><Link to="/about" className="hover:text-primary">عن الموقع</Link></li>
+              <li>
+                <Link to="/articles" className="hover:text-primary">
+                  المقالات
+                </Link>
+              </li>
+              <li>
+                <Link to="/hadiths" className="hover:text-primary">
+                  الأربعون النووية
+                </Link>
+              </li>
+              <li>
+                <Link to="/journey" className="hover:text-primary">
+                  الرحلة الإيمانية
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="hover:text-primary">
+                  عن الموقع
+                </Link>
+              </li>
             </ul>
           </div>
           <div>
             <h4 className="font-semibold mb-3">تواصل معنا</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="https://www.facebook.com/share/18SsDDgzCr/" target="_blank" rel="noreferrer" className="hover:text-primary">فيسبوك</a></li>
-              <li><a href="https://whatsapp.com/channel/0029VbBZyop2ER6j2w21mo3Z" target="_blank" rel="noreferrer" className="hover:text-primary">واتساب</a></li>
-              <li><a href="https://t.me/hemmaty_leommati" target="_blank" rel="noreferrer" className="hover:text-primary">تليجرام</a></li>
+              <li>
+                <a
+                  href="https://www.facebook.com/share/18SsDDgzCr/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-primary"
+                >
+                  فيسبوك
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://whatsapp.com/channel/0029VbBZyop2ER6j2w21mo3Z"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-primary"
+                >
+                  واتساب
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://t.me/hemmaty_leommati"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-primary"
+                >
+                  تليجرام
+                </a>
+              </li>
             </ul>
           </div>
         </div>

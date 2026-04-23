@@ -40,12 +40,13 @@ function AdminPage() {
   }, [user, isAdmin, loading, navigate]);
 
   const refresh = async () => {
-    const [{ data: qs }, { count: usersCount }, { count: qCount }, { count: arCount }] = await Promise.all([
-      supabase.from("user_questions").select("*").order("created_at", { ascending: false }),
-      supabase.from("profiles").select("*", { count: "exact", head: true }),
-      supabase.from("user_questions").select("*", { count: "exact", head: true }),
-      supabase.from("article_reads").select("*", { count: "exact", head: true }),
-    ]);
+    const [{ data: qs }, { count: usersCount }, { count: qCount }, { count: arCount }] =
+      await Promise.all([
+        supabase.from("user_questions").select("*").order("created_at", { ascending: false }),
+        supabase.from("profiles").select("*", { count: "exact", head: true }),
+        supabase.from("user_questions").select("*", { count: "exact", head: true }),
+        supabase.from("article_reads").select("*", { count: "exact", head: true }),
+      ]);
     setQuestions((qs as AdminQuestion[]) ?? []);
     setStats({ users: usersCount ?? 0, questions: qCount ?? 0, articles: arCount ?? 0 });
   };
@@ -88,7 +89,11 @@ function AdminPage() {
   };
 
   if (loading || !isAdmin) {
-    return <div className="container mx-auto px-4 py-20 text-center text-muted-foreground">جاري التحقق...</div>;
+    return (
+      <div className="container mx-auto px-4 py-20 text-center text-muted-foreground">
+        جاري التحقق...
+      </div>
+    );
   }
 
   const pending = questions.filter((q) => !q.is_published);
@@ -149,13 +154,23 @@ function AdminPage() {
       </div>
 
       <div className="text-center mt-10">
-        <Link to="/" className="text-sm text-muted-foreground hover:text-primary">العودة للرئيسية</Link>
+        <Link to="/" className="text-sm text-muted-foreground hover:text-primary">
+          العودة للرئيسية
+        </Link>
       </div>
     </div>
   );
 }
 
-function StatCard({ icon: Icon, label, value }: { icon: typeof Shield; label: string; value: number }) {
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: typeof Shield;
+  label: string;
+  value: number;
+}) {
   return (
     <div className="card-elegant rounded-2xl p-5 text-center">
       <Icon className="h-7 w-7 mx-auto text-[var(--gold)] mb-2" />

@@ -92,7 +92,9 @@ function AuthPage() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-md">
       <div className="text-center mb-8">
-        <Link to="/" className="font-display text-3xl gold-text">هِمَّتي لِأمّتي</Link>
+        <Link to="/" className="font-display text-3xl gold-text">
+          هِمَّتي لِأمّتي
+        </Link>
         <p className="text-sm text-muted-foreground mt-2">انضمّ إلى رحلة الهمّة والعمل</p>
         <OrnamentalDivider />
       </div>

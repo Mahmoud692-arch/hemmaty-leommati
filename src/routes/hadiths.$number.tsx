@@ -19,7 +19,9 @@ export const Route = createFileRoute("/hadiths/$number")({
   head: ({ loaderData }) => ({
     meta: loaderData
       ? [
-          { title: `الحديث ${loaderData.hadith.number}: ${loaderData.hadith.title} — هِمَّتي لِأمّتي` },
+          {
+            title: `الحديث ${loaderData.hadith.number}: ${loaderData.hadith.title} — هِمَّتي لِأمّتي`,
+          },
           { name: "description", content: loaderData.hadith.explanation.slice(0, 160) },
           { property: "og:title", content: loaderData.hadith.title },
           { property: "og:description", content: loaderData.hadith.explanation.slice(0, 160) },
@@ -29,7 +31,9 @@ export const Route = createFileRoute("/hadiths/$number")({
   notFoundComponent: () => (
     <div className="container mx-auto px-4 py-20 text-center">
       <h1 className="font-display text-3xl mb-4">الحديث غير موجود</h1>
-      <Link to="/hadiths" className="text-primary hover:underline">العودة إلى الأحاديث</Link>
+      <Link to="/hadiths" className="text-primary hover:underline">
+        العودة إلى الأحاديث
+      </Link>
     </div>
   ),
   component: HadithPage,
@@ -52,7 +56,9 @@ function HadithPage() {
         .maybeSingle();
       if (existing) return;
 
-      await supabase.from("hadith_reads").insert({ user_id: user.id, hadith_number: hadith.number });
+      await supabase
+        .from("hadith_reads")
+        .insert({ user_id: user.id, hadith_number: hadith.number });
 
       const { data: prof } = await supabase
         .from("profiles")
@@ -101,7 +107,9 @@ function HadithPage() {
       setIsFav(false);
       toast.message("أُزيل من المفضّلة");
     } else {
-      await supabase.from("hadith_favorites").insert({ user_id: user.id, hadith_number: hadith.number });
+      await supabase
+        .from("hadith_favorites")
+        .insert({ user_id: user.id, hadith_number: hadith.number });
       setIsFav(true);
       toast.success("أُضيف إلى المفضّلة 💚");
     }
@@ -112,7 +120,10 @@ function HadithPage() {
 
   return (
     <article className="container mx-auto px-4 py-12 max-w-3xl">
-      <Link to="/hadiths" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary mb-6">
+      <Link
+        to="/hadiths"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary mb-6"
+      >
         <ArrowRight className="h-4 w-4" /> كل الأحاديث
       </Link>
 
@@ -121,7 +132,9 @@ function HadithPage() {
           {hadith.number}
         </div>
         <h1 className="font-display text-3xl md:text-4xl mb-2">{hadith.title}</h1>
-        <p className="text-sm text-muted-foreground">{hadith.narrator} • {hadith.source}</p>
+        <p className="text-sm text-muted-foreground">
+          {hadith.narrator} • {hadith.source}
+        </p>
         <div className="mt-4 flex items-center justify-center gap-2">
           <Button variant={isFav ? "default" : "outline"} size="sm" onClick={toggleFav}>
             <Heart className={`h-4 w-4 ml-2 ${isFav ? "fill-current" : ""}`} />
@@ -187,14 +200,22 @@ function HadithPage() {
       <nav className="flex items-center justify-between gap-4 mt-8">
         {prev ? (
           <Link to="/hadiths/$number" params={{ number: String(prev.number) }}>
-            <Button variant="outline" size="sm"><ArrowRight className="h-4 w-4 ml-1" /> الحديث {prev.number}</Button>
+            <Button variant="outline" size="sm">
+              <ArrowRight className="h-4 w-4 ml-1" /> الحديث {prev.number}
+            </Button>
           </Link>
-        ) : <div />}
+        ) : (
+          <div />
+        )}
         {next ? (
           <Link to="/hadiths/$number" params={{ number: String(next.number) }}>
-            <Button variant="outline" size="sm">الحديث {next.number} <ArrowLeft className="h-4 w-4 mr-1" /></Button>
+            <Button variant="outline" size="sm">
+              الحديث {next.number} <ArrowLeft className="h-4 w-4 mr-1" />
+            </Button>
           </Link>
-        ) : <div />}
+        ) : (
+          <div />
+        )}
       </nav>
     </article>
   );

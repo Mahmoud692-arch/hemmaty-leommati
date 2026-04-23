@@ -29,7 +29,9 @@ export const Route = createFileRoute("/articles/$slug")({
   notFoundComponent: () => (
     <div className="container mx-auto px-4 py-20 text-center">
       <h1 className="font-display text-3xl mb-4">المقال غير موجود</h1>
-      <Link to="/articles" className="text-primary hover:underline">العودة إلى المقالات</Link>
+      <Link to="/articles" className="text-primary hover:underline">
+        العودة إلى المقالات
+      </Link>
     </div>
   ),
   component: ArticlePage,
@@ -98,7 +100,9 @@ function ArticlePage() {
           {article.title}
         </h1>
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
-          <span className="flex items-center gap-1.5"><BookOpen className="h-3.5 w-3.5" /> {article.readTime} دقائق قراءة</span>
+          <span className="flex items-center gap-1.5">
+            <BookOpen className="h-3.5 w-3.5" /> {article.readTime} دقائق قراءة
+          </span>
           <span>{new Date(article.date).toLocaleDateString("ar-EG")}</span>
         </div>
         <div className="inline-flex items-center gap-2 mt-4 text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary">
@@ -111,17 +115,23 @@ function ArticlePage() {
       <div className="article-content text-foreground/90 leading-loose space-y-4">
         <ReactMarkdown
           components={{
-            h2: ({ children }) => <h2 className="font-display text-2xl mt-10 mb-4 text-primary">{children}</h2>,
+            h2: ({ children }) => (
+              <h2 className="font-display text-2xl mt-10 mb-4 text-primary">{children}</h2>
+            ),
             h3: ({ children }) => <h3 className="font-display text-xl mt-6 mb-3">{children}</h3>,
             p: ({ children }) => <p className="leading-loose my-3">{children}</p>,
             ul: ({ children }) => <ul className="list-disc pr-6 space-y-1.5 my-3">{children}</ul>,
-            ol: ({ children }) => <ol className="list-decimal pr-6 space-y-1.5 my-3">{children}</ol>,
+            ol: ({ children }) => (
+              <ol className="list-decimal pr-6 space-y-1.5 my-3">{children}</ol>
+            ),
             blockquote: ({ children }) => (
               <blockquote className="border-r-4 border-[var(--gold)] pr-4 bg-accent/20 py-2 rounded-r-lg my-4 italic">
                 {children}
               </blockquote>
             ),
-            strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
+            strong: ({ children }) => (
+              <strong className="font-semibold text-foreground">{children}</strong>
+            ),
           }}
         >
           {article.content}
