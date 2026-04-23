@@ -36,13 +36,19 @@ export const Route = createRootRoute({
         content:
           "منصّةٌ توعويةٌ تُعينك على التقرّب إلى الله من خلال مقالات، أحاديث الأربعين النووية، ورحلة إيمانية تفاعلية.",
       },
-      { property: "og:title", content: "هِمَّتي لِأمّتي" },
+      { property: "og:title", content: "هِمَّتي لِأمّتي — منصةُ الإيمانِ والعمل" },
       {
         property: "og:description",
         content: "منصةٌ تربويةٌ إيمانيةٌ تفاعلية تجمع المقال والحديث والرحلة الإيمانية.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "هِمَّتي لِأمّتي — منصةُ الإيمانِ والعمل" },
+      { name: "description", content: "موقع هِمَّتِي لأمَّتِي منصة دينية توعوية تنشر محتوى إسلامي موثوق، مقالات، وأحاديث تهدف لرفع الوعي وبناء جيل واعٍ." },
+      { property: "og:description", content: "موقع هِمَّتِي لأمَّتِي منصة دينية توعوية تنشر محتوى إسلامي موثوق، مقالات، وأحاديث تهدف لرفع الوعي وبناء جيل واعٍ." },
+      { name: "twitter:description", content: "موقع هِمَّتِي لأمَّتِي منصة دينية توعوية تنشر محتوى إسلامي موثوق، مقالات، وأحاديث تهدف لرفع الوعي وبناء جيل واعٍ." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/cCKw23SCrdhkZIIerwSRhw8c7hj2/social-images/social-1776962398809-IMG_20260423_183434_123.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/cCKw23SCrdhkZIIerwSRhw8c7hj2/social-images/social-1776962398809-IMG_20260423_183434_123.webp" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
