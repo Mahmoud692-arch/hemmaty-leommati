@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as QuestionsRouteImport } from './routes/questions'
+import { Route as MeRouteImport } from './routes/me'
 import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as HadithsRouteImport } from './routes/hadiths'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -24,6 +25,11 @@ import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
 const QuestionsRoute = QuestionsRouteImport.update({
   id: '/questions',
   path: '/questions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeRoute = MeRouteImport.update({
+  id: '/me',
+  path: '/me',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JourneyRoute = JourneyRouteImport.update({
@@ -86,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/hadiths': typeof HadithsRouteWithChildren
   '/journey': typeof JourneyRoute
+  '/me': typeof MeRoute
   '/questions': typeof QuestionsRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/hadiths': typeof HadithsRouteWithChildren
   '/journey': typeof JourneyRoute
+  '/me': typeof MeRoute
   '/questions': typeof QuestionsRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/hadiths': typeof HadithsRouteWithChildren
   '/journey': typeof JourneyRoute
+  '/me': typeof MeRoute
   '/questions': typeof QuestionsRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
@@ -128,6 +137,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/hadiths'
     | '/journey'
+    | '/me'
     | '/questions'
     | '/articles/$slug'
     | '/hadiths/$number'
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/hadiths'
     | '/journey'
+    | '/me'
     | '/questions'
     | '/articles/$slug'
     | '/hadiths/$number'
@@ -154,6 +165,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/hadiths'
     | '/journey'
+    | '/me'
     | '/questions'
     | '/articles/$slug'
     | '/hadiths/$number'
@@ -168,6 +180,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   HadithsRoute: typeof HadithsRouteWithChildren
   JourneyRoute: typeof JourneyRoute
+  MeRoute: typeof MeRoute
   QuestionsRoute: typeof QuestionsRoute
 }
 
@@ -178,6 +191,13 @@ declare module '@tanstack/react-router' {
       path: '/questions'
       fullPath: '/questions'
       preLoaderRoute: typeof QuestionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/me': {
+      id: '/me'
+      path: '/me'
+      fullPath: '/me'
+      preLoaderRoute: typeof MeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/journey': {
@@ -285,6 +305,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   HadithsRoute: HadithsRouteWithChildren,
   JourneyRoute: JourneyRoute,
+  MeRoute: MeRoute,
   QuestionsRoute: QuestionsRoute,
 }
 export const routeTree = rootRouteImport
