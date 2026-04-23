@@ -258,17 +258,21 @@ const shortHadiths: Array<Omit<Hadith, "vocabulary" | "benefits" | "practical"> 
   { number: 42, title: "حديث المغفرة الواسعة", arabic: "عن أنس رضي الله عنه قال: سمعت رسول الله ﷺ يقول: قال الله تعالى: «يا ابن آدم، إنّك ما دعوتَني ورجوتَني غفرتُ لك على ما كان منك ولا أُبالي...».", narrator: "أنس بن مالك رضي الله عنه", source: "رواه الترمذي وحسّنه", explanation: "سعة مغفرة الله لمن دعاه واستغفره ووحّده.", brief: "" },
 ];
 
-export const allHadiths: Hadith[] = [
+const _full: Hadith[] = [
   ...hadiths,
-  ...shortHadiths.map((h) => ({
+  ...shortHadiths.map<Hadith>((h) => ({
     number: h.number,
     title: h.title,
     arabic: h.arabic,
     narrator: h.narrator,
     source: h.source,
     explanation: h.explanation,
-    vocabulary: [],
-    benefits: [],
+    vocabulary: [] as { word: string; meaning: string }[],
+    benefits: [] as string[],
     practical: "",
   })),
 ];
+
+export const allHadiths: Hadith[] = _full;
+// override export so consumers get full list
+export { _full as __hadithsFull };
