@@ -9,38 +9,126 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as HadithsRouteImport } from './routes/hadiths'
+import { Route as ArticlesRouteImport } from './routes/articles'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as HadithsNumberRouteImport } from './routes/hadiths.$number'
+import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
 
+const HadithsRoute = HadithsRouteImport.update({
+  id: '/hadiths',
+  path: '/hadiths',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArticlesRoute = ArticlesRouteImport.update({
+  id: '/articles',
+  path: '/articles',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HadithsNumberRoute = HadithsNumberRouteImport.update({
+  id: '/$number',
+  path: '/$number',
+  getParentRoute: () => HadithsRoute,
+} as any)
+const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ArticlesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/articles': typeof ArticlesRouteWithChildren
+  '/hadiths': typeof HadithsRouteWithChildren
+  '/articles/$slug': typeof ArticlesSlugRoute
+  '/hadiths/$number': typeof HadithsNumberRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/articles': typeof ArticlesRouteWithChildren
+  '/hadiths': typeof HadithsRouteWithChildren
+  '/articles/$slug': typeof ArticlesSlugRoute
+  '/hadiths/$number': typeof HadithsNumberRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/articles': typeof ArticlesRouteWithChildren
+  '/hadiths': typeof HadithsRouteWithChildren
+  '/articles/$slug': typeof ArticlesSlugRoute
+  '/hadiths/$number': typeof HadithsNumberRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/articles'
+    | '/hadiths'
+    | '/articles/$slug'
+    | '/hadiths/$number'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/articles'
+    | '/hadiths'
+    | '/articles/$slug'
+    | '/hadiths/$number'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/articles'
+    | '/hadiths'
+    | '/articles/$slug'
+    | '/hadiths/$number'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  ArticlesRoute: typeof ArticlesRouteWithChildren
+  HadithsRoute: typeof HadithsRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/hadiths': {
+      id: '/hadiths'
+      path: '/hadiths'
+      fullPath: '/hadiths'
+      preLoaderRoute: typeof HadithsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/articles': {
+      id: '/articles'
+      path: '/articles'
+      fullPath: '/articles'
+      preLoaderRoute: typeof ArticlesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +136,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/hadiths/$number': {
+      id: '/hadiths/$number'
+      path: '/$number'
+      fullPath: '/hadiths/$number'
+      preLoaderRoute: typeof HadithsNumberRouteImport
+      parentRoute: typeof HadithsRoute
+    }
+    '/articles/$slug': {
+      id: '/articles/$slug'
+      path: '/$slug'
+      fullPath: '/articles/$slug'
+      preLoaderRoute: typeof ArticlesSlugRouteImport
+      parentRoute: typeof ArticlesRoute
+    }
   }
 }
 
+interface ArticlesRouteChildren {
+  ArticlesSlugRoute: typeof ArticlesSlugRoute
+}
+
+const ArticlesRouteChildren: ArticlesRouteChildren = {
+  ArticlesSlugRoute: ArticlesSlugRoute,
+}
+
+const ArticlesRouteWithChildren = ArticlesRoute._addFileChildren(
+  ArticlesRouteChildren,
+)
+
+interface HadithsRouteChildren {
+  HadithsNumberRoute: typeof HadithsNumberRoute
+}
+
+const HadithsRouteChildren: HadithsRouteChildren = {
+  HadithsNumberRoute: HadithsNumberRoute,
+}
+
+const HadithsRouteWithChildren =
+  HadithsRoute._addFileChildren(HadithsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  ArticlesRoute: ArticlesRouteWithChildren,
+  HadithsRoute: HadithsRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
