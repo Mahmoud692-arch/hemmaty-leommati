@@ -16,7 +16,7 @@ export const Route = createFileRoute("/articles/$slug")({
       .from("articles")
       .select("*")
       .eq("slug", params.slug)
-      .eq("is_published", true)
+      .eq("status", "published")
       .maybeSingle();
     if (dbRow) {
       const article: Article = {
