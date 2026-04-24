@@ -1,7 +1,15 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { allHadiths as hadiths } from "@/data/hadiths";
+import { useEffect, useState } from "react";
+import { allHadiths as staticHadiths } from "@/data/hadiths";
+import { supabase } from "@/integrations/supabase/client";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
 import { ShieldCheck } from "lucide-react";
+
+interface ListHadith {
+  number: number;
+  title: string;
+  source: string;
+}
 
 export const Route = createFileRoute("/hadiths")({
   head: () => ({
@@ -23,10 +31,37 @@ export const Route = createFileRoute("/hadiths")({
 
 function HadithsPage() {
   const { location } = useRouterState();
+  const [dbHadiths, setDbHadiths] = useState<ListHadith[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("hadiths")
+      .select("number, arabic_text, source")
+      .eq("is_published", true)
+      .order("number", { ascending: true })
+      .then(({ data }) => {
+        if (!data) return;
+        setDbHadiths(
+          data.map((h) => ({
+            number: h.number,
+            title: h.arabic_text.slice(0, 60) + (h.arabic_text.length > 60 ? "…" : ""),
+            source: h.source ?? "",
+          }))
+        );
+      });
+  }, []);
 
   if (location.pathname !== "/hadiths") {
     return <Outlet />;
   }
+
+  const dbNums = new Set(dbHadiths.map((h) => h.number));
+  const merged: ListHadith[] = [
+    ...staticHadiths
+      .filter((h) => !dbNums.has(h.number))
+      .map((h) => ({ number: h.number, title: h.title, source: h.source })),
+    ...dbHadiths,
+  ].sort((a, b) => a.number - b.number);
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-16">
@@ -42,7 +77,7 @@ function HadithsPage() {
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
-        {hadiths.map((h) => (
+        {merged.map((h) => (
           <Link
             key={h.number}
             to="/hadiths/$number"

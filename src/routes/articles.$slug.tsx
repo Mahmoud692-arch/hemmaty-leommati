@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import ReactMarkdown from "react-markdown";
 import { useEffect } from "react";
-import { articles } from "@/data/articles";
+import { articles as staticArticles, type Article } from "@/data/articles";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { POINTS } from "@/lib/journey";
@@ -11,8 +11,26 @@ import { toast } from "sonner";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
 
 export const Route = createFileRoute("/articles/$slug")({
-  loader: ({ params }) => {
-    const article = articles.find((a) => a.slug === params.slug);
+  loader: async ({ params }) => {
+    const { data: dbRow } = await supabase
+      .from("articles")
+      .select("*")
+      .eq("slug", params.slug)
+      .eq("is_published", true)
+      .maybeSingle();
+    if (dbRow) {
+      const article: Article = {
+        slug: dbRow.slug,
+        title: dbRow.title,
+        excerpt: dbRow.excerpt ?? "",
+        category: dbRow.category ?? "عام",
+        readTime: dbRow.read_minutes ?? 5,
+        date: dbRow.created_at,
+        content: dbRow.content,
+      };
+      return { article };
+    }
+    const article = staticArticles.find((a) => a.slug === params.slug);
     if (!article) throw notFound();
     return { article };
   },

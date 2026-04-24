@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { allHadiths as hadiths } from "@/data/hadiths";
+import { allHadiths as staticHadiths, type Hadith } from "@/data/hadiths";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { POINTS } from "@/lib/journey";
@@ -10,9 +10,30 @@ import { ArrowRight, ArrowLeft, Heart, Sparkles, BookOpen, Lightbulb } from "luc
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/hadiths/$number")({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
     const num = Number(params.number);
-    const hadith = hadiths.find((h) => h.number === num);
+    // أولًا: ابحث في قاعدة البيانات
+    const { data: dbRow } = await supabase
+      .from("hadiths")
+      .select("*")
+      .eq("number", num)
+      .eq("is_published", true)
+      .maybeSingle();
+    if (dbRow) {
+      const hadith: Hadith = {
+        number: dbRow.number,
+        title: dbRow.arabic_text.slice(0, 60),
+        arabic: dbRow.arabic_text,
+        narrator: dbRow.narrator ?? "",
+        source: dbRow.source ?? "",
+        explanation: dbRow.explanation ?? "",
+        vocabulary: [],
+        benefits: dbRow.benefit ? [dbRow.benefit] : [],
+        practical: dbRow.benefit ?? "",
+      };
+      return { hadith };
+    }
+    const hadith = staticHadiths.find((h) => h.number === num);
     if (!hadith) throw notFound();
     return { hadith };
   },
@@ -115,8 +136,8 @@ function HadithPage() {
     }
   };
 
-  const prev = hadiths.find((h) => h.number === hadith.number - 1);
-  const next = hadiths.find((h) => h.number === hadith.number + 1);
+  const prev = staticHadiths.find((h) => h.number === hadith.number - 1);
+  const next = staticHadiths.find((h) => h.number === hadith.number + 1);
 
   return (
     <article className="container mx-auto px-4 py-12 max-w-3xl">

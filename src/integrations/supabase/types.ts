@@ -35,6 +35,51 @@ export type Database = {
         }
         Relationships: []
       }
+      articles: {
+        Row: {
+          author: string | null
+          category: string | null
+          content: string
+          cover_image: string | null
+          created_at: string
+          excerpt: string | null
+          id: string
+          is_published: boolean
+          read_minutes: number
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author?: string | null
+          category?: string | null
+          content: string
+          cover_image?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          is_published?: boolean
+          read_minutes?: number
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string | null
+          category?: string | null
+          content?: string
+          cover_image?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          is_published?: boolean
+          read_minutes?: number
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       hadith_favorites: {
         Row: {
           created_at: string
@@ -74,6 +119,48 @@ export type Database = {
           id?: string
           read_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      hadiths: {
+        Row: {
+          arabic_text: string
+          benefit: string | null
+          category: string | null
+          created_at: string
+          explanation: string | null
+          id: string
+          is_published: boolean
+          narrator: string | null
+          number: number
+          source: string | null
+          updated_at: string
+        }
+        Insert: {
+          arabic_text: string
+          benefit?: string | null
+          category?: string | null
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          is_published?: boolean
+          narrator?: string | null
+          number: number
+          source?: string | null
+          updated_at?: string
+        }
+        Update: {
+          arabic_text?: string
+          benefit?: string | null
+          category?: string | null
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          is_published?: boolean
+          narrator?: string | null
+          number?: number
+          source?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -128,6 +215,36 @@ export type Database = {
           total_points?: number
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      quotes: {
+        Row: {
+          created_at: string
+          id: string
+          is_published: boolean
+          source: string | null
+          text: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          source?: string | null
+          text: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          source?: string | null
+          text?: string
+          type?: string
+          updated_at?: string
         }
         Relationships: []
       }

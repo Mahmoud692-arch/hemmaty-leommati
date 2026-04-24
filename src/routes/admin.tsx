@@ -5,7 +5,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
 import {
@@ -18,6 +33,10 @@ import {
   Search,
   ShieldCheck,
   ShieldOff,
+  FileText,
+  ScrollText,
+  Plus,
+  Pencil,
 } from "lucide-react";
 
 interface AdminQuestion {
@@ -34,6 +53,31 @@ interface ProfileRow {
   user_id: string;
   full_name: string;
   email: string;
+}
+
+interface ArticleRow {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string | null;
+  content: string;
+  cover_image: string | null;
+  author: string | null;
+  category: string | null;
+  read_minutes: number;
+  is_published: boolean;
+}
+
+interface HadithRow {
+  id: string;
+  number: number;
+  arabic_text: string;
+  narrator: string | null;
+  source: string | null;
+  explanation: string | null;
+  benefit: string | null;
+  category: string | null;
+  is_published: boolean;
 }
 
 export const Route = createFileRoute("/admin")({
@@ -131,8 +175,14 @@ function AdminPage() {
         <StatCard icon={BookOpen} label="قراءات المقالات" value={stats.articles} />
       </section>
 
-      <Tabs defaultValue="questions" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-6">
+      <Tabs defaultValue="articles" className="w-full">
+        <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsTrigger value="articles">
+            <FileText className="h-4 w-4 ml-1" /> المقالات
+          </TabsTrigger>
+          <TabsTrigger value="hadiths">
+            <ScrollText className="h-4 w-4 ml-1" /> الأحاديث
+          </TabsTrigger>
           <TabsTrigger value="questions">
             <MessageCircleQuestion className="h-4 w-4 ml-1" /> الأسئلة
           </TabsTrigger>
@@ -140,6 +190,14 @@ function AdminPage() {
             <ShieldCheck className="h-4 w-4 ml-1" /> الأدوار
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="articles">
+          <ArticlesManager />
+        </TabsContent>
+
+        <TabsContent value="hadiths">
+          <HadithsManager />
+        </TabsContent>
 
         <TabsContent value="questions">
           <h2 className="font-display text-2xl mb-4">
@@ -218,6 +276,484 @@ function StatCard({
     </div>
   );
 }
+
+/* ============== ARTICLES MANAGER ============== */
+
+const emptyArticle: Omit<ArticleRow, "id"> = {
+  slug: "",
+  title: "",
+  excerpt: "",
+  content: "",
+  cover_image: "",
+  author: "",
+  category: "",
+  read_minutes: 5,
+  is_published: true,
+};
+
+function ArticlesManager() {
+  const [items, setItems] = useState<ArticleRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [editing, setEditing] = useState<ArticleRow | null>(null);
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState<Omit<ArticleRow, "id">>(emptyArticle);
+  const [saving, setSaving] = useState(false);
+
+  const load = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("articles")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) toast.error("تعذّر تحميل المقالات");
+    setItems((data as ArticleRow[]) ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter(
+      (a) => a.title.toLowerCase().includes(q) || a.slug.toLowerCase().includes(q)
+    );
+  }, [items, search]);
+
+  const openNew = () => {
+    setEditing(null);
+    setForm(emptyArticle);
+    setOpen(true);
+  };
+
+  const openEdit = (a: ArticleRow) => {
+    setEditing(a);
+    setForm({
+      slug: a.slug,
+      title: a.title,
+      excerpt: a.excerpt ?? "",
+      content: a.content,
+      cover_image: a.cover_image ?? "",
+      author: a.author ?? "",
+      category: a.category ?? "",
+      read_minutes: a.read_minutes,
+      is_published: a.is_published,
+    });
+    setOpen(true);
+  };
+
+  const save = async () => {
+    if (!form.title.trim() || !form.slug.trim() || !form.content.trim()) {
+      toast.error("العنوان والرابط والمحتوى مطلوبة");
+      return;
+    }
+    setSaving(true);
+    const payload = {
+      ...form,
+      excerpt: form.excerpt || null,
+      cover_image: form.cover_image || null,
+      author: form.author || null,
+      category: form.category || null,
+    };
+    const { error } = editing
+      ? await supabase.from("articles").update(payload).eq("id", editing.id)
+      : await supabase.from("articles").insert(payload);
+    setSaving(false);
+    if (error) {
+      toast.error(error.message.includes("duplicate") ? "الرابط مستخدم" : "تعذّر الحفظ");
+      return;
+    }
+    toast.success(editing ? "تم التحديث" : "تمّت الإضافة");
+    setOpen(false);
+    load();
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("حذف هذا المقال؟")) return;
+    const { error } = await supabase.from("articles").delete().eq("id", id);
+    if (error) {
+      toast.error("تعذّر الحذف");
+      return;
+    }
+    toast.success("تم الحذف");
+    load();
+  };
+
+  return (
+    <div>
+      <div className="flex items-center gap-2 mb-4">
+        <div className="relative flex-1">
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="ابحث في المقالات..."
+            className="pr-9"
+          />
+        </div>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button onClick={openNew}>
+              <Plus className="h-4 w-4 ml-1" /> مقال جديد
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{editing ? "تعديل المقال" : "مقال جديد"}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              <div>
+                <Label>العنوان</Label>
+                <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+              </div>
+              <div>
+                <Label>الرابط (slug)</Label>
+                <Input
+                  value={form.slug}
+                  onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                  placeholder="example-article"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>التصنيف</Label>
+                  <Input value={form.category ?? ""} onChange={(e) => setForm({ ...form, category: e.target.value })} />
+                </div>
+                <div>
+                  <Label>الكاتب</Label>
+                  <Input value={form.author ?? ""} onChange={(e) => setForm({ ...form, author: e.target.value })} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>صورة الغلاف (رابط)</Label>
+                  <Input value={form.cover_image ?? ""} onChange={(e) => setForm({ ...form, cover_image: e.target.value })} />
+                </div>
+                <div>
+                  <Label>دقائق القراءة</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={form.read_minutes}
+                    onChange={(e) => setForm({ ...form, read_minutes: Number(e.target.value) || 1 })}
+                  />
+                </div>
+              </div>
+              <div>
+                <Label>المقتطف</Label>
+                <Textarea
+                  value={form.excerpt ?? ""}
+                  onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
+                  rows={2}
+                />
+              </div>
+              <div>
+                <Label>المحتوى (Markdown مدعوم)</Label>
+                <Textarea
+                  value={form.content}
+                  onChange={(e) => setForm({ ...form, content: e.target.value })}
+                  rows={12}
+                  className="font-mono text-sm"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={form.is_published}
+                  onCheckedChange={(v) => setForm({ ...form, is_published: v })}
+                />
+                <Label>منشور</Label>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setOpen(false)}>
+                إلغاء
+              </Button>
+              <Button onClick={save} disabled={saving}>
+                {saving ? "جاري الحفظ..." : "حفظ"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {loading ? (
+        <p className="text-center text-muted-foreground py-8">جاري التحميل...</p>
+      ) : filtered.length === 0 ? (
+        <p className="text-center text-muted-foreground py-8">
+          لا مقالات بعد. أضف أوّل مقال من الزرّ أعلاه.
+        </p>
+      ) : (
+        <div className="space-y-2">
+          {filtered.map((a) => (
+            <div
+              key={a.id}
+              className="card-elegant rounded-2xl p-4 flex items-center justify-between gap-3"
+            >
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="font-semibold truncate">{a.title}</p>
+                  {!a.is_published && (
+                    <span className="text-[10px] bg-muted px-2 py-0.5 rounded-full">مسودّة</span>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground truncate">/{a.slug}</p>
+              </div>
+              <Button size="sm" variant="outline" onClick={() => openEdit(a)}>
+                <Pencil className="h-4 w-4" />
+              </Button>
+              <Button size="sm" variant="destructive" onClick={() => remove(a.id)}>
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ============== HADITHS MANAGER ============== */
+
+const emptyHadith: Omit<HadithRow, "id"> = {
+  number: 1,
+  arabic_text: "",
+  narrator: "",
+  source: "",
+  explanation: "",
+  benefit: "",
+  category: "",
+  is_published: true,
+};
+
+function HadithsManager() {
+  const [items, setItems] = useState<HadithRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [editing, setEditing] = useState<HadithRow | null>(null);
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState<Omit<HadithRow, "id">>(emptyHadith);
+  const [saving, setSaving] = useState(false);
+
+  const load = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("hadiths")
+      .select("*")
+      .order("number", { ascending: true });
+    if (error) toast.error("تعذّر تحميل الأحاديث");
+    setItems((data as HadithRow[]) ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter(
+      (h) =>
+        String(h.number).includes(q) ||
+        h.arabic_text.toLowerCase().includes(q) ||
+        (h.source ?? "").toLowerCase().includes(q)
+    );
+  }, [items, search]);
+
+  const openNew = () => {
+    const nextNum = items.length ? Math.max(...items.map((h) => h.number)) + 1 : 1;
+    setEditing(null);
+    setForm({ ...emptyHadith, number: nextNum });
+    setOpen(true);
+  };
+
+  const openEdit = (h: HadithRow) => {
+    setEditing(h);
+    setForm({
+      number: h.number,
+      arabic_text: h.arabic_text,
+      narrator: h.narrator ?? "",
+      source: h.source ?? "",
+      explanation: h.explanation ?? "",
+      benefit: h.benefit ?? "",
+      category: h.category ?? "",
+      is_published: h.is_published,
+    });
+    setOpen(true);
+  };
+
+  const save = async () => {
+    if (!form.arabic_text.trim() || !form.number) {
+      toast.error("النصّ ورقم الحديث مطلوبان");
+      return;
+    }
+    setSaving(true);
+    const payload = {
+      ...form,
+      narrator: form.narrator || null,
+      source: form.source || null,
+      explanation: form.explanation || null,
+      benefit: form.benefit || null,
+      category: form.category || null,
+    };
+    const { error } = editing
+      ? await supabase.from("hadiths").update(payload).eq("id", editing.id)
+      : await supabase.from("hadiths").insert(payload);
+    setSaving(false);
+    if (error) {
+      toast.error(error.message.includes("duplicate") ? "رقم مستخدم" : "تعذّر الحفظ");
+      return;
+    }
+    toast.success(editing ? "تم التحديث" : "تمّت الإضافة");
+    setOpen(false);
+    load();
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("حذف هذا الحديث؟")) return;
+    const { error } = await supabase.from("hadiths").delete().eq("id", id);
+    if (error) {
+      toast.error("تعذّر الحذف");
+      return;
+    }
+    toast.success("تم الحذف");
+    load();
+  };
+
+  return (
+    <div>
+      <div className="flex items-center gap-2 mb-4">
+        <div className="relative flex-1">
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="ابحث برقم أو نص..."
+            className="pr-9"
+          />
+        </div>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button onClick={openNew}>
+              <Plus className="h-4 w-4 ml-1" /> حديث جديد
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{editing ? "تعديل الحديث" : "حديث جديد"}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>رقم الحديث</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={form.number}
+                    onChange={(e) => setForm({ ...form, number: Number(e.target.value) || 1 })}
+                  />
+                </div>
+                <div>
+                  <Label>التصنيف</Label>
+                  <Input value={form.category ?? ""} onChange={(e) => setForm({ ...form, category: e.target.value })} />
+                </div>
+              </div>
+              <div>
+                <Label>النصّ العربي</Label>
+                <Textarea
+                  value={form.arabic_text}
+                  onChange={(e) => setForm({ ...form, arabic_text: e.target.value })}
+                  rows={5}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>الراوي</Label>
+                  <Input value={form.narrator ?? ""} onChange={(e) => setForm({ ...form, narrator: e.target.value })} />
+                </div>
+                <div>
+                  <Label>التخريج</Label>
+                  <Input
+                    value={form.source ?? ""}
+                    onChange={(e) => setForm({ ...form, source: e.target.value })}
+                    placeholder="رواه البخاري ومسلم"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label>الشرح</Label>
+                <Textarea
+                  value={form.explanation ?? ""}
+                  onChange={(e) => setForm({ ...form, explanation: e.target.value })}
+                  rows={4}
+                />
+              </div>
+              <div>
+                <Label>الفائدة العملية</Label>
+                <Textarea
+                  value={form.benefit ?? ""}
+                  onChange={(e) => setForm({ ...form, benefit: e.target.value })}
+                  rows={3}
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={form.is_published}
+                  onCheckedChange={(v) => setForm({ ...form, is_published: v })}
+                />
+                <Label>منشور</Label>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setOpen(false)}>
+                إلغاء
+              </Button>
+              <Button onClick={save} disabled={saving}>
+                {saving ? "جاري الحفظ..." : "حفظ"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {loading ? (
+        <p className="text-center text-muted-foreground py-8">جاري التحميل...</p>
+      ) : filtered.length === 0 ? (
+        <p className="text-center text-muted-foreground py-8">
+          لا أحاديث في قاعدة البيانات بعد. أضف أوّل حديث من الزرّ أعلاه.
+        </p>
+      ) : (
+        <div className="space-y-2">
+          {filtered.map((h) => (
+            <div
+              key={h.id}
+              className="card-elegant rounded-2xl p-4 flex items-center justify-between gap-3"
+            >
+              <div className="shrink-0 w-9 h-9 rounded-full bg-[var(--gold)]/15 text-[var(--gold)] flex items-center justify-center text-sm font-bold">
+                {h.number}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm line-clamp-2">{h.arabic_text}</p>
+                <p className="text-xs text-muted-foreground mt-1">{h.source}</p>
+              </div>
+              <Button size="sm" variant="outline" onClick={() => openEdit(h)}>
+                <Pencil className="h-4 w-4" />
+              </Button>
+              <Button size="sm" variant="destructive" onClick={() => remove(h.id)}>
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ============== ROLES MANAGER ============== */
 
 function RolesManager({ currentUserId }: { currentUserId: string }) {
   const [profiles, setProfiles] = useState<ProfileRow[]>([]);

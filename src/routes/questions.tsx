@@ -112,11 +112,20 @@ function QuestionsPage() {
           </Button>
         </form>
       ) : (
-        <div className="card-elegant rounded-2xl p-6 my-8 text-center">
-          <p className="text-muted-foreground mb-3">سجّل دخولك لطرح سؤال.</p>
-          <Link to="/auth">
-            <Button>تسجيل الدخول</Button>
-          </Link>
+        <div className="card-elegant rounded-2xl p-8 my-8 text-center border-2 border-dashed border-[var(--gold)]/40">
+          <ShieldCheck className="h-10 w-10 mx-auto text-[var(--gold)] mb-3" />
+          <h2 className="font-display text-xl mb-2">إرسال الأسئلة للمستخدمين فقط</h2>
+          <p className="text-muted-foreground mb-4 text-sm">
+            لضمان جدّية الأسئلة ومتابعة الإجابات، يلزمك حسابٌ على الموقع لطرح سؤال.
+          </p>
+          <div className="flex items-center justify-center gap-2 flex-wrap">
+            <Link to="/auth">
+              <Button>تسجيل الدخول</Button>
+            </Link>
+            <Link to="/auth">
+              <Button variant="outline">إنشاء حساب جديد</Button>
+            </Link>
+          </div>
         </div>
       )}
 

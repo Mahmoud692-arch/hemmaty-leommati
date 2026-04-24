@@ -1,7 +1,18 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { articles } from "@/data/articles";
+import { useEffect, useState } from "react";
+import { articles as staticArticles } from "@/data/articles";
+import { supabase } from "@/integrations/supabase/client";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
 import { BookOpen, ShieldCheck } from "lucide-react";
+
+interface CombinedArticle {
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  readTime: number;
+  date: string;
+}
 
 export const Route = createFileRoute("/articles")({
   head: () => ({
@@ -20,10 +31,48 @@ export const Route = createFileRoute("/articles")({
 
 function ArticlesPage() {
   const { location } = useRouterState();
+  const [dbArticles, setDbArticles] = useState<CombinedArticle[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("articles")
+      .select("slug, title, excerpt, category, read_minutes, created_at")
+      .eq("is_published", true)
+      .order("created_at", { ascending: false })
+      .then(({ data }) => {
+        if (!data) return;
+        setDbArticles(
+          data.map((a) => ({
+            slug: a.slug,
+            title: a.title,
+            excerpt: a.excerpt ?? "",
+            category: a.category ?? "عام",
+            readTime: a.read_minutes ?? 5,
+            date: a.created_at,
+          }))
+        );
+      });
+  }, []);
 
   if (location.pathname !== "/articles") {
     return <Outlet />;
   }
+
+  // دمج: أولوية لمقالات قاعدة البيانات، ثم القديمة (بدون تكرار slug)
+  const slugs = new Set(dbArticles.map((a) => a.slug));
+  const merged: CombinedArticle[] = [
+    ...dbArticles,
+    ...staticArticles
+      .filter((a) => !slugs.has(a.slug))
+      .map((a) => ({
+        slug: a.slug,
+        title: a.title,
+        excerpt: a.excerpt,
+        category: a.category,
+        readTime: a.readTime,
+        date: a.date,
+      })),
+  ];
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-16">
@@ -39,7 +88,7 @@ function ArticlesPage() {
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-        {articles.map((a) => (
+        {merged.map((a) => (
           <Link
             key={a.slug}
             to="/articles/$slug"
