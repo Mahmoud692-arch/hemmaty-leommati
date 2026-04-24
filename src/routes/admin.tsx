@@ -496,34 +496,73 @@ function ArticlesManager() {
             <DialogHeader>
               <DialogTitle>{editing ? "تعديل المقال" : "مقال جديد"}</DialogTitle>
             </DialogHeader>
-            <div className="space-y-3">
-              <div>
-                <Label>العنوان</Label>
-                <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
-              </div>
-              <div>
-                <Label>الرابط (slug)</Label>
-                <Input
-                  value={form.slug}
-                  onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                  placeholder="example-article"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
+            {showPreview ? (
+              <ArticlePreview form={form} />
+            ) : (
+              <div className="space-y-3">
                 <div>
-                  <Label>التصنيف</Label>
-                  <Input value={form.category ?? ""} onChange={(e) => setForm({ ...form, category: e.target.value })} />
+                  <Label>العنوان</Label>
+                  <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
                 </div>
                 <div>
-                  <Label>الكاتب</Label>
-                  <Input value={form.author ?? ""} onChange={(e) => setForm({ ...form, author: e.target.value })} />
+                  <Label>الرابط (slug)</Label>
+                  <Input
+                    value={form.slug}
+                    onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                    placeholder="example-article"
+                  />
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label>التصنيف</Label>
+                    <Input value={form.category ?? ""} onChange={(e) => setForm({ ...form, category: e.target.value })} />
+                  </div>
+                  <div>
+                    <Label>الكاتب</Label>
+                    <Input value={form.author ?? ""} onChange={(e) => setForm({ ...form, author: e.target.value })} />
+                  </div>
+                </div>
+
                 <div>
-                  <Label>صورة الغلاف (رابط)</Label>
-                  <Input value={form.cover_image ?? ""} onChange={(e) => setForm({ ...form, cover_image: e.target.value })} />
+                  <Label>صورة الغلاف</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={form.cover_image ?? ""}
+                      onChange={(e) => setForm({ ...form, cover_image: e.target.value })}
+                      placeholder="رابط الصورة أو ارفع من جهازك"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      asChild
+                      disabled={uploading}
+                    >
+                      <label className="cursor-pointer">
+                        <Upload className="h-4 w-4 ml-1" />
+                        {uploading ? "جارٍ الرفع..." : "رفع"}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const f = e.target.files?.[0];
+                            if (f) handleUpload(f);
+                            e.target.value = "";
+                          }}
+                        />
+                      </label>
+                    </Button>
+                  </div>
+                  {form.cover_image && (
+                    <img
+                      src={form.cover_image}
+                      alt="غلاف"
+                      className="mt-2 rounded-lg max-h-40 object-cover"
+                    />
+                  )}
                 </div>
+
                 <div>
                   <Label>دقائق القراءة</Label>
                   <Input
@@ -533,39 +572,83 @@ function ArticlesManager() {
                     onChange={(e) => setForm({ ...form, read_minutes: Number(e.target.value) || 1 })}
                   />
                 </div>
+                <div>
+                  <Label>المقتطف</Label>
+                  <Textarea
+                    value={form.excerpt ?? ""}
+                    onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <Label>المحتوى (Markdown مدعوم)</Label>
+                  <Textarea
+                    value={form.content}
+                    onChange={(e) => setForm({ ...form, content: e.target.value })}
+                    rows={12}
+                    className="font-mono text-sm"
+                  />
+                </div>
+
+                <div className="border-t pt-3">
+                  <Label className="mb-2 block">حالة النشر</Label>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {(["draft", "scheduled", "published"] as ArticleStatus[]).map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => setForm({ ...form, status: s })}
+                        className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                          form.status === s
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-background hover:bg-accent"
+                        }`}
+                      >
+                        {s === "draft" ? "مسودّة" : s === "scheduled" ? "مجدول" : "منشور"}
+                      </button>
+                    ))}
+                  </div>
+                  {form.status === "scheduled" && (
+                    <div>
+                      <Label className="text-xs">وقت النشر التلقائي</Label>
+                      <Input
+                        type="datetime-local"
+                        value={toLocalInput(form.scheduled_at)}
+                        onChange={(e) =>
+                          setForm({ ...form, scheduled_at: fromLocalInput(e.target.value) })
+                        }
+                      />
+                      <p className="text-[11px] text-muted-foreground mt-1">
+                        سيُنشر تلقائيًا خلال دقيقة من هذا الوقت.
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div>
-                <Label>المقتطف</Label>
-                <Textarea
-                  value={form.excerpt ?? ""}
-                  onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
-                  rows={2}
-                />
-              </div>
-              <div>
-                <Label>المحتوى (Markdown مدعوم)</Label>
-                <Textarea
-                  value={form.content}
-                  onChange={(e) => setForm({ ...form, content: e.target.value })}
-                  rows={12}
-                  className="font-mono text-sm"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch
-                  checked={form.is_published}
-                  onCheckedChange={(v) => setForm({ ...form, is_published: v })}
-                />
-                <Label>منشور</Label>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setOpen(false)}>
-                إلغاء
+            )}
+
+            <DialogFooter className="flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowPreview((p) => !p)}
+              >
+                <Eye className="h-4 w-4 ml-1" />
+                {showPreview ? "تحرير" : "معاينة"}
               </Button>
-              <Button onClick={save} disabled={saving}>
-                {saving ? "جاري الحفظ..." : "حفظ"}
+              <Button variant="outline" size="sm" onClick={saveDraft} disabled={saving}>
+                <Save className="h-4 w-4 ml-1" /> حفظ كمسودّة
               </Button>
+              {form.status === "scheduled" ? (
+                <Button size="sm" onClick={schedule} disabled={saving}>
+                  <Clock className="h-4 w-4 ml-1" /> جدولة
+                </Button>
+              ) : (
+                <Button size="sm" onClick={publishNow} disabled={saving}>
+                  <Send className="h-4 w-4 ml-1" /> نشر الآن
+                </Button>
+              )}
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -585,11 +668,9 @@ function ArticlesManager() {
               className="card-elegant rounded-2xl p-4 flex items-center justify-between gap-3"
             >
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <p className="font-semibold truncate">{a.title}</p>
-                  {!a.is_published && (
-                    <span className="text-[10px] bg-muted px-2 py-0.5 rounded-full">مسودّة</span>
-                  )}
+                  {statusBadge(a.status, a.scheduled_at)}
                 </div>
                 <p className="text-xs text-muted-foreground truncate">/{a.slug}</p>
               </div>
@@ -604,6 +685,35 @@ function ArticlesManager() {
         </div>
       )}
     </div>
+  );
+}
+
+function ArticlePreview({ form }: { form: Omit<ArticleRow, "id"> }) {
+  return (
+    <article className="rounded-xl border bg-background p-5 max-h-[60vh] overflow-y-auto">
+      {form.cover_image && (
+        <img src={form.cover_image} alt="" className="rounded-lg mb-4 max-h-48 w-full object-cover" />
+      )}
+      {form.category && (
+        <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--gold)]/15 text-[var(--gold-foreground)] dark:text-[var(--gold)]">
+          {form.category}
+        </span>
+      )}
+      <h1 className="font-display text-2xl mt-2 mb-2">{form.title || "بدون عنوان"}</h1>
+      {form.excerpt && <p className="text-sm text-muted-foreground mb-4">{form.excerpt}</p>}
+      <div className="prose prose-sm dark:prose-invert max-w-none leading-loose">
+        <ReactMarkdown
+          components={{
+            h2: ({ children }) => <h2 className="font-display text-xl mt-6 mb-2 text-primary">{children}</h2>,
+            h3: ({ children }) => <h3 className="font-display text-lg mt-4 mb-2">{children}</h3>,
+            p: ({ children }) => <p className="my-2 leading-loose">{children}</p>,
+            ul: ({ children }) => <ul className="list-disc pr-6 space-y-1">{children}</ul>,
+          }}
+        >
+          {form.content || "_ابدأ الكتابة لمعاينة المحتوى..._"}
+        </ReactMarkdown>
+      </div>
+    </article>
   );
 }
 
