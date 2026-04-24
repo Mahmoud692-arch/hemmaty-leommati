@@ -37,7 +37,7 @@ function ArticlesPage() {
     supabase
       .from("articles")
       .select("slug, title, excerpt, category, read_minutes, created_at")
-      .eq("is_published", true)
+      .eq("status", "published")
       .order("created_at", { ascending: false })
       .then(({ data }) => {
         if (!data) return;

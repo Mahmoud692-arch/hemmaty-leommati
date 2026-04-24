@@ -46,7 +46,9 @@ export type Database = {
           id: string
           is_published: boolean
           read_minutes: number
+          scheduled_at: string | null
           slug: string
+          status: string
           title: string
           updated_at: string
         }
@@ -60,7 +62,9 @@ export type Database = {
           id?: string
           is_published?: boolean
           read_minutes?: number
+          scheduled_at?: string | null
           slug: string
+          status?: string
           title: string
           updated_at?: string
         }
@@ -74,7 +78,9 @@ export type Database = {
           id?: string
           is_published?: boolean
           read_minutes?: number
+          scheduled_at?: string | null
           slug?: string
+          status?: string
           title?: string
           updated_at?: string
         }
@@ -338,6 +344,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      publish_due_articles: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
