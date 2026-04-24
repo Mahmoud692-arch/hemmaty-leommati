@@ -37,7 +37,13 @@ import {
   ScrollText,
   Plus,
   Pencil,
+  Upload,
+  Eye,
+  Clock,
+  Send,
+  Save,
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 interface AdminQuestion {
   id: string;
@@ -55,6 +61,8 @@ interface ProfileRow {
   email: string;
 }
 
+type ArticleStatus = "draft" | "scheduled" | "published";
+
 interface ArticleRow {
   id: string;
   slug: string;
@@ -66,6 +74,8 @@ interface ArticleRow {
   category: string | null;
   read_minutes: number;
   is_published: boolean;
+  status: ArticleStatus;
+  scheduled_at: string | null;
 }
 
 interface HadithRow {
@@ -289,7 +299,22 @@ const emptyArticle: Omit<ArticleRow, "id"> = {
   category: "",
   read_minutes: 5,
   is_published: true,
+  status: "draft",
+  scheduled_at: null,
 };
+
+function statusBadge(status: ArticleStatus, scheduled_at?: string | null) {
+  if (status === "published")
+    return <span className="text-[10px] bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-full">منشور</span>;
+  if (status === "scheduled")
+    return (
+      <span className="text-[10px] bg-amber-500/15 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+        <Clock className="h-2.5 w-2.5" />
+        {scheduled_at ? new Date(scheduled_at).toLocaleString("ar-EG", { dateStyle: "short", timeStyle: "short" }) : "مجدول"}
+      </span>
+    );
+  return <span className="text-[10px] bg-muted px-2 py-0.5 rounded-full">مسودّة</span>;
+}
 
 function ArticlesManager() {
   const [items, setItems] = useState<ArticleRow[]>([]);
@@ -299,6 +324,8 @@ function ArticlesManager() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<Omit<ArticleRow, "id">>(emptyArticle);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -326,6 +353,7 @@ function ArticlesManager() {
   const openNew = () => {
     setEditing(null);
     setForm(emptyArticle);
+    setShowPreview(false);
     setOpen(true);
   };
 
@@ -341,22 +369,56 @@ function ArticlesManager() {
       category: a.category ?? "",
       read_minutes: a.read_minutes,
       is_published: a.is_published,
+      status: a.status ?? (a.is_published ? "published" : "draft"),
+      scheduled_at: a.scheduled_at,
     });
+    setShowPreview(false);
     setOpen(true);
   };
 
-  const save = async () => {
-    if (!form.title.trim() || !form.slug.trim() || !form.content.trim()) {
-      toast.error("العنوان والرابط والمحتوى مطلوبة");
+  const handleUpload = async (file: File) => {
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("الحجم الأقصى 5MB");
       return;
+    }
+    setUploading(true);
+    const ext = file.name.split(".").pop() || "jpg";
+    const path = `articles/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error } = await supabase.storage.from("media").upload(path, file, {
+      cacheControl: "3600",
+      upsert: false,
+    });
+    if (error) {
+      toast.error("تعذّر رفع الصورة");
+      setUploading(false);
+      return;
+    }
+    const { data } = supabase.storage.from("media").getPublicUrl(path);
+    setForm((f) => ({ ...f, cover_image: data.publicUrl }));
+    setUploading(false);
+    toast.success("تم رفع الصورة");
+  };
+
+  const persist = async (overrides: Partial<Omit<ArticleRow, "id">> = {}) => {
+    const merged = { ...form, ...overrides };
+    if (!merged.title.trim() || !merged.slug.trim() || !merged.content.trim()) {
+      toast.error("العنوان والرابط والمحتوى مطلوبة");
+      return null;
+    }
+    if (merged.status === "scheduled" && !merged.scheduled_at) {
+      toast.error("اختر وقت النشر المُجدوَل");
+      return null;
     }
     setSaving(true);
     const payload = {
-      ...form,
-      excerpt: form.excerpt || null,
-      cover_image: form.cover_image || null,
-      author: form.author || null,
-      category: form.category || null,
+      ...merged,
+      excerpt: merged.excerpt || null,
+      cover_image: merged.cover_image || null,
+      author: merged.author || null,
+      category: merged.category || null,
+      is_published: merged.status === "published",
+      scheduled_at: merged.status === "scheduled" ? merged.scheduled_at : null,
     };
     const { error } = editing
       ? await supabase.from("articles").update(payload).eq("id", editing.id)
@@ -364,11 +426,32 @@ function ArticlesManager() {
     setSaving(false);
     if (error) {
       toast.error(error.message.includes("duplicate") ? "الرابط مستخدم" : "تعذّر الحفظ");
-      return;
+      return null;
     }
-    toast.success(editing ? "تم التحديث" : "تمّت الإضافة");
-    setOpen(false);
+    setForm(merged);
     load();
+    return merged;
+  };
+
+  const saveDraft = async () => {
+    const r = await persist({ status: "draft" });
+    if (r) toast.success("حُفظت كمسودّة");
+  };
+
+  const publishNow = async () => {
+    const r = await persist({ status: "published", scheduled_at: null });
+    if (r) {
+      toast.success("تم النشر");
+      setOpen(false);
+    }
+  };
+
+  const schedule = async () => {
+    const r = await persist({ status: "scheduled" });
+    if (r) {
+      toast.success("جُدوِل النشر تلقائيًا");
+      setOpen(false);
+    }
   };
 
   const remove = async (id: string) => {
@@ -381,6 +464,15 @@ function ArticlesManager() {
     toast.success("تم الحذف");
     load();
   };
+
+  // قيمة input datetime-local مأخوذة من ISO
+  const toLocalInput = (iso: string | null) => {
+    if (!iso) return "";
+    const d = new Date(iso);
+    const off = d.getTimezoneOffset();
+    return new Date(d.getTime() - off * 60000).toISOString().slice(0, 16);
+  };
+  const fromLocalInput = (v: string) => (v ? new Date(v).toISOString() : null);
 
   return (
     <div>
