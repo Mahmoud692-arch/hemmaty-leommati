@@ -42,8 +42,18 @@ import {
   Clock,
   Send,
   Save,
+  Trophy,
+  Settings,
+  History,
+  MessageSquare,
+  LayoutGrid,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import QuizzesManager from "@/components/admin/QuizzesManager";
+import SettingsManager from "@/components/admin/SettingsManager";
+import AuditLogViewer from "@/components/admin/AuditLogViewer";
+import CommentsManager from "@/components/admin/CommentsManager";
+import HomepageSectionsManager from "@/components/admin/HomepageSectionsManager";
 
 interface AdminQuestion {
   id: string;

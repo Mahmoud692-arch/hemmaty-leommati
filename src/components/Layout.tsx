@@ -17,6 +17,7 @@ import {
 import { useEffect, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
+import NotificationBell from "@/components/NotificationBell";
 
 function useTheme() {
   const [dark, setDark] = useState(false);
@@ -41,6 +42,7 @@ const navItems = [
   { to: "/hadiths", label: "الأربعون النووية", icon: BookOpen },
   { to: "/journey", label: "الرحلة الإيمانية", icon: Trophy },
   { to: "/questions", label: "الأسئلة", icon: MessageCircleQuestion },
+  { to: "/quizzes", label: "الاختبارات", icon: Trophy },
   { to: "/about", label: "عن الموقع", icon: Info },
 ] as const;
 
@@ -90,6 +92,8 @@ export default function Layout({ children }: { children: ReactNode }) {
             <Button variant="ghost" size="icon" onClick={toggle} aria-label="تبديل الوضع">
               {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
+
+            {user && <NotificationBell />}
 
             {user ? (
               <div className="hidden sm:flex items-center gap-2">
