@@ -57,7 +57,7 @@ export default function HomepageSectionsManager() {
     const { error } = await supabase.from("homepage_sections").update({
       section_type: s.section_type,
       title: s.title,
-      content: s.content,
+      content: s.content as never,
       order_index: s.order_index,
       is_visible: s.is_visible,
     }).eq("id", s.id);

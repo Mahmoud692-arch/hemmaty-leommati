@@ -39,7 +39,7 @@ export default function SettingsManager() {
   const set = (k: string, v: unknown) => setSettings((p) => ({ ...p, [k]: v }));
 
   const save = async () => {
-    const rows = Object.entries(settings).map(([key, value]) => ({ key, value }));
+    const rows = Object.entries(settings).map(([key, value]) => ({ key, value: value as never }));
     const { error } = await supabase.from("site_settings").upsert(rows);
     if (error) return toast.error(error.message);
     toast.success("تم حفظ الإعدادات");
