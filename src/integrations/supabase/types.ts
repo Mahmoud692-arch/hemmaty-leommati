@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      article_comments: {
+        Row: {
+          article_slug: string
+          content: string
+          created_at: string
+          id: string
+          is_approved: boolean
+          is_hidden: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          article_slug: string
+          content: string
+          created_at?: string
+          id?: string
+          is_approved?: boolean
+          is_hidden?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          article_slug?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_approved?: boolean
+          is_hidden?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      article_likes: {
+        Row: {
+          article_slug: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          article_slug: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          article_slug?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       article_reads: {
         Row: {
           article_slug: string
@@ -31,6 +85,27 @@ export type Database = {
           article_slug?: string
           id?: string
           read_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      article_saves: {
+        Row: {
+          article_slug: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          article_slug: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          article_slug?: string
+          created_at?: string
+          id?: string
           user_id?: string
         }
         Relationships: []
@@ -83,6 +158,45 @@ export type Database = {
           status?: string
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      audit_log: {
+        Row: {
+          action: string
+          actor_email: string | null
+          actor_id: string | null
+          after_data: Json | null
+          before_data: Json | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          metadata: Json | null
+        }
+        Insert: {
+          action: string
+          actor_email?: string | null
+          actor_id?: string | null
+          after_data?: Json | null
+          before_data?: Json | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          metadata?: Json | null
+        }
+        Update: {
+          action?: string
+          actor_email?: string | null
+          actor_id?: string | null
+          after_data?: Json | null
+          before_data?: Json | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          metadata?: Json | null
         }
         Relationships: []
       }
@@ -170,6 +284,72 @@ export type Database = {
         }
         Relationships: []
       }
+      homepage_sections: {
+        Row: {
+          content: Json
+          created_at: string
+          id: string
+          is_visible: boolean
+          order_index: number
+          section_type: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          id?: string
+          is_visible?: boolean
+          order_index?: number
+          section_type: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          id?: string
+          is_visible?: boolean
+          order_index?: number
+          section_type?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          link: string | null
+          message: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          message?: string | null
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          message?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           articles_read: number
@@ -224,6 +404,193 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_answers: {
+        Row: {
+          attempt_id: string
+          awarded_points: number | null
+          essay_text: string | null
+          graded_at: string | null
+          graded_by: string | null
+          id: string
+          is_correct: boolean | null
+          question_id: string
+          selected_index: number | null
+        }
+        Insert: {
+          attempt_id: string
+          awarded_points?: number | null
+          essay_text?: string | null
+          graded_at?: string | null
+          graded_by?: string | null
+          id?: string
+          is_correct?: boolean | null
+          question_id: string
+          selected_index?: number | null
+        }
+        Update: {
+          attempt_id?: string
+          awarded_points?: number | null
+          essay_text?: string | null
+          graded_at?: string | null
+          graded_by?: string | null
+          id?: string
+          is_correct?: boolean | null
+          question_id?: string
+          selected_index?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_answers_attempt_id_fkey"
+            columns: ["attempt_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_attempts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_attempts: {
+        Row: {
+          id: string
+          max_score: number | null
+          needs_manual_grading: boolean
+          quiz_id: string
+          score: number | null
+          started_at: string
+          status: string
+          submitted_at: string | null
+          time_spent_seconds: number | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          max_score?: number | null
+          needs_manual_grading?: boolean
+          quiz_id: string
+          score?: number | null
+          started_at?: string
+          status?: string
+          submitted_at?: string | null
+          time_spent_seconds?: number | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          max_score?: number | null
+          needs_manual_grading?: boolean
+          quiz_id?: string
+          score?: number | null
+          started_at?: string
+          status?: string
+          submitted_at?: string | null
+          time_spent_seconds?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_attempts_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_questions: {
+        Row: {
+          correct_index: number | null
+          created_at: string
+          id: string
+          options: Json | null
+          order_index: number
+          points: number
+          question_image: string | null
+          question_text: string
+          question_type: string
+          quiz_id: string
+        }
+        Insert: {
+          correct_index?: number | null
+          created_at?: string
+          id?: string
+          options?: Json | null
+          order_index?: number
+          points?: number
+          question_image?: string | null
+          question_text: string
+          question_type?: string
+          quiz_id: string
+        }
+        Update: {
+          correct_index?: number | null
+          created_at?: string
+          id?: string
+          options?: Json | null
+          order_index?: number
+          points?: number
+          question_image?: string | null
+          question_text?: string
+          question_type?: string
+          quiz_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quizzes: {
+        Row: {
+          attempt_policy: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          duration_minutes: number
+          ends_at: string | null
+          id: string
+          is_active: boolean
+          starts_at: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          attempt_policy?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          duration_minutes?: number
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          starts_at?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          attempt_policy?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          duration_minutes?: number
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          starts_at?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       quotes: {
         Row: {
           created_at: string
@@ -251,6 +618,27 @@ export type Database = {
           text?: string
           type?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
         }
         Relationships: []
       }
@@ -345,6 +733,14 @@ export type Database = {
         Returns: boolean
       }
       publish_due_articles: { Args: never; Returns: undefined }
+      submit_quiz_attempt: {
+        Args: { _attempt_id: string }
+        Returns: {
+          max_score: number
+          needs_manual: boolean
+          score: number
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
