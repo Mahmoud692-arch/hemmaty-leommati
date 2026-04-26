@@ -3,21 +3,32 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Sparkles, Send, Trash2, User, Bot, Lightbulb } from "lucide-react";
+import {
+  Sparkles, Send, Trash2, User, Bot, Wand2, Megaphone, BookPlus,
+  ScrollText, Trophy, BarChart3, ListChecks, FileText, Loader2, Zap,
+} from "lucide-react";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 
-interface Msg {
-  role: "user" | "assistant";
-  content: string;
+interface ToolCall {
+  name: string;
+  args: Record<string, unknown>;
+  result: { success: boolean; id?: string; error?: string; message?: string; recipients?: number; stats?: Record<string, number>; questions?: unknown[] };
 }
 
-const SUGGESTIONS = [
-  "اقترح ٥ أفكار لمقالات جديدة عن الهمّة في رمضان",
-  "اكتب لي حديثًا مع شرحه وفائدته العملية",
-  "صمّم لي اختبار من ٥ أسئلة عن أركان الإسلام",
-  "ما الإحصاءات التي يجب متابعتها لقياس نجاح الموقع؟",
-  "اقترح تحسينات لتجربة المستخدم في صفحة المقالات",
+interface Msg {
+  role: "user" | "assistant" | "system";
+  content: string;
+  tool_calls_executed?: ToolCall[];
+}
+
+const QUICK_ACTIONS = [
+  { icon: BookPlus, label: "أنشئ كويز جديد", prompt: "أنشئ كويزًا جديدًا (5 أسئلة اختيار من متعدد) عن أركان الإسلام واحفظه في الموقع. اعرض لي ملخّصًا قبل الحفظ ثم نفّذ." },
+  { icon: FileText, label: "صمّم مقالًا كاملًا", prompt: "صمّم مقالًا كاملًا عن «الهمّة العالية في رمضان» (800-1200 كلمة بالماركداون) ثم احفظه كمسودّة في الموقع. أعرضه لي قبل الحفظ." },
+  { icon: ScrollText, label: "أضف حديثًا مع شرحه", prompt: "اقترح حديثًا نبويًا صحيحًا مع شرحه وفائدته العملية، ثم أضفه إلى قاعدة الأحاديث." },
+  { icon: BarChart3, label: "إحصاءات الموقع", prompt: "اعرض لي أحدث إحصاءات الموقع." },
+  { icon: ListChecks, label: "قيّم آخر الأسئلة", prompt: "اعرض آخر 10 أسئلة من المستخدمين، صنّفها حسب الموضوع، واقترح إجابات مختصرة لكل واحدة." },
+  { icon: Megaphone, label: "خطّة محتوى أسبوعية", prompt: "اقترح خطّة محتوى لمدة أسبوع كامل (سبت إلى جمعة): مقال، حديث، اقتباس، وكويز لكل يوم. اجعلها قابلة للتنفيذ." },
 ];
 
 export default function AdminAssistant() {
@@ -37,7 +48,10 @@ export default function AdminAssistant() {
         .eq("user_id", user.id)
         .order("created_at", { ascending: true })
         .limit(50);
-      setMessages(((data ?? []) as Msg[]).filter((m) => m.role !== "system" as never));
+      const filtered = ((data ?? []) as { role: string; content: string }[])
+        .filter((m) => m.role === "user" || m.role === "assistant")
+        .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
+      setMessages(filtered);
       setHistoryLoaded(true);
     })();
   }, [user?.id]);
@@ -55,7 +69,8 @@ export default function AdminAssistant() {
     if (!text.trim() || loading) return;
     setInput("");
     const userMsg: Msg = { role: "user", content: text.trim() };
-    setMessages((p) => [...p, userMsg, { role: "assistant", content: "" }]);
+    const next = [...messages, userMsg];
+    setMessages(next);
     persist("user", userMsg.content);
     setLoading(true);
 
@@ -69,59 +84,38 @@ export default function AdminAssistant() {
           Authorization: `Bearer ${session?.access_token ?? ""}`,
         },
         body: JSON.stringify({
-          messages: [...messages, userMsg].slice(-20).map((m) => ({ role: m.role, content: m.content })),
+          messages: next.slice(-20).map((m) => ({ role: m.role, content: m.content })),
         }),
       });
 
-      if (!resp.ok || !resp.body) {
+      if (!resp.ok) {
         if (resp.status === 429) toast.error("تجاوزت الحدّ المسموح، حاول لاحقًا");
         else if (resp.status === 402) toast.error("نفدت أرصدة الذكاء الاصطناعي");
         else toast.error("تعذّر الاتصال بالمساعد");
-        setMessages((p) => p.slice(0, -1));
         setLoading(false);
         return;
       }
 
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder();
-      let buf = "";
-      let assistantSoFar = "";
-      let done = false;
+      const data = await resp.json() as { content: string; tool_calls_executed?: ToolCall[] };
+      const aMsg: Msg = {
+        role: "assistant",
+        content: data.content || "",
+        tool_calls_executed: data.tool_calls_executed,
+      };
+      setMessages((p) => [...p, aMsg]);
+      if (aMsg.content) persist("assistant", aMsg.content);
 
-      while (!done) {
-        const { value, done: d } = await reader.read();
-        if (d) break;
-        buf += decoder.decode(value, { stream: true });
-        let idx: number;
-        while ((idx = buf.indexOf("\n")) !== -1) {
-          let line = buf.slice(0, idx);
-          buf = buf.slice(idx + 1);
-          if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (!line.startsWith("data: ")) continue;
-          const json = line.slice(6).trim();
-          if (json === "[DONE]") { done = true; break; }
-          try {
-            const parsed = JSON.parse(json);
-            const delta = parsed.choices?.[0]?.delta?.content as string | undefined;
-            if (delta) {
-              assistantSoFar += delta;
-              setMessages((p) => {
-                const copy = [...p];
-                copy[copy.length - 1] = { role: "assistant", content: assistantSoFar };
-                return copy;
-              });
-            }
-          } catch {
-            buf = line + "\n" + buf;
-            break;
-          }
+      // Show toasts for executed tools
+      data.tool_calls_executed?.forEach((tc) => {
+        if (tc.result.success) {
+          toast.success(`✅ ${tc.name}: ${tc.result.message ?? "تمّ"}`);
+        } else {
+          toast.error(`❌ ${tc.name}: ${tc.result.error ?? "خطأ"}`);
         }
-      }
-      if (assistantSoFar) persist("assistant", assistantSoFar);
+      });
     } catch (e) {
       console.error(e);
       toast.error("خطأ في الاتصال");
-      setMessages((p) => p.slice(0, -1));
     } finally {
       setLoading(false);
     }
@@ -136,13 +130,23 @@ export default function AdminAssistant() {
   };
 
   return (
-    <div className="rounded-2xl border bg-card flex flex-col h-[70vh]">
+    <div className="rounded-2xl border bg-card flex flex-col h-[75vh]">
       <div className="flex items-center justify-between p-3 border-b">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-[var(--gold)]" />
+          <div className="relative">
+            <Sparkles className="h-5 w-5 text-[var(--gold)]" />
+            <Zap className="h-2.5 w-2.5 text-emerald-500 absolute -bottom-0.5 -right-0.5" />
+          </div>
           <div>
-            <div className="font-semibold">مساعد الإدارة الذكي</div>
-            <div className="text-[11px] text-muted-foreground">مدعوم بنماذج Gemini عبر Lovable AI</div>
+            <div className="font-semibold flex items-center gap-2">
+              مساعد الإدارة الذكي
+              <span className="text-[10px] bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded-full">
+                تنفيذي
+              </span>
+            </div>
+            <div className="text-[11px] text-muted-foreground">
+              مدعوم بـ Gemini · يستطيع إنشاء محتوى وتنفيذ مهامّ في الموقع
+            </div>
           </div>
         </div>
         {messages.length > 0 && (
@@ -152,23 +156,39 @@ export default function AdminAssistant() {
         )}
       </div>
 
+      {/* Quick actions */}
+      <div className="p-3 border-b bg-muted/30">
+        <div className="text-[11px] text-muted-foreground mb-2 flex items-center gap-1">
+          <Wand2 className="h-3 w-3" /> أوامر جاهزة
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {QUICK_ACTIONS.map((a, i) => {
+            const Icon = a.icon;
+            return (
+              <button
+                key={i}
+                disabled={loading}
+                onClick={() => send(a.prompt)}
+                className="text-right text-xs px-2.5 py-2 rounded-lg border bg-background hover:bg-accent/50 disabled:opacity-50 flex items-center gap-2"
+              >
+                <Icon className="h-3.5 w-3.5 text-[var(--gold)] shrink-0" />
+                <span className="truncate">{a.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {historyLoaded && messages.length === 0 && (
           <div className="text-center py-6">
             <Bot className="h-12 w-12 mx-auto text-[var(--gold)] mb-2 opacity-70" />
-            <p className="text-sm text-muted-foreground mb-4">ابدأ محادثة مع المساعد. اطلب أفكارًا، حلّل، أو استشره.</p>
-            <div className="grid gap-2 max-w-md mx-auto">
-              {SUGGESTIONS.map((s, i) => (
-                <button
-                  key={i}
-                  onClick={() => send(s)}
-                  className="text-right text-xs px-3 py-2 rounded-lg border hover:bg-accent/50 flex items-center gap-2"
-                >
-                  <Lightbulb className="h-3 w-3 text-[var(--gold)] shrink-0" />
-                  <span>{s}</span>
-                </button>
-              ))}
-            </div>
+            <p className="text-sm text-muted-foreground">
+              ابدأ محادثة، أو اختر أمرًا جاهزًا من الأعلى.
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              يستطيع المساعد إنشاء مقالات وكويزات وأحاديث وإرسال إشعارات بأمر منك.
+            </p>
           </div>
         )}
 
@@ -179,15 +199,57 @@ export default function AdminAssistant() {
             </div>
             <div className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm ${m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
               {m.role === "assistant" ? (
-                <div className="prose prose-sm dark:prose-invert max-w-none [&_p]:my-1 [&_ul]:my-1 [&_h2]:mt-3 [&_h2]:mb-1">
-                  <ReactMarkdown>{m.content || "…"}</ReactMarkdown>
-                </div>
+                <>
+                  {m.content && (
+                    <div className="prose prose-sm dark:prose-invert max-w-none [&_p]:my-1 [&_ul]:my-1 [&_h2]:mt-3 [&_h2]:mb-1">
+                      <ReactMarkdown>{m.content}</ReactMarkdown>
+                    </div>
+                  )}
+                  {m.tool_calls_executed && m.tool_calls_executed.length > 0 && (
+                    <div className="mt-3 space-y-1.5">
+                      {m.tool_calls_executed.map((tc, j) => (
+                        <div
+                          key={j}
+                          className={`text-xs rounded-lg px-2 py-1.5 border ${
+                            tc.result.success
+                              ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-900 dark:text-emerald-200"
+                              : "bg-destructive/10 border-destructive/30 text-destructive"
+                          }`}
+                        >
+                          <div className="font-semibold flex items-center gap-1">
+                            <Zap className="h-3 w-3" />
+                            {tc.name}
+                          </div>
+                          <div className="opacity-80 mt-0.5">
+                            {tc.result.success
+                              ? tc.result.message ?? (tc.result.stats ? JSON.stringify(tc.result.stats) : "تمّ التنفيذ")
+                              : tc.result.error}
+                          </div>
+                          {tc.result.id && (
+                            <div className="text-[10px] opacity-60 mt-0.5 font-mono">ID: {tc.result.id}</div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
               ) : (
                 <div className="whitespace-pre-wrap">{m.content}</div>
               )}
             </div>
           </div>
         ))}
+        {loading && (
+          <div className="flex gap-2">
+            <div className="shrink-0 w-7 h-7 rounded-full bg-[var(--gold)]/20 text-[var(--gold)] flex items-center justify-center">
+              <Bot className="h-4 w-4" />
+            </div>
+            <div className="bg-muted rounded-2xl px-4 py-2 text-sm flex items-center gap-2">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              <span className="text-xs">يفكّر…</span>
+            </div>
+          </div>
+        )}
         <div ref={endRef} />
       </div>
 
@@ -202,7 +264,7 @@ export default function AdminAssistant() {
                 send(input);
               }
             }}
-            placeholder="اسأل أو اطلب اقتراحًا… (Enter للإرسال، Shift+Enter لسطر جديد)"
+            placeholder="اطلب من المساعد… (مثل: أنشئ مقالًا عن الصبر واحفظه)"
             rows={2}
             className="resize-none"
             disabled={loading}
@@ -211,6 +273,9 @@ export default function AdminAssistant() {
             <Send className="h-4 w-4" />
           </Button>
         </div>
+        <p className="text-[10px] text-muted-foreground mt-1.5 text-center">
+          ⚠️ راجع كل محتوى أنشأه المساعد قبل النشر — لا يحذف بل يضيف فقط.
+        </p>
       </div>
     </div>
   );
