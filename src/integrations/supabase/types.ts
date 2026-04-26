@@ -749,6 +749,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_broadcast_notification: {
+        Args: { _link?: string; _message: string; _title: string }
+        Returns: number
+      }
+      admin_create_article: { Args: { _payload: Json }; Returns: string }
+      admin_create_hadith: { Args: { _payload: Json }; Returns: string }
+      admin_create_quiz_with_questions: {
+        Args: { _payload: Json }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -756,6 +766,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_email_confirmed: { Args: { _user_id: string }; Returns: boolean }
       publish_due_articles: { Args: never; Returns: undefined }
       submit_quiz_attempt: {
         Args: { _attempt_id: string }

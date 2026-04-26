@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Clock, AlertTriangle, Send, CheckCircle2, Trophy } from "lucide-react";
+import EmailConfirmGate from "@/components/EmailConfirmGate";
 
 interface QuizDetail {
   id: string;
@@ -92,12 +93,15 @@ function QuizRunPage() {
         .order("order_index");
       setQuestions((qs ?? []) as unknown as QuestionRow[]);
 
-      const { data: existing } = await supabase
+      // Use limit(1) instead of maybeSingle to avoid PostgREST 406 if duplicates exist
+      const { data: existingRows } = await supabase
         .from("quiz_attempts")
         .select("*")
         .eq("quiz_id", id)
         .eq("user_id", user.id)
-        .maybeSingle();
+        .order("started_at", { ascending: false })
+        .limit(1);
+      const existing = existingRows?.[0];
 
       if (existing) {
         setAttempt(existing as AttemptRow);
@@ -145,7 +149,15 @@ function QuizRunPage() {
       .select()
       .single();
     if (error) {
-      toast.error("لقد بدأت هذا الاختبار سابقًا");
+      // RLS rejects unconfirmed emails — surface a clear message
+      const msg = (error.message || "").toLowerCase();
+      if (msg.includes("row-level security") || msg.includes("violates")) {
+        toast.error("تأكّد من بريدك الإلكتروني أولًا قبل بدء الاختبار");
+      } else if (msg.includes("duplicate")) {
+        toast.error("لديك محاولة سابقة لهذا الاختبار");
+      } else {
+        toast.error("تعذّر بدء الاختبار");
+      }
       return;
     }
     setAttempt(data as AttemptRow);
@@ -162,14 +174,19 @@ function QuizRunPage() {
     submittedRef.current = true;
     setSubmitting(true);
     try {
-      const rows = questions.map((q) => ({
-        attempt_id: attempt.id,
-        question_id: q.id,
-        selected_index: answers[q.id]?.selected_index ?? null,
-        essay_text: answers[q.id]?.essay_text ?? null,
-      }));
+      const rows = questions
+        .filter((q) => answers[q.id] !== undefined)
+        .map((q) => ({
+          attempt_id: attempt.id,
+          question_id: q.id,
+          selected_index: answers[q.id]?.selected_index ?? null,
+          essay_text: answers[q.id]?.essay_text ?? null,
+        }));
       await supabase.from("quiz_answers").delete().eq("attempt_id", attempt.id);
-      if (rows.length) await supabase.from("quiz_answers").insert(rows);
+      if (rows.length) {
+        const { error: insErr } = await supabase.from("quiz_answers").insert(rows);
+        if (insErr) throw insErr;
+      }
 
       const { error } = await supabase.rpc("submit_quiz_attempt", { _attempt_id: attempt.id });
       if (error) throw error;
@@ -283,6 +300,7 @@ function QuizRunPage() {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-12 max-w-2xl">
+          <EmailConfirmGate feature="بدء الاختبار" className="mb-6" />
           <div className="rounded-2xl border bg-card p-8 text-center">
             <h1 className="font-display text-2xl gold-text mb-2">{quiz.title}</h1>
             {quiz.description && <p className="text-muted-foreground mb-4">{quiz.description}</p>}

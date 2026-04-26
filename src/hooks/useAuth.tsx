@@ -23,8 +23,10 @@ interface AuthContextValue {
   session: Session | null;
   profile: Profile | null;
   isAdmin: boolean;
+  isEmailConfirmed: boolean;
   loading: boolean;
   refreshProfile: () => Promise<void>;
+  resendConfirmation: () => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
 }
 
@@ -43,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       supabase.from("user_roles").select("role").eq("user_id", uid),
     ]);
     setProfile((prof as Profile) ?? null);
-    setIsAdmin(!!roles?.some((r) => r.role === "admin"));
+    setIsAdmin(!!roles?.some((r) => r.role === "admin" || r.role === "super_admin"));
   };
 
   useEffect(() => {
@@ -51,7 +53,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(sess);
       setUser(sess?.user ?? null);
       if (sess?.user) {
-        // defer to avoid deadlocks
         setTimeout(() => loadProfileAndRole(sess.user.id), 0);
       } else {
         setProfile(null);
@@ -77,9 +78,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   };
 
+  const resendConfirmation = async () => {
+    if (!user?.email) return { error: "لا يوجد بريد" };
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: user.email,
+    });
+    return error ? { error: error.message } : {};
+  };
+
+  const isEmailConfirmed = !!(user?.email_confirmed_at || user?.confirmed_at);
+
   return (
     <AuthContext.Provider
-      value={{ user, session, profile, isAdmin, loading, refreshProfile, signOut }}
+      value={{
+        user,
+        session,
+        profile,
+        isAdmin,
+        isEmailConfirmed,
+        loading,
+        refreshProfile,
+        resendConfirmation,
+        signOut,
+      }}
     >
       {children}
     </AuthContext.Provider>
