@@ -54,6 +54,9 @@ import SettingsManager from "@/components/admin/SettingsManager";
 import AuditLogViewer from "@/components/admin/AuditLogViewer";
 import CommentsManager from "@/components/admin/CommentsManager";
 import HomepageSectionsManager from "@/components/admin/HomepageSectionsManager";
+import UsersManager from "@/components/admin/UsersManager";
+import AdminAssistant from "@/components/admin/AdminAssistant";
+import { Sparkles } from "lucide-react";
 
 interface AdminQuestion {
   id: string;
