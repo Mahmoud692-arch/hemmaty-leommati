@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
+import EmailConfirmGate from "@/components/EmailConfirmGate";
 import { MessageCircleQuestion, ShieldCheck } from "lucide-react";
 import { z } from "zod";
 
@@ -37,7 +38,7 @@ const schema = z.object({
 });
 
 function QuestionsPage() {
-  const { user } = useAuth();
+  const { user, isEmailConfirmed } = useAuth();
   const [items, setItems] = useState<PublicQuestion[]>([]);
   const [text, setText] = useState("");
   const [anon, setAnon] = useState(false);
@@ -59,6 +60,10 @@ function QuestionsPage() {
       toast.info("سجّل دخولك أوّلًا");
       return;
     }
+    if (!isEmailConfirmed) {
+      toast.error("لا يمكن إرسال السؤال قبل تأكيد بريدك الإلكتروني");
+      return;
+    }
     const parsed = schema.safeParse({ question: text });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "سؤال غير صالح");
@@ -72,7 +77,12 @@ function QuestionsPage() {
     });
     setLoading(false);
     if (error) {
-      toast.error("تعذّر إرسال السؤال");
+      const msg = (error.message || "").toLowerCase();
+      if (msg.includes("row-level security") || msg.includes("violates")) {
+        toast.error("تأكّد من بريدك الإلكتروني أولًا");
+      } else {
+        toast.error("تعذّر إرسال السؤال");
+      }
       return;
     }
     toast.success("تم استلام سؤالك، ستتمّ مراجعته 💚");
@@ -92,25 +102,28 @@ function QuestionsPage() {
       </div>
 
       {user ? (
-        <form onSubmit={submit} className="card-elegant rounded-2xl p-6 my-8">
-          <h2 className="font-display text-xl mb-3">اطرح سؤالك</h2>
-          <Textarea
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="اكتب سؤالك بأدبٍ ووضوح..."
-            rows={5}
-            maxLength={2000}
-          />
-          <div className="flex items-center gap-2 mt-3">
-            <Checkbox id="anon" checked={anon} onCheckedChange={(v) => setAnon(!!v)} />
-            <label htmlFor="anon" className="text-sm cursor-pointer">
-              إخفاء هويتي
-            </label>
-          </div>
-          <Button type="submit" disabled={loading} className="mt-4">
-            {loading ? "جاري الإرسال..." : "إرسال السؤال"}
-          </Button>
-        </form>
+        <>
+          <EmailConfirmGate feature="إرسال الأسئلة" className="my-6" />
+          <form onSubmit={submit} className="card-elegant rounded-2xl p-6 my-8">
+            <h2 className="font-display text-xl mb-3">اطرح سؤالك</h2>
+            <Textarea
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="اكتب سؤالك بأدبٍ ووضوح..."
+              rows={5}
+              maxLength={2000}
+            />
+            <div className="flex items-center gap-2 mt-3">
+              <Checkbox id="anon" checked={anon} onCheckedChange={(v) => setAnon(!!v)} />
+              <label htmlFor="anon" className="text-sm cursor-pointer">
+                إخفاء هويتي
+              </label>
+            </div>
+            <Button type="submit" disabled={loading || !isEmailConfirmed} className="mt-4">
+              {loading ? "جاري الإرسال..." : "إرسال السؤال"}
+            </Button>
+          </form>
+        </>
       ) : (
         <div className="card-elegant rounded-2xl p-8 my-8 text-center border-2 border-dashed border-[var(--gold)]/40">
           <ShieldCheck className="h-10 w-10 mx-auto text-[var(--gold)] mb-3" />

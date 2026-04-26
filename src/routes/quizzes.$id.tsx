@@ -300,6 +300,7 @@ function QuizRunPage() {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-12 max-w-2xl">
+          <EmailConfirmGate feature="بدء الاختبار" className="mb-6" />
           <div className="rounded-2xl border bg-card p-8 text-center">
             <h1 className="font-display text-2xl gold-text mb-2">{quiz.title}</h1>
             {quiz.description && <p className="text-muted-foreground mb-4">{quiz.description}</p>}
