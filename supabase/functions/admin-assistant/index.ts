@@ -379,7 +379,39 @@ const TOOLS = [
 const SENSITIVE_OPS = new Set([
   "delete_article", "delete_hadith", "delete_quiz",
   "edit_site_setting", "schedule_content", "broadcast_notification",
+  "update_article", "update_hadith", "update_quiz",
+  "moderate_comment", "respond_to_question",
 ]);
+
+// Map tool name → entity type + arg key holding the id, for diff preview
+const ENTITY_LOOKUP: Record<string, { type: string; key: string }> = {
+  update_article: { type: "article", key: "article_id" },
+  update_hadith: { type: "hadith", key: "hadith_id" },
+  update_quiz: { type: "quiz", key: "quiz_id" },
+  delete_article: { type: "article", key: "article_id" },
+  delete_hadith: { type: "hadith", key: "hadith_id" },
+  delete_quiz: { type: "quiz", key: "quiz_id" },
+  moderate_comment: { type: "comment", key: "comment_id" },
+  respond_to_question: { type: "question", key: "question_id" },
+  edit_site_setting: { type: "site_setting", key: "setting_key" },
+  schedule_content: { type: "", key: "content_id" }, // type comes from args.content_type
+};
+
+// deno-lint-ignore no-explicit-any
+async function fetchBeforeSnapshot(name: string, args: Record<string, any>, supabase: any) {
+  const lookup = ENTITY_LOOKUP[name];
+  if (!lookup) return null;
+  const id = args[lookup.key];
+  if (!id) return null;
+  const entityType = lookup.type || (args.content_type as string) || "";
+  if (!entityType) return null;
+  const { data, error } = await supabase.rpc("admin_preview_changes", {
+    _entity_type: entityType,
+    _entity_id: String(id),
+  });
+  if (error) return null;
+  return data;
+}
 
 // deno-lint-ignore no-explicit-any
 type Sb = any;
@@ -667,14 +699,21 @@ serve(async (req) => {
       if (!confirmed) {
         const pending = toolCalls.filter((tc) => SENSITIVE_OPS.has(tc.function.name));
         if (pending.length > 0) {
+          const pendingDetailed = await Promise.all(pending.map(async (tc) => {
+            let parsed: Record<string, unknown> = {};
+            try { parsed = JSON.parse(tc.function.arguments); } catch { /* ignore */ }
+            const before = await fetchBeforeSnapshot(tc.function.name, parsed, supabase);
+            return {
+              name: tc.function.name,
+              args: parsed,
+              before, // current state of the record (or null)
+            };
+          }));
           return new Response(
             JSON.stringify({
-              content: msg.content ?? "هذه العملية تحتاج تأكيدًا منك. أكّد بإرسال «نفّذ» أو «موافق» للمتابعة.",
+              content: msg.content ?? "هذه العملية تحتاج تأكيدًا منك. راجع المقارنة (قبل/بعد) ثم اضغط «نفّذ» أو «إلغاء».",
               tool_calls_executed: toolCallsExecuted,
-              pending_confirmation: pending.map((tc) => ({
-                name: tc.function.name,
-                args: (() => { try { return JSON.parse(tc.function.arguments); } catch { return {}; } })(),
-              })),
+              pending_confirmation: pendingDetailed,
             }),
             { headers: { ...corsHeaders, "Content-Type": "application/json" } },
           );

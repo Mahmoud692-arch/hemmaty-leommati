@@ -866,11 +866,16 @@ export type Database = {
         Args: { _action: string; _comment_id: string }
         Returns: boolean
       }
+      admin_preview_changes: {
+        Args: { _entity_id: string; _entity_type: string }
+        Returns: Json
+      }
       admin_quiz_performance: { Args: { _quiz_id?: string }; Returns: Json }
       admin_respond_to_question: {
         Args: { _answer_text: string; _publish?: boolean; _question_id: string }
         Returns: string
       }
+      admin_run_rls_smoke_tests: { Args: never; Returns: Json }
       admin_schedule_content: {
         Args: { _content_id: string; _publish_at: string; _type: string }
         Returns: boolean
