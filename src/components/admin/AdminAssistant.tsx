@@ -72,6 +72,39 @@ export default function AdminAssistant() {
   };
 
   const send = async (text: string) => {
+  const callAssistant = async (
+    convo: Msg[],
+    opts: { confirmed?: boolean } = {}
+  ) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-assistant`;
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.access_token ?? ""}`,
+      },
+      body: JSON.stringify({
+        messages: convo.slice(-20).map((m) => ({ role: m.role, content: m.content })),
+        confirmed: opts.confirmed === true,
+      }),
+    });
+
+    if (!resp.ok) {
+      if (resp.status === 429) toast.error("تجاوزت الحدّ المسموح، حاول لاحقًا");
+      else if (resp.status === 402) toast.error("نفدت أرصدة الذكاء الاصطناعي");
+      else toast.error("تعذّر الاتصال بالمساعد");
+      return null;
+    }
+
+    return await resp.json() as {
+      content: string;
+      tool_calls_executed?: ToolCall[];
+      pending_confirmation?: PendingOp[];
+    };
+  };
+
+  const send = async (text: string) => {
     if (!text.trim() || loading) return;
     setInput("");
     const userMsg: Msg = { role: "user", content: text.trim() };
@@ -81,43 +114,21 @@ export default function AdminAssistant() {
     setLoading(true);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-assistant`;
-      const resp = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.access_token ?? ""}`,
-        },
-        body: JSON.stringify({
-          messages: next.slice(-20).map((m) => ({ role: m.role, content: m.content })),
-        }),
-      });
+      const data = await callAssistant(next);
+      if (!data) return;
 
-      if (!resp.ok) {
-        if (resp.status === 429) toast.error("تجاوزت الحدّ المسموح، حاول لاحقًا");
-        else if (resp.status === 402) toast.error("نفدت أرصدة الذكاء الاصطناعي");
-        else toast.error("تعذّر الاتصال بالمساعد");
-        setLoading(false);
-        return;
-      }
-
-      const data = await resp.json() as { content: string; tool_calls_executed?: ToolCall[] };
       const aMsg: Msg = {
         role: "assistant",
         content: data.content || "",
         tool_calls_executed: data.tool_calls_executed,
+        pending_confirmation: data.pending_confirmation,
       };
       setMessages((p) => [...p, aMsg]);
       if (aMsg.content) persist("assistant", aMsg.content);
 
-      // Show toasts for executed tools
       data.tool_calls_executed?.forEach((tc) => {
-        if (tc.result.success) {
-          toast.success(`✅ ${tc.name}: ${tc.result.message ?? "تمّ"}`);
-        } else {
-          toast.error(`❌ ${tc.name}: ${tc.result.error ?? "خطأ"}`);
-        }
+        if (tc.result.success) toast.success(`✅ ${tc.name}: ${tc.result.message ?? "تمّ"}`);
+        else toast.error(`❌ ${tc.name}: ${tc.result.error ?? "خطأ"}`);
       });
     } catch (e) {
       console.error(e);
@@ -125,6 +136,40 @@ export default function AdminAssistant() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const confirmPending = async () => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      // Replay last conversation with confirmed=true
+      const convo = [...messages, { role: "user" as const, content: "نفّذ" }];
+      const data = await callAssistant(convo, { confirmed: true });
+      if (!data) return;
+      const aMsg: Msg = {
+        role: "assistant",
+        content: data.content || "",
+        tool_calls_executed: data.tool_calls_executed,
+      };
+      // Remove pending from previous message and append result
+      setMessages((prev) => {
+        const trimmed = prev.map((m) => ({ ...m, pending_confirmation: undefined }));
+        return [...trimmed, { role: "user", content: "نفّذ" }, aMsg];
+      });
+      persist("user", "نفّذ");
+      if (aMsg.content) persist("assistant", aMsg.content);
+      data.tool_calls_executed?.forEach((tc) => {
+        if (tc.result.success) toast.success(`✅ ${tc.name}: ${tc.result.message ?? "تمّ"}`);
+        else toast.error(`❌ ${tc.name}: ${tc.result.error ?? "خطأ"}`);
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const cancelPending = () => {
+    setMessages((prev) => prev.map((m) => ({ ...m, pending_confirmation: undefined })));
+    toast.info("تم إلغاء العملية");
   };
 
   const clearHistory = async () => {
