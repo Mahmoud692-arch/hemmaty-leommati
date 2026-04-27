@@ -699,14 +699,21 @@ serve(async (req) => {
       if (!confirmed) {
         const pending = toolCalls.filter((tc) => SENSITIVE_OPS.has(tc.function.name));
         if (pending.length > 0) {
+          const pendingDetailed = await Promise.all(pending.map(async (tc) => {
+            let parsed: Record<string, unknown> = {};
+            try { parsed = JSON.parse(tc.function.arguments); } catch { /* ignore */ }
+            const before = await fetchBeforeSnapshot(tc.function.name, parsed, supabase);
+            return {
+              name: tc.function.name,
+              args: parsed,
+              before, // current state of the record (or null)
+            };
+          }));
           return new Response(
             JSON.stringify({
-              content: msg.content ?? "هذه العملية تحتاج تأكيدًا منك. أكّد بإرسال «نفّذ» أو «موافق» للمتابعة.",
+              content: msg.content ?? "هذه العملية تحتاج تأكيدًا منك. راجع المقارنة (قبل/بعد) ثم اضغط «نفّذ» أو «إلغاء».",
               tool_calls_executed: toolCallsExecuted,
-              pending_confirmation: pending.map((tc) => ({
-                name: tc.function.name,
-                args: (() => { try { return JSON.parse(tc.function.arguments); } catch { return {}; } })(),
-              })),
+              pending_confirmation: pendingDetailed,
             }),
             { headers: { ...corsHeaders, "Content-Type": "application/json" } },
           );
