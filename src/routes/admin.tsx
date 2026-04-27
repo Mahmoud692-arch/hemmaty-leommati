@@ -52,6 +52,7 @@ import ReactMarkdown from "react-markdown";
 import QuizzesManager from "@/components/admin/QuizzesManager";
 import SettingsManager from "@/components/admin/SettingsManager";
 import AuditLogViewer from "@/components/admin/AuditLogViewer";
+import RLSTestPanel from "@/components/admin/RLSTestPanel";
 import CommentsManager from "@/components/admin/CommentsManager";
 import HomepageSectionsManager from "@/components/admin/HomepageSectionsManager";
 import UsersManager from "@/components/admin/UsersManager";
@@ -211,6 +212,7 @@ function AdminPage() {
           <TabsTrigger value="settings"><Settings className="h-4 w-4 ml-1" /> الإعدادات</TabsTrigger>
           <TabsTrigger value="roles"><ShieldCheck className="h-4 w-4 ml-1" /> الأدوار</TabsTrigger>
           <TabsTrigger value="audit"><History className="h-4 w-4 ml-1" /> السجل</TabsTrigger>
+          <TabsTrigger value="security"><ShieldCheck className="h-4 w-4 ml-1" /> الأمان</TabsTrigger>
         </TabsList>
 
         <TabsContent value="assistant"><AdminAssistant /></TabsContent>
@@ -270,6 +272,7 @@ function AdminPage() {
         <TabsContent value="settings"><SettingsManager /></TabsContent>
         <TabsContent value="roles"><RolesManager currentUserId={user!.id} /></TabsContent>
         <TabsContent value="audit"><AuditLogViewer /></TabsContent>
+        <TabsContent value="security"><RLSTestPanel /></TabsContent>
       </Tabs>
 
       <div className="text-center mt-10">
