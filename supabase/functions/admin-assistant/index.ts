@@ -381,10 +381,11 @@ const SENSITIVE_OPS = new Set([
   "edit_site_setting", "schedule_content", "broadcast_notification",
 ]);
 
-// Use a permissive client type to avoid strict generic mismatch in Deno deploy
-type Sb = ReturnType<typeof createClient<unknown, never>>;
+// deno-lint-ignore no-explicit-any
+type Sb = any;
 
-async function executeTool(name: string, args: Record<string, unknown>, supabase: Sb) {
+// deno-lint-ignore no-explicit-any
+async function executeTool(name: string, args: Record<string, any>, supabase: Sb) {
   try {
     // ===== إنشاء =====
     if (name === "create_article") {
