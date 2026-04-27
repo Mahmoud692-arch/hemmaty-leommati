@@ -282,6 +282,27 @@ export default function AdminAssistant() {
                       ))}
                     </div>
                   )}
+                  {m.pending_confirmation && m.pending_confirmation.length > 0 && (
+                    <div className="mt-3 rounded-lg border-2 border-amber-500/50 bg-amber-500/10 p-2.5 space-y-2">
+                      <div className="text-xs font-semibold text-amber-900 dark:text-amber-200 flex items-center gap-1">
+                        ⚠️ عملية حسّاسة — تحتاج تأكيدك
+                      </div>
+                      {m.pending_confirmation.map((op, k) => (
+                        <div key={k} className="text-[11px] bg-background/60 rounded px-2 py-1 font-mono">
+                          <span className="text-amber-700 dark:text-amber-300 font-semibold">{op.name}</span>
+                          <span className="opacity-70"> — {JSON.stringify(op.args).slice(0, 120)}</span>
+                        </div>
+                      ))}
+                      <div className="flex gap-2 pt-1">
+                        <Button size="sm" onClick={confirmPending} disabled={loading} className="h-7 text-xs">
+                          ✓ نفّذ
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={cancelPending} disabled={loading} className="h-7 text-xs">
+                          إلغاء
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </>
               ) : (
                 <div className="whitespace-pre-wrap">{m.content}</div>
