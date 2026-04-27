@@ -381,7 +381,8 @@ const SENSITIVE_OPS = new Set([
   "edit_site_setting", "schedule_content", "broadcast_notification",
 ]);
 
-type Sb = ReturnType<typeof createClient>;
+// Use a permissive client type to avoid strict generic mismatch in Deno deploy
+type Sb = ReturnType<typeof createClient<unknown, never>>;
 
 async function executeTool(name: string, args: Record<string, unknown>, supabase: Sb) {
   try {
