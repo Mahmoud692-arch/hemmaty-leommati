@@ -16,10 +16,16 @@ interface ToolCall {
   result: { success: boolean; id?: string; error?: string; message?: string; recipients?: number; stats?: Record<string, number>; questions?: unknown[] };
 }
 
+interface PendingOp {
+  name: string;
+  args: Record<string, unknown>;
+}
+
 interface Msg {
   role: "user" | "assistant" | "system";
   content: string;
   tool_calls_executed?: ToolCall[];
+  pending_confirmation?: PendingOp[];
 }
 
 const QUICK_ACTIONS = [
@@ -65,6 +71,38 @@ export default function AdminAssistant() {
     await supabase.from("ai_assistant_messages").insert({ user_id: user.id, role, content });
   };
 
+  const callAssistant = async (
+    convo: Msg[],
+    opts: { confirmed?: boolean } = {}
+  ) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-assistant`;
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.access_token ?? ""}`,
+      },
+      body: JSON.stringify({
+        messages: convo.slice(-20).map((m) => ({ role: m.role, content: m.content })),
+        confirmed: opts.confirmed === true,
+      }),
+    });
+
+    if (!resp.ok) {
+      if (resp.status === 429) toast.error("تجاوزت الحدّ المسموح، حاول لاحقًا");
+      else if (resp.status === 402) toast.error("نفدت أرصدة الذكاء الاصطناعي");
+      else toast.error("تعذّر الاتصال بالمساعد");
+      return null;
+    }
+
+    return await resp.json() as {
+      content: string;
+      tool_calls_executed?: ToolCall[];
+      pending_confirmation?: PendingOp[];
+    };
+  };
+
   const send = async (text: string) => {
     if (!text.trim() || loading) return;
     setInput("");
@@ -75,43 +113,21 @@ export default function AdminAssistant() {
     setLoading(true);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-assistant`;
-      const resp = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.access_token ?? ""}`,
-        },
-        body: JSON.stringify({
-          messages: next.slice(-20).map((m) => ({ role: m.role, content: m.content })),
-        }),
-      });
+      const data = await callAssistant(next);
+      if (!data) return;
 
-      if (!resp.ok) {
-        if (resp.status === 429) toast.error("تجاوزت الحدّ المسموح، حاول لاحقًا");
-        else if (resp.status === 402) toast.error("نفدت أرصدة الذكاء الاصطناعي");
-        else toast.error("تعذّر الاتصال بالمساعد");
-        setLoading(false);
-        return;
-      }
-
-      const data = await resp.json() as { content: string; tool_calls_executed?: ToolCall[] };
       const aMsg: Msg = {
         role: "assistant",
         content: data.content || "",
         tool_calls_executed: data.tool_calls_executed,
+        pending_confirmation: data.pending_confirmation,
       };
       setMessages((p) => [...p, aMsg]);
       if (aMsg.content) persist("assistant", aMsg.content);
 
-      // Show toasts for executed tools
       data.tool_calls_executed?.forEach((tc) => {
-        if (tc.result.success) {
-          toast.success(`✅ ${tc.name}: ${tc.result.message ?? "تمّ"}`);
-        } else {
-          toast.error(`❌ ${tc.name}: ${tc.result.error ?? "خطأ"}`);
-        }
+        if (tc.result.success) toast.success(`✅ ${tc.name}: ${tc.result.message ?? "تمّ"}`);
+        else toast.error(`❌ ${tc.name}: ${tc.result.error ?? "خطأ"}`);
       });
     } catch (e) {
       console.error(e);
@@ -119,6 +135,40 @@ export default function AdminAssistant() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const confirmPending = async () => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      // Replay last conversation with confirmed=true
+      const convo = [...messages, { role: "user" as const, content: "نفّذ" }];
+      const data = await callAssistant(convo, { confirmed: true });
+      if (!data) return;
+      const aMsg: Msg = {
+        role: "assistant",
+        content: data.content || "",
+        tool_calls_executed: data.tool_calls_executed,
+      };
+      // Remove pending from previous message and append result
+      setMessages((prev) => {
+        const trimmed = prev.map((m) => ({ ...m, pending_confirmation: undefined }));
+        return [...trimmed, { role: "user", content: "نفّذ" }, aMsg];
+      });
+      persist("user", "نفّذ");
+      if (aMsg.content) persist("assistant", aMsg.content);
+      data.tool_calls_executed?.forEach((tc) => {
+        if (tc.result.success) toast.success(`✅ ${tc.name}: ${tc.result.message ?? "تمّ"}`);
+        else toast.error(`❌ ${tc.name}: ${tc.result.error ?? "خطأ"}`);
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const cancelPending = () => {
+    setMessages((prev) => prev.map((m) => ({ ...m, pending_confirmation: undefined })));
+    toast.info("تم إلغاء العملية");
   };
 
   const clearHistory = async () => {
@@ -230,6 +280,27 @@ export default function AdminAssistant() {
                           )}
                         </div>
                       ))}
+                    </div>
+                  )}
+                  {m.pending_confirmation && m.pending_confirmation.length > 0 && (
+                    <div className="mt-3 rounded-lg border-2 border-amber-500/50 bg-amber-500/10 p-2.5 space-y-2">
+                      <div className="text-xs font-semibold text-amber-900 dark:text-amber-200 flex items-center gap-1">
+                        ⚠️ عملية حسّاسة — تحتاج تأكيدك
+                      </div>
+                      {m.pending_confirmation.map((op, k) => (
+                        <div key={k} className="text-[11px] bg-background/60 rounded px-2 py-1 font-mono">
+                          <span className="text-amber-700 dark:text-amber-300 font-semibold">{op.name}</span>
+                          <span className="opacity-70"> — {JSON.stringify(op.args).slice(0, 120)}</span>
+                        </div>
+                      ))}
+                      <div className="flex gap-2 pt-1">
+                        <Button size="sm" onClick={confirmPending} disabled={loading} className="h-7 text-xs">
+                          ✓ نفّذ
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={cancelPending} disabled={loading} className="h-7 text-xs">
+                          إلغاء
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </>

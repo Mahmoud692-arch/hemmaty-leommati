@@ -86,8 +86,17 @@ function QuizRunPage() {
       }
       setQuiz(q as QuizDetail);
 
-      const { data: qs } = await supabase
-        .from("quiz_questions")
+      // قراءة آمنة عبر view لا تعرض correct_index للمستخدمين
+      const { data: qs } = await (supabase as unknown as {
+        from: (t: string) => {
+          select: (c: string) => {
+            eq: (k: string, v: string) => {
+              order: (c: string) => Promise<{ data: unknown[] | null }>;
+            };
+          };
+        };
+      })
+        .from("quiz_questions_safe")
         .select("id,question_text,question_image,question_type,options,points,order_index")
         .eq("quiz_id", id)
         .order("order_index");
