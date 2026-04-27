@@ -16,10 +16,16 @@ interface ToolCall {
   result: { success: boolean; id?: string; error?: string; message?: string; recipients?: number; stats?: Record<string, number>; questions?: unknown[] };
 }
 
+interface PendingOp {
+  name: string;
+  args: Record<string, unknown>;
+}
+
 interface Msg {
   role: "user" | "assistant" | "system";
   content: string;
   tool_calls_executed?: ToolCall[];
+  pending_confirmation?: PendingOp[];
 }
 
 const QUICK_ACTIONS = [
