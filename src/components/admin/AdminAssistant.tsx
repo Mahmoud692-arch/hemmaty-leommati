@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
+import DiffPreview from "./DiffPreview";
 
 interface ToolCall {
   name: string;
@@ -19,6 +20,7 @@ interface ToolCall {
 interface PendingOp {
   name: string;
   args: Record<string, unknown>;
+  before?: Record<string, unknown> | null;
 }
 
 interface Msg {
@@ -283,19 +285,33 @@ export default function AdminAssistant() {
                     </div>
                   )}
                   {m.pending_confirmation && m.pending_confirmation.length > 0 && (
-                    <div className="mt-3 rounded-lg border-2 border-amber-500/50 bg-amber-500/10 p-2.5 space-y-2">
+                    <div className="mt-3 rounded-lg border-2 border-amber-500/50 bg-amber-500/10 p-3 space-y-3">
                       <div className="text-xs font-semibold text-amber-900 dark:text-amber-200 flex items-center gap-1">
-                        ⚠️ عملية حسّاسة — تحتاج تأكيدك
+                        ⚠️ عملية حسّاسة — راجع التغييرات قبل التأكيد
                       </div>
                       {m.pending_confirmation.map((op, k) => (
-                        <div key={k} className="text-[11px] bg-background/60 rounded px-2 py-1 font-mono">
-                          <span className="text-amber-700 dark:text-amber-300 font-semibold">{op.name}</span>
-                          <span className="opacity-70"> — {JSON.stringify(op.args).slice(0, 120)}</span>
+                        <div key={k} className="space-y-1.5">
+                          <div className="text-[11px] bg-background/70 rounded px-2 py-1 font-mono flex items-center gap-2">
+                            <span className="text-amber-700 dark:text-amber-300 font-bold">{op.name}</span>
+                            {Object.entries(op.args)
+                              .filter(([k]) => k.endsWith("_id") || k === "setting_key" || k === "content_id")
+                              .slice(0, 1)
+                              .map(([k, v]) => (
+                                <span key={k} className="opacity-70 text-[10px]">
+                                  {k}: <span dir="ltr">{String(v).slice(0, 36)}</span>
+                                </span>
+                              ))}
+                          </div>
+                          <DiffPreview
+                            toolName={op.name}
+                            before={op.before ?? null}
+                            after={op.args}
+                          />
                         </div>
                       ))}
-                      <div className="flex gap-2 pt-1">
+                      <div className="flex gap-2 pt-1 border-t border-amber-500/30">
                         <Button size="sm" onClick={confirmPending} disabled={loading} className="h-7 text-xs">
-                          ✓ نفّذ
+                          ✓ نفّذ التغييرات
                         </Button>
                         <Button size="sm" variant="ghost" onClick={cancelPending} disabled={loading} className="h-7 text-xs">
                           إلغاء
