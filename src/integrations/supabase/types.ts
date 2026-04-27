@@ -477,6 +477,13 @@ export type Database = {
             referencedRelation: "quiz_questions"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "quiz_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions_safe"
+            referencedColumns: ["id"]
+          },
         ]
       }
       quiz_attempts: {
@@ -746,9 +753,101 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      profiles_public: {
+        Row: {
+          articles_read: number | null
+          avatar_url: string | null
+          country: string | null
+          created_at: string | null
+          full_name: string | null
+          hadiths_read: number | null
+          id: string | null
+          level: number | null
+          quizzes_passed: number | null
+          total_points: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          articles_read?: number | null
+          avatar_url?: string | null
+          country?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          hadiths_read?: number | null
+          id?: string | null
+          level?: number | null
+          quizzes_passed?: number | null
+          total_points?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          articles_read?: number | null
+          avatar_url?: string | null
+          country?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          hadiths_read?: number | null
+          id?: string | null
+          level?: number | null
+          quizzes_passed?: number | null
+          total_points?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      quiz_questions_safe: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          options: Json | null
+          order_index: number | null
+          points: number | null
+          question_image: string | null
+          question_text: string | null
+          question_type: string | null
+          quiz_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string | null
+          options?: Json | null
+          order_index?: number | null
+          points?: number | null
+          question_image?: string | null
+          question_text?: string | null
+          question_type?: string | null
+          quiz_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string | null
+          options?: Json | null
+          order_index?: number | null
+          points?: number | null
+          question_image?: string | null
+          question_text?: string | null
+          question_type?: string | null
+          quiz_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
+      admin_article_performance: {
+        Args: { _article_slug?: string }
+        Returns: Json
+      }
       admin_broadcast_notification: {
         Args: { _link?: string; _message: string; _title: string }
         Returns: number
@@ -757,6 +856,39 @@ export type Database = {
       admin_create_hadith: { Args: { _payload: Json }; Returns: string }
       admin_create_quiz_with_questions: {
         Args: { _payload: Json }
+        Returns: string
+      }
+      admin_delete_article: { Args: { _article_id: string }; Returns: boolean }
+      admin_delete_hadith: { Args: { _hadith_id: string }; Returns: boolean }
+      admin_delete_quiz: { Args: { _quiz_id: string }; Returns: boolean }
+      admin_get_user_info: { Args: { _user_id: string }; Returns: Json }
+      admin_moderate_comment: {
+        Args: { _action: string; _comment_id: string }
+        Returns: boolean
+      }
+      admin_quiz_performance: { Args: { _quiz_id?: string }; Returns: Json }
+      admin_respond_to_question: {
+        Args: { _answer_text: string; _publish?: boolean; _question_id: string }
+        Returns: string
+      }
+      admin_schedule_content: {
+        Args: { _content_id: string; _publish_at: string; _type: string }
+        Returns: boolean
+      }
+      admin_set_site_setting: {
+        Args: { _key: string; _value: Json }
+        Returns: boolean
+      }
+      admin_update_article: {
+        Args: { _article_id: string; _payload: Json }
+        Returns: string
+      }
+      admin_update_hadith: {
+        Args: { _hadith_id: string; _payload: Json }
+        Returns: string
+      }
+      admin_update_quiz: {
+        Args: { _payload: Json; _quiz_id: string }
         Returns: string
       }
       has_role: {
