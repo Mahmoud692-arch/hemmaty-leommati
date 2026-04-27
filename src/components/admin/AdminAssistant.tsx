@@ -71,7 +71,6 @@ export default function AdminAssistant() {
     await supabase.from("ai_assistant_messages").insert({ user_id: user.id, role, content });
   };
 
-  const send = async (text: string) => {
   const callAssistant = async (
     convo: Msg[],
     opts: { confirmed?: boolean } = {}
