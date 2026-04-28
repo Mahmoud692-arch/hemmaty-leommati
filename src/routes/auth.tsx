@@ -119,6 +119,9 @@ function AuthPage() {
               <Button type="submit" className="w-full" disabled={submitting}>
                 {submitting ? "جاري الدخول..." : "تسجيل الدخول"}
               </Button>
+              <Link to="/password-reset" className="block text-center text-xs text-primary hover:underline mt-2">
+                نسيت كلمة المرور؟
+              </Link>
             </form>
           </TabsContent>
 
