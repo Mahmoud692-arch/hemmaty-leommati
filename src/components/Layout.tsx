@@ -38,8 +38,9 @@ function useTheme() {
 
 const navItems = [
   { to: "/", label: "الرئيسية", icon: Home },
+  { to: "/quran", label: "القرآن الكريم", icon: BookOpen },
   { to: "/articles", label: "المقالات", icon: BookOpen },
-  { to: "/hadiths", label: "الأربعون النووية", icon: BookOpen },
+  { to: "/hadiths", label: "الأحاديث النبوية", icon: BookOpen },
   { to: "/journey", label: "الرحلة الإيمانية", icon: Trophy },
   { to: "/questions", label: "الأسئلة", icon: MessageCircleQuestion },
   { to: "/quizzes", label: "الاختبارات", icon: Trophy },
@@ -212,7 +213,7 @@ export default function Layout({ children }: { children: ReactNode }) {
               </li>
               <li>
                 <Link to="/hadiths" className="hover:text-primary">
-                  الأربعون النووية
+                  الأحاديث النبوية
                 </Link>
               </li>
               <li>
@@ -228,7 +229,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold mb-3">تواصل معنا</h4>
+            <h4 className="font-semibold mb-3">قنواتنا</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
                 <a

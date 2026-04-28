@@ -57,7 +57,10 @@ import CommentsManager from "@/components/admin/CommentsManager";
 import HomepageSectionsManager from "@/components/admin/HomepageSectionsManager";
 import UsersManager from "@/components/admin/UsersManager";
 import AdminAssistant from "@/components/admin/AdminAssistant";
-import { Sparkles } from "lucide-react";
+import PagesManager from "@/components/admin/PagesManager";
+import AdsManager from "@/components/admin/AdsManager";
+import PointsManager from "@/components/admin/PointsManager";
+import { Sparkles, FileStack, Megaphone } from "lucide-react";
 
 interface AdminQuestion {
   id: string;
@@ -209,6 +212,9 @@ function AdminPage() {
           <TabsTrigger value="quizzes"><Trophy className="h-4 w-4 ml-1" /> الاختبارات</TabsTrigger>
           <TabsTrigger value="comments"><MessageSquare className="h-4 w-4 ml-1" /> التعليقات</TabsTrigger>
           <TabsTrigger value="sections"><LayoutGrid className="h-4 w-4 ml-1" /> الرئيسية</TabsTrigger>
+          <TabsTrigger value="pages"><FileStack className="h-4 w-4 ml-1" /> الصفحات</TabsTrigger>
+          <TabsTrigger value="ads"><Megaphone className="h-4 w-4 ml-1" /> الإعلانات</TabsTrigger>
+          <TabsTrigger value="points"><Trophy className="h-4 w-4 ml-1" /> النقاط</TabsTrigger>
           <TabsTrigger value="settings"><Settings className="h-4 w-4 ml-1" /> الإعدادات</TabsTrigger>
           <TabsTrigger value="roles"><ShieldCheck className="h-4 w-4 ml-1" /> الأدوار</TabsTrigger>
           <TabsTrigger value="audit"><History className="h-4 w-4 ml-1" /> السجل</TabsTrigger>
@@ -269,6 +275,9 @@ function AdminPage() {
         <TabsContent value="quizzes"><QuizzesManager /></TabsContent>
         <TabsContent value="comments"><CommentsManager /></TabsContent>
         <TabsContent value="sections"><HomepageSectionsManager /></TabsContent>
+        <TabsContent value="pages"><PagesManager /></TabsContent>
+        <TabsContent value="ads"><AdsManager /></TabsContent>
+        <TabsContent value="points"><PointsManager /></TabsContent>
         <TabsContent value="settings"><SettingsManager /></TabsContent>
         <TabsContent value="roles"><RolesManager currentUserId={user!.id} /></TabsContent>
         <TabsContent value="audit"><AuditLogViewer /></TabsContent>

@@ -19,21 +19,21 @@ export const LEVELS: Level[] = [
     title: "الالتزام",
     subtitle: "الصحبة والقرآن",
     themes: ["وِرد قرآني يومي", "صحبة صالحة", "حضور مجالس العلم"],
-    minPoints: 100,
+    minPoints: 500,
   },
   {
     level: 3,
     title: "الثبات",
     subtitle: "الإخلاص والصبر",
     themes: ["تنقية النية", "الصبر على البلاء", "ذكر الله الكثير"],
-    minPoints: 300,
+    minPoints: 1000,
   },
   {
     level: 4,
     title: "التأثير",
     subtitle: "الدعوة وإصلاح النفس",
     themes: ["الدعوة بالقدوة", "نفع الناس", "إصلاح من حولك"],
-    minPoints: 600,
+    minPoints: 2000,
   },
 ];
 

@@ -87,7 +87,7 @@ function AboutPage() {
       <OrnamentalDivider />
 
       <section className="text-center my-12">
-        <h2 className="font-display text-2xl mb-6">تواصل معنا</h2>
+        <h2 className="font-display text-2xl mb-6">قنواتنا</h2>
         <div className="flex items-center justify-center gap-4 flex-wrap">
           <a
             href="https://www.facebook.com/share/18SsDDgzCr/"
