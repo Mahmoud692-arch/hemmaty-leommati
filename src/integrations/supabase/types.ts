@@ -38,6 +38,30 @@ export type Database = {
         }
         Relationships: []
       }
+      article_audio: {
+        Row: {
+          article_slug: string
+          audio_url: string
+          generated_at: string
+          id: string
+          voice: string | null
+        }
+        Insert: {
+          article_slug: string
+          audio_url: string
+          generated_at?: string
+          id?: string
+          voice?: string | null
+        }
+        Update: {
+          article_slug?: string
+          audio_url?: string
+          generated_at?: string
+          id?: string
+          voice?: string | null
+        }
+        Relationships: []
+      }
       article_comments: {
         Row: {
           article_slug: string
@@ -88,6 +112,36 @@ export type Database = {
           article_slug?: string
           created_at?: string
           id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      article_read_progress: {
+        Row: {
+          article_slug: string
+          id: string
+          points_awarded: boolean
+          scroll_percent: number
+          seconds_spent: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          article_slug: string
+          id?: string
+          points_awarded?: boolean
+          scroll_percent?: number
+          seconds_spent?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          article_slug?: string
+          id?: string
+          points_awarded?: boolean
+          scroll_percent?: number
+          seconds_spent?: number
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -224,6 +278,62 @@ export type Database = {
         }
         Relationships: []
       }
+      cms_pages: {
+        Row: {
+          content: string | null
+          cover_image: string | null
+          created_at: string
+          id: string
+          is_published: boolean
+          meta_description: string | null
+          meta_keywords: string | null
+          order_index: number
+          parent_id: string | null
+          show_in_nav: boolean
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string | null
+          cover_image?: string | null
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          meta_description?: string | null
+          meta_keywords?: string | null
+          order_index?: number
+          parent_id?: string | null
+          show_in_nav?: boolean
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string | null
+          cover_image?: string | null
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          meta_description?: string | null
+          meta_keywords?: string | null
+          order_index?: number
+          parent_id?: string | null
+          show_in_nav?: boolean
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cms_pages_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "cms_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hadith_favorites: {
         Row: {
           created_at: string
@@ -308,6 +418,51 @@ export type Database = {
         }
         Relationships: []
       }
+      homepage_ads: {
+        Row: {
+          body: string | null
+          created_at: string
+          ends_at: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          link_url: string | null
+          order_index: number
+          position: string
+          starts_at: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          link_url?: string | null
+          order_index?: number
+          position?: string
+          starts_at?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          link_url?: string | null
+          order_index?: number
+          position?: string
+          starts_at?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       homepage_sections: {
         Row: {
           content: Json
@@ -374,6 +529,36 @@ export type Database = {
         }
         Relationships: []
       }
+      points_adjustments: {
+        Row: {
+          created_at: string
+          created_by: string
+          delta: number
+          id: string
+          notification_message: string | null
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          delta: number
+          id?: string
+          notification_message?: string | null
+          reason: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          delta?: number
+          id?: string
+          notification_message?: string | null
+          reason?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           articles_read: number
@@ -425,6 +610,27 @@ export type Database = {
           total_points?: number
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      public_site_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
         }
         Relationships: []
       }
@@ -652,6 +858,33 @@ export type Database = {
         }
         Relationships: []
       }
+      quran_bookmarks: {
+        Row: {
+          ayah_number: number | null
+          created_at: string
+          id: string
+          note: string | null
+          surah_number: number
+          user_id: string
+        }
+        Insert: {
+          ayah_number?: number | null
+          created_at?: string
+          id?: string
+          note?: string | null
+          surah_number: number
+          user_id: string
+        }
+        Update: {
+          ayah_number?: number | null
+          created_at?: string
+          id?: string
+          note?: string | null
+          surah_number?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
           key: string
@@ -753,6 +986,13 @@ export type Database = {
       }
     }
     Views: {
+      article_likes_count: {
+        Row: {
+          article_slug: string | null
+          likes_count: number | null
+        }
+        Relationships: []
+      }
       profiles_public: {
         Row: {
           articles_read: number | null
@@ -844,6 +1084,15 @@ export type Database = {
       }
     }
     Functions: {
+      admin_adjust_points: {
+        Args: {
+          _delta: number
+          _notify?: string
+          _reason: string
+          _user_id: string
+        }
+        Returns: boolean
+      }
       admin_article_performance: {
         Args: { _article_slug?: string }
         Returns: Json
@@ -860,8 +1109,21 @@ export type Database = {
       }
       admin_delete_article: { Args: { _article_id: string }; Returns: boolean }
       admin_delete_hadith: { Args: { _hadith_id: string }; Returns: boolean }
+      admin_delete_page: { Args: { _page_id: string }; Returns: boolean }
       admin_delete_quiz: { Args: { _quiz_id: string }; Returns: boolean }
       admin_get_user_info: { Args: { _user_id: string }; Returns: Json }
+      admin_list_hadiths: {
+        Args: {
+          _category?: string
+          _hadith_id?: string
+          _has_benefit?: boolean
+          _has_explanation?: boolean
+          _limit?: number
+          _offset?: number
+          _source?: string
+        }
+        Returns: Json
+      }
       admin_moderate_comment: {
         Args: { _action: string; _comment_id: string }
         Returns: boolean
@@ -895,6 +1157,20 @@ export type Database = {
       admin_update_quiz: {
         Args: { _payload: Json; _quiz_id: string }
         Returns: string
+      }
+      admin_upsert_ad: { Args: { _payload: Json }; Returns: string }
+      admin_upsert_page: { Args: { _payload: Json }; Returns: string }
+      award_badge: {
+        Args: { _badge_key: string; _user_id: string }
+        Returns: boolean
+      }
+      award_reading_points: {
+        Args: {
+          _article_slug: string
+          _scroll_percent: number
+          _seconds_spent: number
+        }
+        Returns: Json
       }
       has_role: {
         Args: {
