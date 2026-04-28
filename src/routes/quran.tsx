@@ -93,7 +93,8 @@ function QuranPage() {
     }
     const key = `${surah}:${ayah ?? ""}`;
     if (bookmarks.has(key)) {
-      await supabase.from("quran_bookmarks").delete().eq("user_id", user.id).eq("surah_number", surah).eq("ayah_number", ayah);
+      const q = supabase.from("quran_bookmarks").delete().eq("user_id", user.id).eq("surah_number", surah);
+      await (ayah == null ? q.is("ayah_number", null) : q.eq("ayah_number", ayah));
       const n = new Set(bookmarks);
       n.delete(key);
       setBookmarks(n);

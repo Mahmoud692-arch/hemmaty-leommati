@@ -9,8 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as QuranRouteImport } from './routes/quran'
 import { Route as QuizzesRouteImport } from './routes/quizzes'
 import { Route as QuestionsRouteImport } from './routes/questions'
+import { Route as PasswordResetRouteImport } from './routes/password-reset'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as HadithsRouteImport } from './routes/hadiths'
@@ -24,6 +26,11 @@ import { Route as QuizzesIdRouteImport } from './routes/quizzes.$id'
 import { Route as HadithsNumberRouteImport } from './routes/hadiths.$number'
 import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
 
+const QuranRoute = QuranRouteImport.update({
+  id: '/quran',
+  path: '/quran',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const QuizzesRoute = QuizzesRouteImport.update({
   id: '/quizzes',
   path: '/quizzes',
@@ -32,6 +39,11 @@ const QuizzesRoute = QuizzesRouteImport.update({
 const QuestionsRoute = QuestionsRouteImport.update({
   id: '/questions',
   path: '/questions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PasswordResetRoute = PasswordResetRouteImport.update({
+  id: '/password-reset',
+  path: '/password-reset',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MeRoute = MeRouteImport.update({
@@ -105,8 +117,10 @@ export interface FileRoutesByFullPath {
   '/hadiths': typeof HadithsRouteWithChildren
   '/journey': typeof JourneyRoute
   '/me': typeof MeRoute
+  '/password-reset': typeof PasswordResetRoute
   '/questions': typeof QuestionsRoute
   '/quizzes': typeof QuizzesRouteWithChildren
+  '/quran': typeof QuranRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
   '/quizzes/$id': typeof QuizzesIdRoute
@@ -121,8 +135,10 @@ export interface FileRoutesByTo {
   '/hadiths': typeof HadithsRouteWithChildren
   '/journey': typeof JourneyRoute
   '/me': typeof MeRoute
+  '/password-reset': typeof PasswordResetRoute
   '/questions': typeof QuestionsRoute
   '/quizzes': typeof QuizzesRouteWithChildren
+  '/quran': typeof QuranRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
   '/quizzes/$id': typeof QuizzesIdRoute
@@ -138,8 +154,10 @@ export interface FileRoutesById {
   '/hadiths': typeof HadithsRouteWithChildren
   '/journey': typeof JourneyRoute
   '/me': typeof MeRoute
+  '/password-reset': typeof PasswordResetRoute
   '/questions': typeof QuestionsRoute
   '/quizzes': typeof QuizzesRouteWithChildren
+  '/quran': typeof QuranRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
   '/quizzes/$id': typeof QuizzesIdRoute
@@ -156,8 +174,10 @@ export interface FileRouteTypes {
     | '/hadiths'
     | '/journey'
     | '/me'
+    | '/password-reset'
     | '/questions'
     | '/quizzes'
+    | '/quran'
     | '/articles/$slug'
     | '/hadiths/$number'
     | '/quizzes/$id'
@@ -172,8 +192,10 @@ export interface FileRouteTypes {
     | '/hadiths'
     | '/journey'
     | '/me'
+    | '/password-reset'
     | '/questions'
     | '/quizzes'
+    | '/quran'
     | '/articles/$slug'
     | '/hadiths/$number'
     | '/quizzes/$id'
@@ -188,8 +210,10 @@ export interface FileRouteTypes {
     | '/hadiths'
     | '/journey'
     | '/me'
+    | '/password-reset'
     | '/questions'
     | '/quizzes'
+    | '/quran'
     | '/articles/$slug'
     | '/hadiths/$number'
     | '/quizzes/$id'
@@ -205,12 +229,21 @@ export interface RootRouteChildren {
   HadithsRoute: typeof HadithsRouteWithChildren
   JourneyRoute: typeof JourneyRoute
   MeRoute: typeof MeRoute
+  PasswordResetRoute: typeof PasswordResetRoute
   QuestionsRoute: typeof QuestionsRoute
   QuizzesRoute: typeof QuizzesRouteWithChildren
+  QuranRoute: typeof QuranRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/quran': {
+      id: '/quran'
+      path: '/quran'
+      fullPath: '/quran'
+      preLoaderRoute: typeof QuranRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/quizzes': {
       id: '/quizzes'
       path: '/quizzes'
@@ -223,6 +256,13 @@ declare module '@tanstack/react-router' {
       path: '/questions'
       fullPath: '/questions'
       preLoaderRoute: typeof QuestionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/password-reset': {
+      id: '/password-reset'
+      path: '/password-reset'
+      fullPath: '/password-reset'
+      preLoaderRoute: typeof PasswordResetRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/me': {
@@ -356,8 +396,10 @@ const rootRouteChildren: RootRouteChildren = {
   HadithsRoute: HadithsRouteWithChildren,
   JourneyRoute: JourneyRoute,
   MeRoute: MeRoute,
+  PasswordResetRoute: PasswordResetRoute,
   QuestionsRoute: QuestionsRoute,
   QuizzesRoute: QuizzesRouteWithChildren,
+  QuranRoute: QuranRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

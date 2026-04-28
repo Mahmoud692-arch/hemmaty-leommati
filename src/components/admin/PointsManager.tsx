@@ -70,7 +70,7 @@ export default function PointsManager() {
       _user_id: selected.user_id,
       _delta: Math.abs(delta) * sign,
       _reason: reason.trim(),
-      _notify: notify.trim() || null,
+      _notify: notify.trim() || undefined,
     });
     setSubmitting(false);
     if (error) {
