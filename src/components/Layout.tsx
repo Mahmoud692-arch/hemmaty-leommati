@@ -38,8 +38,9 @@ function useTheme() {
 
 const navItems = [
   { to: "/", label: "الرئيسية", icon: Home },
+  { to: "/quran", label: "القرآن الكريم", icon: BookOpen },
   { to: "/articles", label: "المقالات", icon: BookOpen },
-  { to: "/hadiths", label: "الأربعون النووية", icon: BookOpen },
+  { to: "/hadiths", label: "الأحاديث النبوية", icon: BookOpen },
   { to: "/journey", label: "الرحلة الإيمانية", icon: Trophy },
   { to: "/questions", label: "الأسئلة", icon: MessageCircleQuestion },
   { to: "/quizzes", label: "الاختبارات", icon: Trophy },
