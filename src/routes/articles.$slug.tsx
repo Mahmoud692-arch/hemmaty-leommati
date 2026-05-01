@@ -140,6 +140,8 @@ function ArticlePage() {
 
       <OrnamentalDivider />
 
+      <ArticleAudioPlayer articleSlug={article.slug} text={article.content} />
+
       <div className="article-content text-foreground/90 leading-loose space-y-4">
         <ReactMarkdown
           components={{
