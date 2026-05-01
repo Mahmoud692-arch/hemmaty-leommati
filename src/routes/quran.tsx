@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, BookOpen, Bookmark, Loader2, ChevronLeft } from "lucide-react";
+import { Search, BookOpen, Bookmark, Loader2, ChevronLeft, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -12,9 +12,9 @@ export const Route = createFileRoute("/quran")({
   head: () => ({
     meta: [
       { title: "القرآن الكريم — هِمَّتي لِأمّتي" },
-      { name: "description", content: "تصفّح المصحف الشريف كاملاً، 114 سورة، مع البحث، والتنقّل بين السور والآيات." },
+      { name: "description", content: "تصفّح المصحف الشريف كاملاً، 114 سورة، مع البحث في النص القرآني والتنقّل بين السور والآيات." },
       { property: "og:title", content: "القرآن الكريم — هِمَّتي لِأمّتي" },
-      { property: "og:description", content: "تصفّح المصحف الشريف كاملاً مع البحث والتنقّل." },
+      { property: "og:description", content: "تصفّح المصحف الشريف كاملاً مع البحث في الآيات والتنقّل." },
     ],
   }),
   component: QuranPage,
