@@ -37,15 +37,26 @@ interface Ayah {
   page: number;
 }
 
+interface SearchHit {
+  number: number;
+  text: string;
+  numberInSurah: number;
+  surah: { number: number; name: string; englishName: string };
+}
+
 function QuranPage() {
   const { user } = useAuth();
   const [surahs, setSurahs] = useState<SurahMeta[]>([]);
   const [search, setSearch] = useState("");
+  const [searchMode, setSearchMode] = useState<"surah" | "ayah">("surah");
+  const [searchHits, setSearchHits] = useState<SearchHit[]>([]);
+  const [searching, setSearching] = useState(false);
   const [selected, setSelected] = useState<number | null>(null);
   const [ayahs, setAyahs] = useState<Ayah[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingAyahs, setLoadingAyahs] = useState(false);
   const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
+  const [highlightAyah, setHighlightAyah] = useState<number | null>(null);
 
   useEffect(() => {
     fetch("https://api.alquran.cloud/v1/surah")
@@ -71,10 +82,11 @@ function QuranPage() {
       });
   }, [user]);
 
-  const openSurah = async (n: number) => {
+  const openSurah = async (n: number, focusAyah: number | null = null) => {
     setSelected(n);
     setLoadingAyahs(true);
     setAyahs([]);
+    setHighlightAyah(focusAyah);
     window.scrollTo({ top: 0, behavior: "smooth" });
     try {
       const r = await fetch(`https://api.alquran.cloud/v1/surah/${n}/quran-uthmani`);
@@ -84,6 +96,12 @@ function QuranPage() {
       toast.error("تعذّر تحميل السورة");
     }
     setLoadingAyahs(false);
+    if (focusAyah) {
+      setTimeout(() => {
+        const el = document.getElementById(`ayah-${focusAyah}`);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 200);
+    }
   };
 
   const toggleBookmark = async (surah: number, ayah: number | null = null) => {
@@ -105,6 +123,26 @@ function QuranPage() {
     }
   };
 
+  const runAyahSearch = async () => {
+    const q = search.trim();
+    if (q.length < 2) {
+      toast.error("اكتب حرفين على الأقل للبحث في الآيات");
+      return;
+    }
+    setSearching(true);
+    setSearchHits([]);
+    try {
+      const r = await fetch(`https://api.alquran.cloud/v1/search/${encodeURIComponent(q)}/all/quran-uthmani`);
+      const d = await r.json();
+      const matches = d?.data?.matches ?? [];
+      setSearchHits(matches.slice(0, 50));
+      if (!matches.length) toast("لا توجد نتائج لهذا البحث");
+    } catch {
+      toast.error("تعذّر البحث في الآيات");
+    }
+    setSearching(false);
+  };
+
   const filtered = useMemo(() => {
     const q = search.trim();
     if (!q) return surahs;
@@ -117,13 +155,24 @@ function QuranPage() {
 
   const currentSurah = surahs.find((s) => s.number === selected);
 
+  // Filter out the API-returned Basmala that appears as the first ayah of every
+  // surah except 1 (الفاتحة) and 9 (التوبة). We render the Basmala header ourselves.
+  const renderedAyahs = useMemo(() => {
+    if (!currentSurah || !ayahs.length) return ayahs;
+    if (currentSurah.number === 1 || currentSurah.number === 9) return ayahs;
+    const first = ayahs[0];
+    const isApiBasmala = first && first.numberInSurah === 1 &&
+      first.text.replace(/\s+/g, "").startsWith("بِسْمِ");
+    return isApiBasmala ? ayahs.slice(1) : ayahs;
+  }, [currentSurah, ayahs]);
+
   return (
     <div className="container mx-auto px-4 py-10 max-w-6xl">
       <div className="text-center mb-8">
         <BookOpen className="h-12 w-12 mx-auto text-[var(--gold)] mb-3" />
         <h1 className="font-display text-4xl md:text-5xl">القرآن الكريم</h1>
         <p className="text-muted-foreground mt-2 text-sm max-w-xl mx-auto">
-          المصحفُ الشريف كاملاً، 114 سورة، تصفّح وبحث وحفظ في المفضلة.
+          المصحفُ الشريف كاملاً، 114 سورة، تصفّح وبحث في الآيات وحفظ في المفضلة.
         </p>
         <OrnamentalDivider />
       </div>
@@ -131,7 +180,7 @@ function QuranPage() {
       {selected && currentSurah ? (
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <Button variant="ghost" size="sm" onClick={() => { setSelected(null); setAyahs([]); }}>
+            <Button variant="ghost" size="sm" onClick={() => { setSelected(null); setAyahs([]); setHighlightAyah(null); }}>
               <ChevronLeft className="h-4 w-4 ml-1" /> السور
             </Button>
             <h2 className="font-display text-2xl flex-1 text-center">
@@ -157,11 +206,12 @@ function QuranPage() {
               </div>
             ) : (
               <div className="quran-text text-2xl md:text-3xl leading-loose text-right" style={{ lineHeight: 2.4 }}>
-                {ayahs.map((a) => {
+                {renderedAyahs.map((a) => {
                   const k = `${currentSurah.number}:${a.numberInSurah}`;
                   const isBm = bookmarks.has(k);
+                  const isHi = highlightAyah === a.numberInSurah;
                   return (
-                    <span key={a.number} className="inline">
+                    <span key={a.number} id={`ayah-${a.numberInSurah}`} className={`inline ${isHi ? "bg-[var(--gold)]/20 rounded-md px-1" : ""}`}>
                       {a.text}
                       <button
                         onClick={() => toggleBookmark(currentSurah.number, a.numberInSurah)}
@@ -179,22 +229,74 @@ function QuranPage() {
         </div>
       ) : (
         <>
-          <div className="relative max-w-md mx-auto mb-6">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="ابحث عن سورة بالاسم أو الرقم…"
-              className="pr-9"
-            />
+          <div className="max-w-2xl mx-auto mb-6 space-y-3">
+            <div className="flex gap-2 justify-center">
+              <Button
+                size="sm"
+                variant={searchMode === "surah" ? "default" : "outline"}
+                onClick={() => { setSearchMode("surah"); setSearchHits([]); }}
+              >
+                بحث في السور
+              </Button>
+              <Button
+                size="sm"
+                variant={searchMode === "ayah" ? "default" : "outline"}
+                onClick={() => { setSearchMode("ayah"); }}
+              >
+                بحث في الآيات
+              </Button>
+            </div>
+            <div className="relative">
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter" && searchMode === "ayah") runAyahSearch(); }}
+                placeholder={searchMode === "surah" ? "ابحث عن سورة بالاسم أو الرقم…" : "ابحث في نص الآيات (مثلاً: الرحمن، الصبر)…"}
+                className="pr-9 pl-9"
+              />
+              {search && (
+                <button onClick={() => { setSearch(""); setSearchHits([]); }} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            {searchMode === "ayah" && (
+              <div className="text-center">
+                <Button size="sm" onClick={runAyahSearch} disabled={searching}>
+                  {searching ? <Loader2 className="h-4 w-4 animate-spin ml-1" /> : <Search className="h-4 w-4 ml-1" />}
+                  ابحث في الآيات
+                </Button>
+              </div>
+            )}
           </div>
+
+          {searchMode === "ayah" && searchHits.length > 0 && (
+            <div className="mb-8 space-y-2">
+              <div className="text-sm text-muted-foreground text-center">
+                {searchHits.length} نتيجة
+              </div>
+              {searchHits.map((hit) => (
+                <button
+                  key={hit.number}
+                  onClick={() => openSurah(hit.surah.number, hit.numberInSurah)}
+                  className="w-full text-right card-elegant rounded-xl p-4 hover:border-[var(--gold)]/50 transition-all"
+                >
+                  <div className="text-xs text-muted-foreground mb-1">
+                    سورة {hit.surah.name} · الآية {hit.numberInSurah}
+                  </div>
+                  <div className="quran-text text-lg leading-loose">{hit.text}</div>
+                </button>
+              ))}
+            </div>
+          )}
 
           {loading ? (
             <div className="text-center py-20 text-muted-foreground">
               <Loader2 className="h-6 w-6 animate-spin mx-auto" />
               <p className="text-sm mt-2">جارٍ التحميل…</p>
             </div>
-          ) : (
+          ) : searchMode === "surah" || !searchHits.length ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {filtered.map((s) => (
                 <button
@@ -218,7 +320,7 @@ function QuranPage() {
                 </button>
               ))}
             </div>
-          )}
+          ) : null}
         </>
       )}
 
