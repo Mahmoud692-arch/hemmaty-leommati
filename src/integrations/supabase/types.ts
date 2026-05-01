@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievement_rules: {
+        Row: {
+          conditions: Json
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          reward: Json
+          trigger_event: string
+        }
+        Insert: {
+          conditions?: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          reward?: Json
+          trigger_event: string
+        }
+        Update: {
+          conditions?: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          reward?: Json
+          trigger_event?: string
+        }
+        Relationships: []
+      }
       ai_assistant_messages: {
         Row: {
           content: string
@@ -278,6 +311,39 @@ export type Database = {
         }
         Relationships: []
       }
+      automation_rules: {
+        Row: {
+          actions: Json
+          conditions: Json
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          name: string
+          trigger_event: string
+        }
+        Insert: {
+          actions?: Json
+          conditions?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          trigger_event: string
+        }
+        Update: {
+          actions?: Json
+          conditions?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          trigger_event?: string
+        }
+        Relationships: []
+      }
       cms_pages: {
         Row: {
           content: string | null
@@ -330,6 +396,115 @@ export type Database = {
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "cms_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dynamic_content: {
+        Row: {
+          body: Json
+          content_type: string
+          created_at: string
+          created_by: string | null
+          id: string
+          metadata: Json
+          published_at: string | null
+          scheduled_at: string | null
+          slug: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: Json
+          content_type: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          metadata?: Json
+          published_at?: string | null
+          scheduled_at?: string | null
+          slug?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: Json
+          content_type?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          metadata?: Json
+          published_at?: string | null
+          scheduled_at?: string | null
+          slug?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      entity_tags: {
+        Row: {
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          taxonomy_item_id: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          taxonomy_item_id: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          taxonomy_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entity_tags_taxonomy_item_id_fkey"
+            columns: ["taxonomy_item_id"]
+            isOneToOne: false
+            referencedRelation: "taxonomy_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      form_submissions: {
+        Row: {
+          created_at: string
+          data: Json
+          form_id: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          form_id: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          form_id?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "form_submissions_form_id_fkey"
+            columns: ["form_id"]
+            isOneToOne: false
+            referencedRelation: "interactive_forms"
             referencedColumns: ["id"]
           },
         ]
@@ -496,6 +671,45 @@ export type Database = {
         }
         Relationships: []
       }
+      interactive_forms: {
+        Row: {
+          created_at: string
+          description: string | null
+          fields: Json
+          form_type: string
+          id: string
+          is_published: boolean
+          settings: Json
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          fields?: Json
+          form_type?: string
+          id?: string
+          is_published?: boolean
+          settings?: Json
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          fields?: Json
+          form_type?: string
+          id?: string
+          is_published?: boolean
+          settings?: Json
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -610,6 +824,121 @@ export type Database = {
           total_points?: number
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      program_enrollments: {
+        Row: {
+          completed_at: string | null
+          id: string
+          program_id: string
+          progress: Json
+          started_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          id?: string
+          program_id: string
+          progress?: Json
+          started_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          id?: string
+          program_id?: string
+          progress?: Json
+          started_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "program_enrollments_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      program_steps: {
+        Row: {
+          body: Json
+          created_at: string
+          id: string
+          order_index: number
+          program_id: string
+          required: boolean
+          title: string
+        }
+        Insert: {
+          body?: Json
+          created_at?: string
+          id?: string
+          order_index?: number
+          program_id: string
+          required?: boolean
+          title: string
+        }
+        Update: {
+          body?: Json
+          created_at?: string
+          id?: string
+          order_index?: number
+          program_id?: string
+          required?: boolean
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "program_steps_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      programs: {
+        Row: {
+          config: Json
+          cover_image: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_published: boolean
+          program_type: string
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          config?: Json
+          cover_image?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          program_type?: string
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          config?: Json
+          cover_image?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          program_type?: string
+          slug?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -906,6 +1235,72 @@ export type Database = {
         }
         Relationships: []
       }
+      taxonomies: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      taxonomy_items: {
+        Row: {
+          id: string
+          name: string
+          order_index: number
+          parent_id: string | null
+          slug: string
+          taxonomy_id: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          order_index?: number
+          parent_id?: string | null
+          slug: string
+          taxonomy_id: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          order_index?: number
+          parent_id?: string | null
+          slug?: string
+          taxonomy_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "taxonomy_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "taxonomy_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "taxonomy_items_taxonomy_id_fkey"
+            columns: ["taxonomy_id"]
+            isOneToOne: false
+            referencedRelation: "taxonomies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_badges: {
         Row: {
           badge_key: string
@@ -1082,6 +1477,42 @@ export type Database = {
           },
         ]
       }
+      user_questions_public: {
+        Row: {
+          answer: string | null
+          answered_at: string | null
+          created_at: string | null
+          id: string | null
+          is_anonymous: boolean | null
+          is_published: boolean | null
+          question: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          answer?: string | null
+          answered_at?: string | null
+          created_at?: string | null
+          id?: string | null
+          is_anonymous?: boolean | null
+          is_published?: boolean | null
+          question?: string | null
+          updated_at?: string | null
+          user_id?: never
+        }
+        Update: {
+          answer?: string | null
+          answered_at?: string | null
+          created_at?: string | null
+          id?: string | null
+          is_anonymous?: boolean | null
+          is_published?: boolean | null
+          question?: string | null
+          updated_at?: string | null
+          user_id?: never
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_adjust_points: {
@@ -1097,6 +1528,18 @@ export type Database = {
         Args: { _article_slug?: string }
         Returns: Json
       }
+      admin_assign_program: {
+        Args: { _program_id: string; _user_ids: string[] }
+        Returns: number
+      }
+      admin_assign_tag: {
+        Args: {
+          _entity_id: string
+          _entity_type: string
+          _taxonomy_item_id: string
+        }
+        Returns: string
+      }
       admin_broadcast_notification: {
         Args: { _link?: string; _message: string; _title: string }
         Returns: number
@@ -1108,9 +1551,11 @@ export type Database = {
         Returns: string
       }
       admin_delete_article: { Args: { _article_id: string }; Returns: boolean }
+      admin_delete_dynamic_content: { Args: { _id: string }; Returns: boolean }
       admin_delete_hadith: { Args: { _hadith_id: string }; Returns: boolean }
       admin_delete_page: { Args: { _page_id: string }; Returns: boolean }
       admin_delete_quiz: { Args: { _quiz_id: string }; Returns: boolean }
+      admin_engagement_metrics: { Args: { _days?: number }; Returns: Json }
       admin_get_user_info: { Args: { _user_id: string }; Returns: Json }
       admin_list_hadiths: {
         Args: {
@@ -1158,8 +1603,20 @@ export type Database = {
         Args: { _payload: Json; _quiz_id: string }
         Returns: string
       }
+      admin_upsert_achievement_rule: {
+        Args: { _payload: Json }
+        Returns: string
+      }
       admin_upsert_ad: { Args: { _payload: Json }; Returns: string }
+      admin_upsert_automation: { Args: { _payload: Json }; Returns: string }
+      admin_upsert_dynamic_content: {
+        Args: { _payload: Json }
+        Returns: string
+      }
+      admin_upsert_form: { Args: { _payload: Json }; Returns: string }
       admin_upsert_page: { Args: { _payload: Json }; Returns: string }
+      admin_upsert_program: { Args: { _payload: Json }; Returns: string }
+      admin_upsert_taxonomy: { Args: { _payload: Json }; Returns: string }
       award_badge: {
         Args: { _badge_key: string; _user_id: string }
         Returns: boolean

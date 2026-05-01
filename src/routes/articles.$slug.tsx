@@ -1,14 +1,14 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import ReactMarkdown from "react-markdown";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { articles as staticArticles, type Article } from "@/data/articles";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { POINTS } from "@/lib/journey";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BookOpen, ShieldCheck, Award } from "lucide-react";
 import { toast } from "sonner";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
+import ArticleAudioPlayer from "@/components/ArticleAudioPlayer";
 
 export const Route = createFileRoute("/articles/$slug")({
   loader: async ({ params }) => {
@@ -59,46 +59,56 @@ function ArticlePage() {
   const { article } = Route.useLoaderData();
   const { user, refreshProfile } = useAuth();
 
+  const startTimeRef = useRef<number>(Date.now());
+  const awardedRef = useRef<boolean>(false);
+
+  // Track scroll percent and seconds; award points when ≥85% via RPC (server-side enforced)
   useEffect(() => {
     if (!user) return;
-    const recordRead = async () => {
-      // check if already read
-      const { data: existing } = await supabase
-        .from("article_reads")
-        .select("id")
-        .eq("user_id", user.id)
-        .eq("article_slug", article.slug)
-        .maybeSingle();
+    startTimeRef.current = Date.now();
+    awardedRef.current = false;
 
-      if (existing) return;
-
-      const { error } = await supabase
-        .from("article_reads")
-        .insert({ user_id: user.id, article_slug: article.slug });
-      if (error) return;
-
-      // increment profile counters
-      const { data: prof } = await supabase
-        .from("profiles")
-        .select("articles_read, total_points")
-        .eq("user_id", user.id)
-        .single();
-
-      if (prof) {
-        await supabase
-          .from("profiles")
-          .update({
-            articles_read: (prof.articles_read ?? 0) + 1,
-            total_points: (prof.total_points ?? 0) + POINTS.ARTICLE_READ,
-          })
-          .eq("user_id", user.id);
-        toast.success(`+${POINTS.ARTICLE_READ} نقاط على قراءة المقال 🎉`);
-        refreshProfile();
+    const sendProgress = async () => {
+      if (awardedRef.current) return;
+      const doc = document.documentElement;
+      const totalScrollable = doc.scrollHeight - window.innerHeight;
+      const scrollPct = totalScrollable > 0
+        ? Math.min(100, Math.round((window.scrollY / totalScrollable) * 100))
+        : 100;
+      const seconds = Math.floor((Date.now() - startTimeRef.current) / 1000);
+      try {
+        const { data } = await supabase.rpc("award_reading_points", {
+          _article_slug: article.slug,
+          _scroll_percent: scrollPct,
+          _seconds_spent: seconds,
+        });
+        const res = data as { ok?: boolean; awarded?: boolean; points?: number } | null;
+        if (res?.awarded) {
+          awardedRef.current = true;
+          toast.success(`+${res.points ?? 10} نقاط على إكمالك قراءة المقال 🎉`);
+          refreshProfile();
+        }
+      } catch {
+        // silent — server validates anyway
       }
     };
-    // delay to ensure user actually opened it
-    const t = setTimeout(recordRead, 4000);
-    return () => clearTimeout(t);
+
+    // Send progress periodically + on scroll (debounced)
+    const interval = window.setInterval(sendProgress, 15000);
+    let scrollTimer: number | null = null;
+    const onScroll = () => {
+      if (scrollTimer) window.clearTimeout(scrollTimer);
+      scrollTimer = window.setTimeout(sendProgress, 1500);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener("scroll", onScroll);
+      if (scrollTimer) window.clearTimeout(scrollTimer);
+      // Final attempt on unmount
+      sendProgress();
+    };
   }, [user, article.slug, refreshProfile]);
 
   return (
@@ -129,6 +139,8 @@ function ArticlePage() {
       </header>
 
       <OrnamentalDivider />
+
+      <ArticleAudioPlayer articleSlug={article.slug} text={article.content} />
 
       <div className="article-content text-foreground/90 leading-loose space-y-4">
         <ReactMarkdown
