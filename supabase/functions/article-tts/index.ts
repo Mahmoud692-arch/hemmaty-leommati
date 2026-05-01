@@ -26,6 +26,14 @@ serve(async (req) => {
       global: { headers: { Authorization: authHeader } },
     });
 
+    // CRITICAL: require authenticated user to prevent anonymous AI credit abuse
+    const { data: userData, error: userErr } = await supabase.auth.getUser();
+    if (userErr || !userData?.user) {
+      return new Response(JSON.stringify({ error: "يجب تسجيل الدخول لاستخدام الصوتيات" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { article_slug, text } = await req.json();
     if (!article_slug || !text) {
       return new Response(JSON.stringify({ error: "article_slug و text مطلوبان" }), {

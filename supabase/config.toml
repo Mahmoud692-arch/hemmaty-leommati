@@ -1,1 +1,7 @@
 project_id = "lnvhvbrkacsmlntsjzrx"
+
+[functions.article-tts]
+verify_jwt = true
+
+[functions.admin-assistant]
+verify_jwt = true
