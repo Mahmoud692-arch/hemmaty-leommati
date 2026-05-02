@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import QuoteCard from "@/components/QuoteCard";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
+import HomepageAds from "@/components/HomepageAds";
 import { Button } from "@/components/ui/button";
 import { articles } from "@/data/articles";
 import { allHadiths as hadiths } from "@/data/hadiths";
