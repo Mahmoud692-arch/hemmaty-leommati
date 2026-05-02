@@ -60,7 +60,13 @@ import AdminAssistant from "@/components/admin/AdminAssistant";
 import PagesManager from "@/components/admin/PagesManager";
 import AdsManager from "@/components/admin/AdsManager";
 import PointsManager from "@/components/admin/PointsManager";
-import { Sparkles, FileStack, Megaphone } from "lucide-react";
+import DynamicContentManager from "@/components/admin/DynamicContentManager";
+import ProgramsManager from "@/components/admin/ProgramsManager";
+import FormsManager from "@/components/admin/FormsManager";
+import TaxonomyManager from "@/components/admin/TaxonomyManager";
+import AutomationManager from "@/components/admin/AutomationManager";
+import AchievementsManager from "@/components/admin/AchievementsManager";
+import { Sparkles, FileStack, Megaphone, Compass, ClipboardList, Tags, Zap, Award } from "lucide-react";
 
 interface AdminQuestion {
   id: string;
