@@ -64,6 +64,9 @@ function HomePage() {
         </div>
       </section>
 
+      {/* Ads */}
+      <HomepageAds position="top" />
+
       {/* Quote */}
       <section className="container mx-auto px-4 -mt-12 relative z-20">
         <div className="max-w-2xl mx-auto">
