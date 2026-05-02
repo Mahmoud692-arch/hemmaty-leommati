@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,6 +8,15 @@ import {
 } from "@/components/ui/dialog";
 import { Search, Eye, Award, BookOpen, ScrollText, MessageCircleQuestion, Trophy, Shield, Mail, Phone, Calendar, Globe } from "lucide-react";
 import { toast } from "sonner";
+
+const maskEmail = (e: string) => {
+  if (!e) return "—";
+  const [u, d] = e.split("@");
+  if (!d) return "•••";
+  return `${u.slice(0, 2)}•••@${d}`;
+};
+const maskPhone = (p: string | null) => p ? `${p.slice(0, 3)}•••${p.slice(-2)}` : "—";
+const maskDob = (d: string | null) => d ? `••••-${d.slice(5, 7)}-••` : "—";
 
 interface ProfileFull {
   user_id: string;
