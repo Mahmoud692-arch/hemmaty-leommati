@@ -60,7 +60,13 @@ import AdminAssistant from "@/components/admin/AdminAssistant";
 import PagesManager from "@/components/admin/PagesManager";
 import AdsManager from "@/components/admin/AdsManager";
 import PointsManager from "@/components/admin/PointsManager";
-import { Sparkles, FileStack, Megaphone } from "lucide-react";
+import DynamicContentManager from "@/components/admin/DynamicContentManager";
+import ProgramsManager from "@/components/admin/ProgramsManager";
+import FormsManager from "@/components/admin/FormsManager";
+import TaxonomyManager from "@/components/admin/TaxonomyManager";
+import AutomationManager from "@/components/admin/AutomationManager";
+import AchievementsManager from "@/components/admin/AchievementsManager";
+import { Sparkles, FileStack, Megaphone, Compass, ClipboardList, Tags, Zap, Award } from "lucide-react";
 
 interface AdminQuestion {
   id: string;
@@ -215,6 +221,12 @@ function AdminPage() {
           <TabsTrigger value="pages"><FileStack className="h-4 w-4 ml-1" /> الصفحات</TabsTrigger>
           <TabsTrigger value="ads"><Megaphone className="h-4 w-4 ml-1" /> الإعلانات</TabsTrigger>
           <TabsTrigger value="points"><Trophy className="h-4 w-4 ml-1" /> النقاط</TabsTrigger>
+          <TabsTrigger value="dynamic"><FileStack className="h-4 w-4 ml-1" /> محتوى ديناميكي</TabsTrigger>
+          <TabsTrigger value="programs"><Compass className="h-4 w-4 ml-1" /> البرامج</TabsTrigger>
+          <TabsTrigger value="forms"><ClipboardList className="h-4 w-4 ml-1" /> النماذج</TabsTrigger>
+          <TabsTrigger value="taxonomy"><Tags className="h-4 w-4 ml-1" /> التصنيفات</TabsTrigger>
+          <TabsTrigger value="automation"><Zap className="h-4 w-4 ml-1" /> الأتمتة</TabsTrigger>
+          <TabsTrigger value="achievements"><Award className="h-4 w-4 ml-1" /> الإنجازات</TabsTrigger>
           <TabsTrigger value="settings"><Settings className="h-4 w-4 ml-1" /> الإعدادات</TabsTrigger>
           <TabsTrigger value="roles"><ShieldCheck className="h-4 w-4 ml-1" /> الأدوار</TabsTrigger>
           <TabsTrigger value="audit"><History className="h-4 w-4 ml-1" /> السجل</TabsTrigger>
@@ -278,6 +290,12 @@ function AdminPage() {
         <TabsContent value="pages"><PagesManager /></TabsContent>
         <TabsContent value="ads"><AdsManager /></TabsContent>
         <TabsContent value="points"><PointsManager /></TabsContent>
+        <TabsContent value="dynamic"><DynamicContentManager /></TabsContent>
+        <TabsContent value="programs"><ProgramsManager /></TabsContent>
+        <TabsContent value="forms"><FormsManager /></TabsContent>
+        <TabsContent value="taxonomy"><TaxonomyManager /></TabsContent>
+        <TabsContent value="automation"><AutomationManager /></TabsContent>
+        <TabsContent value="achievements"><AchievementsManager /></TabsContent>
         <TabsContent value="settings"><SettingsManager /></TabsContent>
         <TabsContent value="roles"><RolesManager currentUserId={user!.id} /></TabsContent>
         <TabsContent value="audit"><AuditLogViewer /></TabsContent>
