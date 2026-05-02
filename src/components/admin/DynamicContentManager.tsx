@@ -67,7 +67,7 @@ export default function DynamicContentManager() {
     try { body = JSON.parse(bodyText || "{}"); } catch { toast.error("Body ليس JSON صالح"); return; }
     try { metadata = JSON.parse(metaText || "{}"); } catch { toast.error("Metadata ليس JSON صالح"); return; }
     const payload = { ...form, body, metadata, ...(editing ? { id: editing.id } : {}) };
-    const { error } = await supabase.rpc("admin_upsert_dynamic_content", { _payload: payload });
+    const { error } = await supabase.rpc("admin_upsert_dynamic_content", { _payload: payload as never });
     if (error) { toast.error(error.message); return; }
     toast.success("تم الحفظ"); setOpen(false); load();
   };
