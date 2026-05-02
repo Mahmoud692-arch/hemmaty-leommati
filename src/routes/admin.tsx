@@ -290,6 +290,12 @@ function AdminPage() {
         <TabsContent value="pages"><PagesManager /></TabsContent>
         <TabsContent value="ads"><AdsManager /></TabsContent>
         <TabsContent value="points"><PointsManager /></TabsContent>
+        <TabsContent value="dynamic"><DynamicContentManager /></TabsContent>
+        <TabsContent value="programs"><ProgramsManager /></TabsContent>
+        <TabsContent value="forms"><FormsManager /></TabsContent>
+        <TabsContent value="taxonomy"><TaxonomyManager /></TabsContent>
+        <TabsContent value="automation"><AutomationManager /></TabsContent>
+        <TabsContent value="achievements"><AchievementsManager /></TabsContent>
         <TabsContent value="settings"><SettingsManager /></TabsContent>
         <TabsContent value="roles"><RolesManager currentUserId={user!.id} /></TabsContent>
         <TabsContent value="audit"><AuditLogViewer /></TabsContent>
