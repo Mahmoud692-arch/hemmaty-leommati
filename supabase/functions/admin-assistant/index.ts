@@ -373,6 +373,190 @@ const TOOLS = [
       },
     },
   },
+  // ============ المحركات الديناميكية الجديدة ============
+  {
+    type: "function",
+    function: {
+      name: "upsert_dynamic_content",
+      description: "إنشاء/تعديل محتوى ديناميكي (إعلانات، بنرات، مشاركات). draft افتراضيًا.",
+      parameters: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "اتركه فارغًا للإنشاء" },
+          title: { type: "string" },
+          slug: { type: "string" },
+          content_type: { type: "string", description: "announcement | banner | post" },
+          body: { type: "object" },
+          metadata: { type: "object" },
+          status: { type: "string", enum: ["draft", "published", "scheduled"] },
+          scheduled_at: { type: "string" },
+        },
+        required: ["title", "content_type"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "upsert_program",
+      description: "إنشاء/تعديل برنامج إيماني (رحلة/كورس). is_published=false افتراضيًا.",
+      parameters: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          title: { type: "string" },
+          slug: { type: "string" },
+          description: { type: "string" },
+          program_type: { type: "string", enum: ["journey", "course"] },
+          cover_image: { type: "string" },
+          config: { type: "object" },
+          is_published: { type: "boolean" },
+        },
+        required: ["title", "slug"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "upsert_form",
+      description: "إنشاء/تعديل نموذج تفاعلي (استبيان/طلب).",
+      parameters: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          title: { type: "string" },
+          slug: { type: "string" },
+          description: { type: "string" },
+          form_type: { type: "string", enum: ["survey", "application", "feedback"] },
+          fields: { type: "array", items: { type: "object" } },
+          settings: { type: "object" },
+          is_published: { type: "boolean" },
+        },
+        required: ["title", "slug", "fields"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "upsert_taxonomy",
+      description: "إنشاء/تعديل تصنيف وعناصره (وسوم/فئات).",
+      parameters: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          name: { type: "string" },
+          slug: { type: "string" },
+          description: { type: "string" },
+          items: { type: "array", items: { type: "object", properties: { name: { type: "string" }, slug: { type: "string" } } } },
+        },
+        required: ["name", "slug"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "upsert_automation",
+      description: "إنشاء/تعديل قاعدة أتمتة (مُحفِّز + إجراءات). is_active=false افتراضيًا.",
+      parameters: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          name: { type: "string" },
+          trigger_event: { type: "string" },
+          conditions: { type: "object" },
+          actions: { type: "array", items: { type: "object" } },
+          is_active: { type: "boolean" },
+        },
+        required: ["name", "trigger_event", "actions"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "upsert_achievement_rule",
+      description: "إنشاء/تعديل قاعدة إنجاز (شارات/مكافآت).",
+      parameters: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          name: { type: "string" },
+          description: { type: "string" },
+          trigger_event: { type: "string" },
+          conditions: { type: "object" },
+          reward: { type: "object" },
+          is_active: { type: "boolean" },
+        },
+        required: ["name", "trigger_event"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "adjust_points",
+      description: "تعديل نقاط مستخدم (delta سالب/موجب) مع سبب وإشعار اختياري.",
+      parameters: {
+        type: "object",
+        properties: {
+          user_id: { type: "string" },
+          delta: { type: "number", description: "موجب لإضافة، سالب للخصم" },
+          reason: { type: "string" },
+          notification_message: { type: "string" },
+        },
+        required: ["user_id", "delta", "reason"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "upsert_ad",
+      description: "إنشاء/تعديل إعلان للصفحة الرئيسية.",
+      parameters: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          title: { type: "string" },
+          body: { type: "string" },
+          image_url: { type: "string" },
+          link_url: { type: "string" },
+          position: { type: "string", enum: ["top", "middle", "bottom"] },
+          order_index: { type: "number" },
+          starts_at: { type: "string" },
+          ends_at: { type: "string" },
+          is_active: { type: "boolean" },
+        },
+        required: ["title"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "upsert_page",
+      description: "إنشاء/تعديل صفحة CMS (about/contact/...).",
+      parameters: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          title: { type: "string" },
+          slug: { type: "string" },
+          content: { type: "string" },
+          meta_description: { type: "string" },
+          meta_keywords: { type: "string" },
+          cover_image: { type: "string" },
+          is_published: { type: "boolean" },
+          show_in_nav: { type: "boolean" },
+          order_index: { type: "number" },
+        },
+        required: ["title", "slug"],
+      },
+    },
+  },
 ];
 
 // Operations that require explicit admin confirmation in chat (preview only on first call)
