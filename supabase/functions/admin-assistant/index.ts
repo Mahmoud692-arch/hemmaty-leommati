@@ -773,6 +773,63 @@ async function executeTool(name: string, args: Record<string, any>, supabase: Sb
       return { success: true, stats: data };
     }
 
+    // ===== المحركات الديناميكية الجديدة =====
+    if (name === "upsert_dynamic_content") {
+      const payload = { ...args, status: args.status || "draft" };
+      const { data, error } = await supabase.rpc("admin_upsert_dynamic_content", { _payload: payload });
+      if (error) return { success: false, error: error.message };
+      return { success: true, id: data, message: "تم حفظ المحتوى الديناميكي" };
+    }
+    if (name === "upsert_program") {
+      const payload = { ...args, is_published: args.is_published === true };
+      const { data, error } = await supabase.rpc("admin_upsert_program", { _payload: payload });
+      if (error) return { success: false, error: error.message };
+      return { success: true, id: data, message: "تم حفظ البرنامج" };
+    }
+    if (name === "upsert_form") {
+      const payload = { ...args, is_published: args.is_published === true };
+      const { data, error } = await supabase.rpc("admin_upsert_form", { _payload: payload });
+      if (error) return { success: false, error: error.message };
+      return { success: true, id: data, message: "تم حفظ النموذج" };
+    }
+    if (name === "upsert_taxonomy") {
+      const { data, error } = await supabase.rpc("admin_upsert_taxonomy", { _payload: args });
+      if (error) return { success: false, error: error.message };
+      return { success: true, id: data, message: "تم حفظ التصنيف" };
+    }
+    if (name === "upsert_automation") {
+      const payload = { ...args, is_active: args.is_active === true };
+      const { data, error } = await supabase.rpc("admin_upsert_automation", { _payload: payload });
+      if (error) return { success: false, error: error.message };
+      return { success: true, id: data, message: "تم حفظ قاعدة الأتمتة (متوقفة افتراضيًا)" };
+    }
+    if (name === "upsert_achievement_rule") {
+      const payload = { ...args, is_active: args.is_active !== false };
+      const { data, error } = await supabase.rpc("admin_upsert_achievement_rule", { _payload: payload });
+      if (error) return { success: false, error: error.message };
+      return { success: true, id: data, message: "تم حفظ قاعدة الإنجاز" };
+    }
+    if (name === "adjust_points") {
+      const { error } = await supabase.rpc("admin_adjust_points", {
+        _user_id: args.user_id,
+        _delta: args.delta,
+        _reason: args.reason,
+        _notify: args.notification_message ?? null,
+      });
+      if (error) return { success: false, error: error.message };
+      return { success: true, message: `تم تعديل النقاط (${args.delta > 0 ? "+" : ""}${args.delta})` };
+    }
+    if (name === "upsert_ad") {
+      const { data, error } = await supabase.rpc("admin_upsert_ad", { _payload: args });
+      if (error) return { success: false, error: error.message };
+      return { success: true, id: data, message: "تم حفظ الإعلان" };
+    }
+    if (name === "upsert_page") {
+      const { data, error } = await supabase.rpc("admin_upsert_page", { _payload: args });
+      if (error) return { success: false, error: error.message };
+      return { success: true, id: data, message: "تم حفظ الصفحة" };
+    }
+
     return { success: false, error: "أداة غير معروفة" };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "خطأ غير معروف" };
