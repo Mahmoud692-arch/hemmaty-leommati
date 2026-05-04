@@ -128,6 +128,27 @@ export type Database = {
         }
         Relationships: []
       }
+      article_favorites: {
+        Row: {
+          article_slug: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          article_slug: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          article_slug?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       article_likes: {
         Row: {
           article_slug: string
@@ -341,6 +362,30 @@ export type Database = {
           is_active?: boolean
           name?: string
           trigger_event?: string
+        }
+        Relationships: []
+      }
+      avatar_change_log: {
+        Row: {
+          changed_at: string
+          id: string
+          new_url: string | null
+          old_url: string | null
+          user_id: string
+        }
+        Insert: {
+          changed_at?: string
+          id?: string
+          new_url?: string | null
+          old_url?: string | null
+          user_id: string
+        }
+        Update: {
+          changed_at?: string
+          id?: string
+          new_url?: string | null
+          old_url?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -710,6 +755,169 @@ export type Database = {
         }
         Relationships: []
       }
+      last_visits: {
+        Row: {
+          entity_id: string
+          entity_type: string
+          id: string
+          position_sec: number | null
+          scroll_percent: number | null
+          title: string | null
+          user_id: string
+          visited_at: string
+        }
+        Insert: {
+          entity_id: string
+          entity_type: string
+          id?: string
+          position_sec?: number | null
+          scroll_percent?: number | null
+          title?: string | null
+          user_id: string
+          visited_at?: string
+        }
+        Update: {
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          position_sec?: number | null
+          scroll_percent?: number | null
+          title?: string | null
+          user_id?: string
+          visited_at?: string
+        }
+        Relationships: []
+      }
+      lesson_favorites: {
+        Row: {
+          created_at: string
+          id: string
+          lesson_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lesson_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lesson_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_favorites_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lesson_progress: {
+        Row: {
+          completed: boolean
+          id: string
+          last_position_sec: number
+          lesson_id: string
+          seconds_watched: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          id?: string
+          last_position_sec?: number
+          lesson_id: string
+          seconds_watched?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          id?: string
+          last_position_sec?: number
+          lesson_id?: string
+          seconds_watched?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lessons: {
+        Row: {
+          category: string | null
+          cover_image: string | null
+          created_at: string
+          description: string | null
+          duration_seconds: number | null
+          id: string
+          instructor: string | null
+          is_featured: boolean
+          order_index: number
+          series: string | null
+          slug: string
+          source_type: string
+          status: string
+          thumbnail: string | null
+          title: string
+          updated_at: string
+          video_url: string | null
+          youtube_url: string | null
+        }
+        Insert: {
+          category?: string | null
+          cover_image?: string | null
+          created_at?: string
+          description?: string | null
+          duration_seconds?: number | null
+          id?: string
+          instructor?: string | null
+          is_featured?: boolean
+          order_index?: number
+          series?: string | null
+          slug: string
+          source_type?: string
+          status?: string
+          thumbnail?: string | null
+          title: string
+          updated_at?: string
+          video_url?: string | null
+          youtube_url?: string | null
+        }
+        Update: {
+          category?: string | null
+          cover_image?: string | null
+          created_at?: string
+          description?: string | null
+          duration_seconds?: number | null
+          id?: string
+          instructor?: string | null
+          is_featured?: boolean
+          order_index?: number
+          series?: string | null
+          slug?: string
+          source_type?: string
+          status?: string
+          thumbnail?: string | null
+          title?: string
+          updated_at?: string
+          video_url?: string | null
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -776,6 +984,7 @@ export type Database = {
       profiles: {
         Row: {
           articles_read: number
+          avatar_changed_at: string | null
           avatar_url: string | null
           country: string | null
           created_at: string
@@ -784,6 +993,7 @@ export type Database = {
           full_name: string
           hadiths_read: number
           id: string
+          last_seen_at: string | null
           level: number
           phone: string | null
           quizzes_passed: number
@@ -793,6 +1003,7 @@ export type Database = {
         }
         Insert: {
           articles_read?: number
+          avatar_changed_at?: string | null
           avatar_url?: string | null
           country?: string | null
           created_at?: string
@@ -801,6 +1012,7 @@ export type Database = {
           full_name: string
           hadiths_read?: number
           id?: string
+          last_seen_at?: string | null
           level?: number
           phone?: string | null
           quizzes_passed?: number
@@ -810,6 +1022,7 @@ export type Database = {
         }
         Update: {
           articles_read?: number
+          avatar_changed_at?: string | null
           avatar_url?: string | null
           country?: string | null
           created_at?: string
@@ -818,6 +1031,7 @@ export type Database = {
           full_name?: string
           hadiths_read?: number
           id?: string
+          last_seen_at?: string | null
           level?: number
           phone?: string | null
           quizzes_passed?: number
@@ -936,6 +1150,48 @@ export type Database = {
           id?: string
           is_published?: boolean
           program_type?: string
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      prophet_stories: {
+        Row: {
+          content: string | null
+          cover_image: string | null
+          created_at: string
+          excerpt: string | null
+          id: string
+          is_published: boolean
+          order_index: number
+          prophet_name: string | null
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string | null
+          cover_image?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          is_published?: boolean
+          order_index?: number
+          prophet_name?: string | null
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string | null
+          cover_image?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          is_published?: boolean
+          order_index?: number
+          prophet_name?: string | null
           slug?: string
           title?: string
           updated_at?: string
@@ -1629,6 +1885,7 @@ export type Database = {
         }
         Returns: Json
       }
+      change_avatar: { Args: { _new_url: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1637,6 +1894,16 @@ export type Database = {
         Returns: boolean
       }
       is_email_confirmed: { Args: { _user_id: string }; Returns: boolean }
+      leaderboard: {
+        Args: { _period?: string }
+        Returns: {
+          avatar_url: string
+          full_name: string
+          points: number
+          rank: number
+          user_id: string
+        }[]
+      }
       publish_due_articles: { Args: never; Returns: undefined }
       submit_quiz_attempt: {
         Args: { _attempt_id: string }
@@ -1646,6 +1913,7 @@ export type Database = {
           score: number
         }[]
       }
+      touch_last_seen: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user" | "super_admin"
