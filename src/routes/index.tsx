@@ -64,14 +64,16 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Ads */}
-      <HomepageAds position="top" />
-
-      {/* Quote */}
+      {/* Quote — overlapping hero edge */}
       <section className="container mx-auto px-4 -mt-12 relative z-20">
         <div className="max-w-2xl mx-auto">
           <QuoteCard />
         </div>
+      </section>
+
+      {/* Ads — separated, never overlaps */}
+      <section className="relative z-10 mt-8">
+        <HomepageAds position="top" />
       </section>
 
       {/* Levels */}
