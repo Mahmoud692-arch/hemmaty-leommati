@@ -173,40 +173,26 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Featured Articles */}
-      <section className="bg-card/40 border-y border-border py-20">
-        <div className="container mx-auto px-4">
-          <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
-            <div>
-              <h2 className="font-display text-3xl md:text-4xl mb-2">مقالاتٌ مختارة</h2>
-              <p className="text-muted-foreground text-sm">محتوًى مُراجعٌ علميًا ودينيًا</p>
-            </div>
+      {/* Latest + Most-read (real data) */}
+      <section className="bg-card/40 border-y border-border py-16">
+        <div className="container mx-auto px-4 space-y-12">
+          <FeedBlock
+            icon={<Sparkles className="h-5 w-5 text-[var(--gold)]" />}
+            title="الأحدث نشرًا"
+            subtitle="آخر ما أُضيف إلى المنصة"
+            items={latest}
+          />
+          <FeedBlock
+            icon={<Flame className="h-5 w-5 text-[var(--gold)]" />}
+            title="الأكثر قراءة"
+            subtitle="مبنيٌّ على قراءات المستخدمين الفعلية"
+            items={mostRead}
+            showReads
+          />
+          <div className="text-center">
             <Link to="/articles" className="text-sm text-primary font-semibold hover:underline">
               كل المقالات ←
             </Link>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {featured.map((a) => (
-              <Link
-                key={a.slug}
-                to="/articles/$slug"
-                params={{ slug: a.slug }}
-                className="card-elegant rounded-2xl p-6 group block"
-              >
-                <span className="text-xs px-2.5 py-1 rounded-full bg-[var(--gold)]/15 text-[var(--gold-foreground)] dark:text-[var(--gold)] font-semibold">
-                  {a.category}
-                </span>
-                <h3 className="font-display text-xl mt-4 mb-2 group-hover:text-primary transition-colors">
-                  {a.title}
-                </h3>
-                <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
-                  {a.excerpt}
-                </p>
-                <div className="mt-4 text-xs text-muted-foreground flex items-center gap-2">
-                  <BookOpen className="h-3 w-3" /> {a.readTime} دقائق قراءة
-                </div>
-              </Link>
-            ))}
           </div>
         </div>
       </section>
