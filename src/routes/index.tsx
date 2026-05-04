@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import QuoteCard from "@/components/QuoteCard";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
 import HomepageAds from "@/components/HomepageAds";
 import { Button } from "@/components/ui/button";
-import { articles } from "@/data/articles";
+import { supabase } from "@/integrations/supabase/client";
+import { articles as staticArticles } from "@/data/articles";
 import { allHadiths as hadiths } from "@/data/hadiths";
 import { LEVELS } from "@/lib/journey";
-import { BookOpen, Trophy, Heart, ArrowLeft, Star } from "lucide-react";
+import { BookOpen, Trophy, Heart, ArrowLeft, Star, Flame, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,8 +24,65 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
+interface FeedItem {
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  read_minutes: number;
+  reads?: number;
+}
+
 function HomePage() {
-  const featured = articles.slice(0, 3);
+  const [latest, setLatest] = useState<FeedItem[]>([]);
+  const [mostRead, setMostRead] = useState<FeedItem[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: db } = await supabase
+        .from("articles")
+        .select("slug,title,excerpt,category,read_minutes,created_at")
+        .eq("status", "published")
+        .order("created_at", { ascending: false })
+        .limit(6);
+      const dbItems: FeedItem[] = (db ?? []).map((a) => ({
+        slug: a.slug,
+        title: a.title,
+        excerpt: a.excerpt ?? "",
+        category: a.category ?? "عام",
+        read_minutes: a.read_minutes ?? 5,
+      }));
+      const merged: FeedItem[] = [
+        ...dbItems,
+        ...staticArticles
+          .filter((s) => !dbItems.some((d) => d.slug === s.slug))
+          .map((s) => ({
+            slug: s.slug,
+            title: s.title,
+            excerpt: s.excerpt,
+            category: s.category,
+            read_minutes: s.readTime,
+          })),
+      ];
+      if (!cancelled) setLatest(merged.slice(0, 3));
+
+      const { data: reads } = await supabase
+        .from("article_reads")
+        .select("article_slug")
+        .limit(1000);
+      const counts = new Map<string, number>();
+      (reads ?? []).forEach((r) => {
+        counts.set(r.article_slug, (counts.get(r.article_slug) ?? 0) + 1);
+      });
+      const ranked = merged
+        .map((m) => ({ ...m, reads: counts.get(m.slug) ?? 0 }))
+        .sort((a, b) => (b.reads ?? 0) - (a.reads ?? 0))
+        .slice(0, 3);
+      if (!cancelled) setMostRead(ranked);
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   return (
     <div className="relative">
