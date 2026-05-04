@@ -264,3 +264,47 @@ function HomePage() {
     </div>
   );
 }
+
+function FeedBlock({
+  icon,
+  title,
+  subtitle,
+  items,
+  showReads = false,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  subtitle: string;
+  items: FeedItem[];
+  showReads?: boolean;
+}) {
+  if (items.length === 0) return null;
+  return (
+    <div>
+      <div className="flex items-center gap-2 mb-1">{icon}<h2 className="font-display text-2xl md:text-3xl">{title}</h2></div>
+      <p className="text-muted-foreground text-sm mb-6">{subtitle}</p>
+      <div className="grid md:grid-cols-3 gap-5">
+        {items.map((a) => (
+          <Link
+            key={a.slug}
+            to="/articles/$slug"
+            params={{ slug: a.slug }}
+            className="card-elegant rounded-2xl p-5 group block"
+          >
+            <span className="text-xs px-2.5 py-1 rounded-full bg-[var(--gold)]/15 text-[var(--gold-foreground)] dark:text-[var(--gold)] font-semibold">
+              {a.category}
+            </span>
+            <h3 className="font-display text-lg mt-3 mb-2 group-hover:text-primary transition-colors line-clamp-2">
+              {a.title}
+            </h3>
+            <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">{a.excerpt}</p>
+            <div className="mt-3 text-xs text-muted-foreground flex items-center gap-3">
+              <span className="flex items-center gap-1"><BookOpen className="h-3 w-3" /> {a.read_minutes} د</span>
+              {showReads && (a.reads ?? 0) > 0 && <span>• {a.reads} قراءة</span>}
+            </div>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
