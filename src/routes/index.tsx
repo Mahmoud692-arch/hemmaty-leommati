@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import QuoteCard from "@/components/QuoteCard";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
 import HomepageAds from "@/components/HomepageAds";
 import { Button } from "@/components/ui/button";
-import { articles } from "@/data/articles";
+import { supabase } from "@/integrations/supabase/client";
+import { articles as staticArticles } from "@/data/articles";
 import { allHadiths as hadiths } from "@/data/hadiths";
 import { LEVELS } from "@/lib/journey";
-import { BookOpen, Trophy, Heart, ArrowLeft, Star } from "lucide-react";
+import { BookOpen, Trophy, Heart, ArrowLeft, Star, Flame, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,8 +24,65 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
+interface FeedItem {
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  read_minutes: number;
+  reads?: number;
+}
+
 function HomePage() {
-  const featured = articles.slice(0, 3);
+  const [latest, setLatest] = useState<FeedItem[]>([]);
+  const [mostRead, setMostRead] = useState<FeedItem[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: db } = await supabase
+        .from("articles")
+        .select("slug,title,excerpt,category,read_minutes,created_at")
+        .eq("status", "published")
+        .order("created_at", { ascending: false })
+        .limit(6);
+      const dbItems: FeedItem[] = (db ?? []).map((a) => ({
+        slug: a.slug,
+        title: a.title,
+        excerpt: a.excerpt ?? "",
+        category: a.category ?? "عام",
+        read_minutes: a.read_minutes ?? 5,
+      }));
+      const merged: FeedItem[] = [
+        ...dbItems,
+        ...staticArticles
+          .filter((s) => !dbItems.some((d) => d.slug === s.slug))
+          .map((s) => ({
+            slug: s.slug,
+            title: s.title,
+            excerpt: s.excerpt,
+            category: s.category,
+            read_minutes: s.readTime,
+          })),
+      ];
+      if (!cancelled) setLatest(merged.slice(0, 3));
+
+      const { data: reads } = await supabase
+        .from("article_reads")
+        .select("article_slug")
+        .limit(1000);
+      const counts = new Map<string, number>();
+      (reads ?? []).forEach((r) => {
+        counts.set(r.article_slug, (counts.get(r.article_slug) ?? 0) + 1);
+      });
+      const ranked = merged
+        .map((m) => ({ ...m, reads: counts.get(m.slug) ?? 0 }))
+        .sort((a, b) => (b.reads ?? 0) - (a.reads ?? 0))
+        .slice(0, 3);
+      if (!cancelled) setMostRead(ranked);
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   return (
     <div className="relative">
@@ -64,14 +123,16 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Ads */}
-      <HomepageAds position="top" />
-
-      {/* Quote */}
+      {/* Quote — overlapping hero edge */}
       <section className="container mx-auto px-4 -mt-12 relative z-20">
         <div className="max-w-2xl mx-auto">
           <QuoteCard />
         </div>
+      </section>
+
+      {/* Ads — separated, never overlaps */}
+      <section className="relative z-10 mt-8">
+        <HomepageAds position="top" />
       </section>
 
       {/* Levels */}
@@ -112,40 +173,26 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Featured Articles */}
-      <section className="bg-card/40 border-y border-border py-20">
-        <div className="container mx-auto px-4">
-          <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
-            <div>
-              <h2 className="font-display text-3xl md:text-4xl mb-2">مقالاتٌ مختارة</h2>
-              <p className="text-muted-foreground text-sm">محتوًى مُراجعٌ علميًا ودينيًا</p>
-            </div>
+      {/* Latest + Most-read (real data) */}
+      <section className="bg-card/40 border-y border-border py-16">
+        <div className="container mx-auto px-4 space-y-12">
+          <FeedBlock
+            icon={<Sparkles className="h-5 w-5 text-[var(--gold)]" />}
+            title="الأحدث نشرًا"
+            subtitle="آخر ما أُضيف إلى المنصة"
+            items={latest}
+          />
+          <FeedBlock
+            icon={<Flame className="h-5 w-5 text-[var(--gold)]" />}
+            title="الأكثر قراءة"
+            subtitle="مبنيٌّ على قراءات المستخدمين الفعلية"
+            items={mostRead}
+            showReads
+          />
+          <div className="text-center">
             <Link to="/articles" className="text-sm text-primary font-semibold hover:underline">
               كل المقالات ←
             </Link>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {featured.map((a) => (
-              <Link
-                key={a.slug}
-                to="/articles/$slug"
-                params={{ slug: a.slug }}
-                className="card-elegant rounded-2xl p-6 group block"
-              >
-                <span className="text-xs px-2.5 py-1 rounded-full bg-[var(--gold)]/15 text-[var(--gold-foreground)] dark:text-[var(--gold)] font-semibold">
-                  {a.category}
-                </span>
-                <h3 className="font-display text-xl mt-4 mb-2 group-hover:text-primary transition-colors">
-                  {a.title}
-                </h3>
-                <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
-                  {a.excerpt}
-                </p>
-                <div className="mt-4 text-xs text-muted-foreground flex items-center gap-2">
-                  <BookOpen className="h-3 w-3" /> {a.readTime} دقائق قراءة
-                </div>
-              </Link>
-            ))}
           </div>
         </div>
       </section>
@@ -214,6 +261,50 @@ function HomePage() {
           </div>
         </div>
       </section>
+    </div>
+  );
+}
+
+function FeedBlock({
+  icon,
+  title,
+  subtitle,
+  items,
+  showReads = false,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  subtitle: string;
+  items: FeedItem[];
+  showReads?: boolean;
+}) {
+  if (items.length === 0) return null;
+  return (
+    <div>
+      <div className="flex items-center gap-2 mb-1">{icon}<h2 className="font-display text-2xl md:text-3xl">{title}</h2></div>
+      <p className="text-muted-foreground text-sm mb-6">{subtitle}</p>
+      <div className="grid md:grid-cols-3 gap-5">
+        {items.map((a) => (
+          <Link
+            key={a.slug}
+            to="/articles/$slug"
+            params={{ slug: a.slug }}
+            className="card-elegant rounded-2xl p-5 group block"
+          >
+            <span className="text-xs px-2.5 py-1 rounded-full bg-[var(--gold)]/15 text-[var(--gold-foreground)] dark:text-[var(--gold)] font-semibold">
+              {a.category}
+            </span>
+            <h3 className="font-display text-lg mt-3 mb-2 group-hover:text-primary transition-colors line-clamp-2">
+              {a.title}
+            </h3>
+            <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">{a.excerpt}</p>
+            <div className="mt-3 text-xs text-muted-foreground flex items-center gap-3">
+              <span className="flex items-center gap-1"><BookOpen className="h-3 w-3" /> {a.read_minutes} د</span>
+              {showReads && (a.reads ?? 0) > 0 && <span>• {a.reads} قراءة</span>}
+            </div>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
