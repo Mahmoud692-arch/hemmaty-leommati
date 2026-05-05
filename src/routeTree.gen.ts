@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StoriesRouteImport } from './routes/stories'
 import { Route as QuranRouteImport } from './routes/quran'
 import { Route as QuizzesRouteImport } from './routes/quizzes'
 import { Route as QuestionsRouteImport } from './routes/questions'
@@ -26,6 +27,11 @@ import { Route as QuizzesIdRouteImport } from './routes/quizzes.$id'
 import { Route as HadithsNumberRouteImport } from './routes/hadiths.$number'
 import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
 
+const StoriesRoute = StoriesRouteImport.update({
+  id: '/stories',
+  path: '/stories',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const QuranRoute = QuranRouteImport.update({
   id: '/quran',
   path: '/quran',
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/questions': typeof QuestionsRoute
   '/quizzes': typeof QuizzesRouteWithChildren
   '/quran': typeof QuranRoute
+  '/stories': typeof StoriesRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
   '/quizzes/$id': typeof QuizzesIdRoute
@@ -139,6 +146,7 @@ export interface FileRoutesByTo {
   '/questions': typeof QuestionsRoute
   '/quizzes': typeof QuizzesRouteWithChildren
   '/quran': typeof QuranRoute
+  '/stories': typeof StoriesRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
   '/quizzes/$id': typeof QuizzesIdRoute
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/questions': typeof QuestionsRoute
   '/quizzes': typeof QuizzesRouteWithChildren
   '/quran': typeof QuranRoute
+  '/stories': typeof StoriesRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
   '/quizzes/$id': typeof QuizzesIdRoute
@@ -178,6 +187,7 @@ export interface FileRouteTypes {
     | '/questions'
     | '/quizzes'
     | '/quran'
+    | '/stories'
     | '/articles/$slug'
     | '/hadiths/$number'
     | '/quizzes/$id'
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/questions'
     | '/quizzes'
     | '/quran'
+    | '/stories'
     | '/articles/$slug'
     | '/hadiths/$number'
     | '/quizzes/$id'
@@ -214,6 +225,7 @@ export interface FileRouteTypes {
     | '/questions'
     | '/quizzes'
     | '/quran'
+    | '/stories'
     | '/articles/$slug'
     | '/hadiths/$number'
     | '/quizzes/$id'
@@ -233,10 +245,18 @@ export interface RootRouteChildren {
   QuestionsRoute: typeof QuestionsRoute
   QuizzesRoute: typeof QuizzesRouteWithChildren
   QuranRoute: typeof QuranRoute
+  StoriesRoute: typeof StoriesRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/stories': {
+      id: '/stories'
+      path: '/stories'
+      fullPath: '/stories'
+      preLoaderRoute: typeof StoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/quran': {
       id: '/quran'
       path: '/quran'
@@ -400,7 +420,17 @@ const rootRouteChildren: RootRouteChildren = {
   QuestionsRoute: QuestionsRoute,
   QuizzesRoute: QuizzesRouteWithChildren,
   QuranRoute: QuranRoute,
+  StoriesRoute: StoriesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
