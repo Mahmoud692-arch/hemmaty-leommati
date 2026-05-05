@@ -23,8 +23,8 @@ export const Route = createFileRoute("/lessons/$slug")({
           { name: "description", content: loaderData.lesson.description ?? loaderData.lesson.title },
           { property: "og:title", content: loaderData.lesson.title },
           { property: "og:description", content: loaderData.lesson.description ?? loaderData.lesson.title },
-          ...(loaderData.lesson.thumbnail || loaderData.lesson.cover_image
-            ? [{ property: "og:image", content: loaderData.lesson.thumbnail ?? loaderData.lesson.cover_image }]
+          ...((loaderData.lesson.thumbnail ?? loaderData.lesson.cover_image)
+            ? [{ property: "og:image", content: (loaderData.lesson.thumbnail ?? loaderData.lesson.cover_image) as string }]
             : []),
         ]
       : [],
