@@ -15,6 +15,7 @@ import { Route as QuizzesRouteImport } from './routes/quizzes'
 import { Route as QuestionsRouteImport } from './routes/questions'
 import { Route as PasswordResetRouteImport } from './routes/password-reset'
 import { Route as MeRouteImport } from './routes/me'
+import { Route as LessonsRouteImport } from './routes/lessons'
 import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as HadithsRouteImport } from './routes/hadiths'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -25,6 +26,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StoriesSlugRouteImport } from './routes/stories.$slug'
 import { Route as QuizzesIdRouteImport } from './routes/quizzes.$id'
+import { Route as LessonsSlugRouteImport } from './routes/lessons.$slug'
 import { Route as HadithsNumberRouteImport } from './routes/hadiths.$number'
 import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
 
@@ -56,6 +58,11 @@ const PasswordResetRoute = PasswordResetRouteImport.update({
 const MeRoute = MeRouteImport.update({
   id: '/me',
   path: '/me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LessonsRoute = LessonsRouteImport.update({
+  id: '/lessons',
+  path: '/lessons',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JourneyRoute = JourneyRouteImport.update({
@@ -108,6 +115,11 @@ const QuizzesIdRoute = QuizzesIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => QuizzesRoute,
 } as any)
+const LessonsSlugRoute = LessonsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => LessonsRoute,
+} as any)
 const HadithsNumberRoute = HadithsNumberRouteImport.update({
   id: '/$number',
   path: '/$number',
@@ -128,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/hadiths': typeof HadithsRouteWithChildren
   '/journey': typeof JourneyRoute
+  '/lessons': typeof LessonsRouteWithChildren
   '/me': typeof MeRoute
   '/password-reset': typeof PasswordResetRoute
   '/questions': typeof QuestionsRoute
@@ -136,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/stories': typeof StoriesRouteWithChildren
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
+  '/lessons/$slug': typeof LessonsSlugRoute
   '/quizzes/$id': typeof QuizzesIdRoute
   '/stories/$slug': typeof StoriesSlugRoute
 }
@@ -148,6 +162,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/hadiths': typeof HadithsRouteWithChildren
   '/journey': typeof JourneyRoute
+  '/lessons': typeof LessonsRouteWithChildren
   '/me': typeof MeRoute
   '/password-reset': typeof PasswordResetRoute
   '/questions': typeof QuestionsRoute
@@ -156,6 +171,7 @@ export interface FileRoutesByTo {
   '/stories': typeof StoriesRouteWithChildren
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
+  '/lessons/$slug': typeof LessonsSlugRoute
   '/quizzes/$id': typeof QuizzesIdRoute
   '/stories/$slug': typeof StoriesSlugRoute
 }
@@ -169,6 +185,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/hadiths': typeof HadithsRouteWithChildren
   '/journey': typeof JourneyRoute
+  '/lessons': typeof LessonsRouteWithChildren
   '/me': typeof MeRoute
   '/password-reset': typeof PasswordResetRoute
   '/questions': typeof QuestionsRoute
@@ -177,6 +194,7 @@ export interface FileRoutesById {
   '/stories': typeof StoriesRouteWithChildren
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
+  '/lessons/$slug': typeof LessonsSlugRoute
   '/quizzes/$id': typeof QuizzesIdRoute
   '/stories/$slug': typeof StoriesSlugRoute
 }
@@ -191,6 +209,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/hadiths'
     | '/journey'
+    | '/lessons'
     | '/me'
     | '/password-reset'
     | '/questions'
@@ -199,6 +218,7 @@ export interface FileRouteTypes {
     | '/stories'
     | '/articles/$slug'
     | '/hadiths/$number'
+    | '/lessons/$slug'
     | '/quizzes/$id'
     | '/stories/$slug'
   fileRoutesByTo: FileRoutesByTo
@@ -211,6 +231,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/hadiths'
     | '/journey'
+    | '/lessons'
     | '/me'
     | '/password-reset'
     | '/questions'
@@ -219,6 +240,7 @@ export interface FileRouteTypes {
     | '/stories'
     | '/articles/$slug'
     | '/hadiths/$number'
+    | '/lessons/$slug'
     | '/quizzes/$id'
     | '/stories/$slug'
   id:
@@ -231,6 +253,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/hadiths'
     | '/journey'
+    | '/lessons'
     | '/me'
     | '/password-reset'
     | '/questions'
@@ -239,6 +262,7 @@ export interface FileRouteTypes {
     | '/stories'
     | '/articles/$slug'
     | '/hadiths/$number'
+    | '/lessons/$slug'
     | '/quizzes/$id'
     | '/stories/$slug'
   fileRoutesById: FileRoutesById
@@ -252,6 +276,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   HadithsRoute: typeof HadithsRouteWithChildren
   JourneyRoute: typeof JourneyRoute
+  LessonsRoute: typeof LessonsRouteWithChildren
   MeRoute: typeof MeRoute
   PasswordResetRoute: typeof PasswordResetRoute
   QuestionsRoute: typeof QuestionsRoute
@@ -302,6 +327,13 @@ declare module '@tanstack/react-router' {
       path: '/me'
       fullPath: '/me'
       preLoaderRoute: typeof MeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lessons': {
+      id: '/lessons'
+      path: '/lessons'
+      fullPath: '/lessons'
+      preLoaderRoute: typeof LessonsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/journey': {
@@ -374,6 +406,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QuizzesIdRouteImport
       parentRoute: typeof QuizzesRoute
     }
+    '/lessons/$slug': {
+      id: '/lessons/$slug'
+      path: '/$slug'
+      fullPath: '/lessons/$slug'
+      preLoaderRoute: typeof LessonsSlugRouteImport
+      parentRoute: typeof LessonsRoute
+    }
     '/hadiths/$number': {
       id: '/hadiths/$number'
       path: '/$number'
@@ -414,6 +453,17 @@ const HadithsRouteChildren: HadithsRouteChildren = {
 const HadithsRouteWithChildren =
   HadithsRoute._addFileChildren(HadithsRouteChildren)
 
+interface LessonsRouteChildren {
+  LessonsSlugRoute: typeof LessonsSlugRoute
+}
+
+const LessonsRouteChildren: LessonsRouteChildren = {
+  LessonsSlugRoute: LessonsSlugRoute,
+}
+
+const LessonsRouteWithChildren =
+  LessonsRoute._addFileChildren(LessonsRouteChildren)
+
 interface QuizzesRouteChildren {
   QuizzesIdRoute: typeof QuizzesIdRoute
 }
@@ -445,6 +495,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   HadithsRoute: HadithsRouteWithChildren,
   JourneyRoute: JourneyRoute,
+  LessonsRoute: LessonsRouteWithChildren,
   MeRoute: MeRoute,
   PasswordResetRoute: PasswordResetRoute,
   QuestionsRoute: QuestionsRoute,
@@ -455,3 +506,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
