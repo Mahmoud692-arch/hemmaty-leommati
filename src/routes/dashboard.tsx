@@ -45,6 +45,11 @@ function DashboardPage() {
         <OrnamentalDivider />
       </div>
 
+      <section className="card-elegant rounded-2xl p-5 mb-6">
+        <h2 className="font-display text-lg mb-3">صورتي الشخصية</h2>
+        <AvatarChanger />
+      </section>
+
       {/* Level card */}
       <section className="card-elegant rounded-3xl p-6 md:p-8 relative overflow-hidden">
         <div className="absolute inset-0 arabic-pattern opacity-20" />
