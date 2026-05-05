@@ -60,6 +60,14 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   useEffect(() => setOpen(false), [location.pathname]);
 
+  // Ping last_seen periodically while logged in
+  useEffect(() => {
+    if (!user) return;
+    supabase.rpc("touch_last_seen");
+    const t = window.setInterval(() => { supabase.rpc("touch_last_seen"); }, 60000);
+    return () => window.clearInterval(t);
+  }, [user]);
+
   const handleSignOut = async () => {
     await signOut();
     navigate({ to: "/" });
