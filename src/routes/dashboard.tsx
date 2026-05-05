@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Trophy, BookOpen, Scroll, Flame, Star, ArrowLeft } from "lucide-react";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
 import UserBadges from "@/components/UserBadges";
+import AvatarChanger from "@/components/AvatarChanger";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -43,6 +44,11 @@ function DashboardPage() {
         <p className="text-muted-foreground mt-2">هذه لوحة إنجازك في رحلتك الإيمانية</p>
         <OrnamentalDivider />
       </div>
+
+      <section className="card-elegant rounded-2xl p-5 mb-6">
+        <h2 className="font-display text-lg mb-3">صورتي الشخصية</h2>
+        <AvatarChanger />
+      </section>
 
       {/* Level card */}
       <section className="card-elegant rounded-3xl p-6 md:p-8 relative overflow-hidden">
@@ -136,11 +142,15 @@ function DashboardPage() {
         </div>
       </section>
 
-      <div className="text-center mt-8">
-        <Link to="/articles">
-          <button className="text-primary hover:underline font-semibold">
-            تابع القراءة لكسب المزيد <ArrowLeft className="h-4 w-4 inline mr-1" />
-          </button>
+      <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
+        <Link to="/articles" className="text-primary hover:underline font-semibold">
+          تابع القراءة لكسب المزيد <ArrowLeft className="h-4 w-4 inline mr-1" />
+        </Link>
+        <Link to="/leaderboard" className="text-primary hover:underline font-semibold">
+          لوحة المتصدّرين
+        </Link>
+        <Link to="/favorites" className="text-primary hover:underline font-semibold">
+          مفضّلتي
         </Link>
       </div>
     </div>

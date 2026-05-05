@@ -85,7 +85,7 @@ export default function UsersManager() {
   const load = async () => {
     setLoading(true);
     const [{ data: profs }, { data: roles }] = await Promise.all([
-      supabase.from("profiles").select("*").order("created_at", { ascending: false }),
+      supabase.from("profiles").select("*").order("last_seen_at", { ascending: false, nullsFirst: false }).order("created_at", { ascending: false }),
       supabase.from("user_roles").select("user_id, role"),
     ]);
     setUsers((profs ?? []) as ProfileFull[]);
@@ -207,6 +207,7 @@ export default function UsersManager() {
                 <th className="p-2 text-right">النقاط</th>
                 <th className="p-2 text-right">المستوى</th>
                 <th className="p-2 text-right">الدور</th>
+                <th className="p-2 text-right">آخر ظهور</th>
                 <th className="p-2 text-right">إجراء</th>
               </tr>
             </thead>
@@ -229,6 +230,11 @@ export default function UsersManager() {
                     ) : (
                       <span className="text-[10px] text-muted-foreground">عضو</span>
                     )}
+                  </td>
+                  <td className="p-2 text-xs text-muted-foreground" dir="ltr">
+                    {(u as any).last_seen_at
+                      ? new Date((u as any).last_seen_at).toLocaleString("ar-EG")
+                      : "—"}
                   </td>
                   <td className="p-2">
                     <Button size="sm" variant="outline" onClick={() => openDetail(u)}>

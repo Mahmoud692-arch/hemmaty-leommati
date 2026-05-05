@@ -9,23 +9,34 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StoriesRouteImport } from './routes/stories'
 import { Route as QuranRouteImport } from './routes/quran'
 import { Route as QuizzesRouteImport } from './routes/quizzes'
 import { Route as QuestionsRouteImport } from './routes/questions'
 import { Route as PasswordResetRouteImport } from './routes/password-reset'
 import { Route as MeRouteImport } from './routes/me'
+import { Route as LessonsRouteImport } from './routes/lessons'
+import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as HadithsRouteImport } from './routes/hadiths'
+import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ArticlesRouteImport } from './routes/articles'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StoriesSlugRouteImport } from './routes/stories.$slug'
 import { Route as QuizzesIdRouteImport } from './routes/quizzes.$id'
+import { Route as LessonsSlugRouteImport } from './routes/lessons.$slug'
 import { Route as HadithsNumberRouteImport } from './routes/hadiths.$number'
 import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
 
+const StoriesRoute = StoriesRouteImport.update({
+  id: '/stories',
+  path: '/stories',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const QuranRoute = QuranRouteImport.update({
   id: '/quran',
   path: '/quran',
@@ -51,6 +62,16 @@ const MeRoute = MeRouteImport.update({
   path: '/me',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LessonsRoute = LessonsRouteImport.update({
+  id: '/lessons',
+  path: '/lessons',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeaderboardRoute = LeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const JourneyRoute = JourneyRouteImport.update({
   id: '/journey',
   path: '/journey',
@@ -59,6 +80,11 @@ const JourneyRoute = JourneyRouteImport.update({
 const HadithsRoute = HadithsRouteImport.update({
   id: '/hadiths',
   path: '/hadiths',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritesRoute = FavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -91,10 +117,20 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StoriesSlugRoute = StoriesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => StoriesRoute,
+} as any)
 const QuizzesIdRoute = QuizzesIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => QuizzesRoute,
+} as any)
+const LessonsSlugRoute = LessonsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => LessonsRoute,
 } as any)
 const HadithsNumberRoute = HadithsNumberRouteImport.update({
   id: '/$number',
@@ -114,16 +150,22 @@ export interface FileRoutesByFullPath {
   '/articles': typeof ArticlesRouteWithChildren
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
+  '/favorites': typeof FavoritesRoute
   '/hadiths': typeof HadithsRouteWithChildren
   '/journey': typeof JourneyRoute
+  '/leaderboard': typeof LeaderboardRoute
+  '/lessons': typeof LessonsRouteWithChildren
   '/me': typeof MeRoute
   '/password-reset': typeof PasswordResetRoute
   '/questions': typeof QuestionsRoute
   '/quizzes': typeof QuizzesRouteWithChildren
   '/quran': typeof QuranRoute
+  '/stories': typeof StoriesRouteWithChildren
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
+  '/lessons/$slug': typeof LessonsSlugRoute
   '/quizzes/$id': typeof QuizzesIdRoute
+  '/stories/$slug': typeof StoriesSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -132,16 +174,22 @@ export interface FileRoutesByTo {
   '/articles': typeof ArticlesRouteWithChildren
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
+  '/favorites': typeof FavoritesRoute
   '/hadiths': typeof HadithsRouteWithChildren
   '/journey': typeof JourneyRoute
+  '/leaderboard': typeof LeaderboardRoute
+  '/lessons': typeof LessonsRouteWithChildren
   '/me': typeof MeRoute
   '/password-reset': typeof PasswordResetRoute
   '/questions': typeof QuestionsRoute
   '/quizzes': typeof QuizzesRouteWithChildren
   '/quran': typeof QuranRoute
+  '/stories': typeof StoriesRouteWithChildren
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
+  '/lessons/$slug': typeof LessonsSlugRoute
   '/quizzes/$id': typeof QuizzesIdRoute
+  '/stories/$slug': typeof StoriesSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -151,16 +199,22 @@ export interface FileRoutesById {
   '/articles': typeof ArticlesRouteWithChildren
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
+  '/favorites': typeof FavoritesRoute
   '/hadiths': typeof HadithsRouteWithChildren
   '/journey': typeof JourneyRoute
+  '/leaderboard': typeof LeaderboardRoute
+  '/lessons': typeof LessonsRouteWithChildren
   '/me': typeof MeRoute
   '/password-reset': typeof PasswordResetRoute
   '/questions': typeof QuestionsRoute
   '/quizzes': typeof QuizzesRouteWithChildren
   '/quran': typeof QuranRoute
+  '/stories': typeof StoriesRouteWithChildren
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
+  '/lessons/$slug': typeof LessonsSlugRoute
   '/quizzes/$id': typeof QuizzesIdRoute
+  '/stories/$slug': typeof StoriesSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -171,16 +225,22 @@ export interface FileRouteTypes {
     | '/articles'
     | '/auth'
     | '/dashboard'
+    | '/favorites'
     | '/hadiths'
     | '/journey'
+    | '/leaderboard'
+    | '/lessons'
     | '/me'
     | '/password-reset'
     | '/questions'
     | '/quizzes'
     | '/quran'
+    | '/stories'
     | '/articles/$slug'
     | '/hadiths/$number'
+    | '/lessons/$slug'
     | '/quizzes/$id'
+    | '/stories/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -189,16 +249,22 @@ export interface FileRouteTypes {
     | '/articles'
     | '/auth'
     | '/dashboard'
+    | '/favorites'
     | '/hadiths'
     | '/journey'
+    | '/leaderboard'
+    | '/lessons'
     | '/me'
     | '/password-reset'
     | '/questions'
     | '/quizzes'
     | '/quran'
+    | '/stories'
     | '/articles/$slug'
     | '/hadiths/$number'
+    | '/lessons/$slug'
     | '/quizzes/$id'
+    | '/stories/$slug'
   id:
     | '__root__'
     | '/'
@@ -207,16 +273,22 @@ export interface FileRouteTypes {
     | '/articles'
     | '/auth'
     | '/dashboard'
+    | '/favorites'
     | '/hadiths'
     | '/journey'
+    | '/leaderboard'
+    | '/lessons'
     | '/me'
     | '/password-reset'
     | '/questions'
     | '/quizzes'
     | '/quran'
+    | '/stories'
     | '/articles/$slug'
     | '/hadiths/$number'
+    | '/lessons/$slug'
     | '/quizzes/$id'
+    | '/stories/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -226,17 +298,28 @@ export interface RootRouteChildren {
   ArticlesRoute: typeof ArticlesRouteWithChildren
   AuthRoute: typeof AuthRoute
   DashboardRoute: typeof DashboardRoute
+  FavoritesRoute: typeof FavoritesRoute
   HadithsRoute: typeof HadithsRouteWithChildren
   JourneyRoute: typeof JourneyRoute
+  LeaderboardRoute: typeof LeaderboardRoute
+  LessonsRoute: typeof LessonsRouteWithChildren
   MeRoute: typeof MeRoute
   PasswordResetRoute: typeof PasswordResetRoute
   QuestionsRoute: typeof QuestionsRoute
   QuizzesRoute: typeof QuizzesRouteWithChildren
   QuranRoute: typeof QuranRoute
+  StoriesRoute: typeof StoriesRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/stories': {
+      id: '/stories'
+      path: '/stories'
+      fullPath: '/stories'
+      preLoaderRoute: typeof StoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/quran': {
       id: '/quran'
       path: '/quran'
@@ -272,6 +355,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lessons': {
+      id: '/lessons'
+      path: '/lessons'
+      fullPath: '/lessons'
+      preLoaderRoute: typeof LessonsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/leaderboard': {
+      id: '/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/journey': {
       id: '/journey'
       path: '/journey'
@@ -284,6 +381,13 @@ declare module '@tanstack/react-router' {
       path: '/hadiths'
       fullPath: '/hadiths'
       preLoaderRoute: typeof HadithsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favorites': {
+      id: '/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof FavoritesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -328,12 +432,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/stories/$slug': {
+      id: '/stories/$slug'
+      path: '/$slug'
+      fullPath: '/stories/$slug'
+      preLoaderRoute: typeof StoriesSlugRouteImport
+      parentRoute: typeof StoriesRoute
+    }
     '/quizzes/$id': {
       id: '/quizzes/$id'
       path: '/$id'
       fullPath: '/quizzes/$id'
       preLoaderRoute: typeof QuizzesIdRouteImport
       parentRoute: typeof QuizzesRoute
+    }
+    '/lessons/$slug': {
+      id: '/lessons/$slug'
+      path: '/$slug'
+      fullPath: '/lessons/$slug'
+      preLoaderRoute: typeof LessonsSlugRouteImport
+      parentRoute: typeof LessonsRoute
     }
     '/hadiths/$number': {
       id: '/hadiths/$number'
@@ -375,6 +493,17 @@ const HadithsRouteChildren: HadithsRouteChildren = {
 const HadithsRouteWithChildren =
   HadithsRoute._addFileChildren(HadithsRouteChildren)
 
+interface LessonsRouteChildren {
+  LessonsSlugRoute: typeof LessonsSlugRoute
+}
+
+const LessonsRouteChildren: LessonsRouteChildren = {
+  LessonsSlugRoute: LessonsSlugRoute,
+}
+
+const LessonsRouteWithChildren =
+  LessonsRoute._addFileChildren(LessonsRouteChildren)
+
 interface QuizzesRouteChildren {
   QuizzesIdRoute: typeof QuizzesIdRoute
 }
@@ -386,6 +515,17 @@ const QuizzesRouteChildren: QuizzesRouteChildren = {
 const QuizzesRouteWithChildren =
   QuizzesRoute._addFileChildren(QuizzesRouteChildren)
 
+interface StoriesRouteChildren {
+  StoriesSlugRoute: typeof StoriesSlugRoute
+}
+
+const StoriesRouteChildren: StoriesRouteChildren = {
+  StoriesSlugRoute: StoriesSlugRoute,
+}
+
+const StoriesRouteWithChildren =
+  StoriesRoute._addFileChildren(StoriesRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -393,23 +533,18 @@ const rootRouteChildren: RootRouteChildren = {
   ArticlesRoute: ArticlesRouteWithChildren,
   AuthRoute: AuthRoute,
   DashboardRoute: DashboardRoute,
+  FavoritesRoute: FavoritesRoute,
   HadithsRoute: HadithsRouteWithChildren,
   JourneyRoute: JourneyRoute,
+  LeaderboardRoute: LeaderboardRoute,
+  LessonsRoute: LessonsRouteWithChildren,
   MeRoute: MeRoute,
   PasswordResetRoute: PasswordResetRoute,
   QuestionsRoute: QuestionsRoute,
   QuizzesRoute: QuizzesRouteWithChildren,
   QuranRoute: QuranRoute,
+  StoriesRoute: StoriesRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

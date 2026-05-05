@@ -1809,7 +1809,9 @@ export type Database = {
       admin_delete_article: { Args: { _article_id: string }; Returns: boolean }
       admin_delete_dynamic_content: { Args: { _id: string }; Returns: boolean }
       admin_delete_hadith: { Args: { _hadith_id: string }; Returns: boolean }
+      admin_delete_lesson: { Args: { _id: string }; Returns: boolean }
       admin_delete_page: { Args: { _page_id: string }; Returns: boolean }
+      admin_delete_prophet_story: { Args: { _id: string }; Returns: boolean }
       admin_delete_quiz: { Args: { _quiz_id: string }; Returns: boolean }
       admin_engagement_metrics: { Args: { _days?: number }; Returns: Json }
       admin_get_user_info: { Args: { _user_id: string }; Returns: Json }
@@ -1870,8 +1872,10 @@ export type Database = {
         Returns: string
       }
       admin_upsert_form: { Args: { _payload: Json }; Returns: string }
+      admin_upsert_lesson: { Args: { _payload: Json }; Returns: string }
       admin_upsert_page: { Args: { _payload: Json }; Returns: string }
       admin_upsert_program: { Args: { _payload: Json }; Returns: string }
+      admin_upsert_prophet_story: { Args: { _payload: Json }; Returns: string }
       admin_upsert_taxonomy: { Args: { _payload: Json }; Returns: string }
       award_badge: {
         Args: { _badge_key: string; _user_id: string }

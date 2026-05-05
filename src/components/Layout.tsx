@@ -18,6 +18,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import NotificationBell from "@/components/NotificationBell";
+import { supabase } from "@/integrations/supabase/client";
 
 function useTheme() {
   const [dark, setDark] = useState(false);
@@ -41,7 +42,10 @@ const navItems = [
   { to: "/quran", label: "القرآن الكريم", icon: BookOpen },
   { to: "/articles", label: "المقالات", icon: BookOpen },
   { to: "/hadiths", label: "الأحاديث النبوية", icon: BookOpen },
+  { to: "/stories", label: "قصص الأنبياء", icon: BookOpen },
+  { to: "/lessons", label: "الدروس", icon: BookOpen },
   { to: "/journey", label: "الرحلة الإيمانية", icon: Trophy },
+  { to: "/leaderboard", label: "المتصدّرون", icon: Trophy },
   { to: "/questions", label: "الأسئلة", icon: MessageCircleQuestion },
   { to: "/quizzes", label: "الاختبارات", icon: Trophy },
   { to: "/about", label: "عن الموقع", icon: Info },
@@ -55,6 +59,14 @@ export default function Layout({ children }: { children: ReactNode }) {
   const { location } = useRouterState();
 
   useEffect(() => setOpen(false), [location.pathname]);
+
+  // Ping last_seen periodically while logged in
+  useEffect(() => {
+    if (!user) return;
+    supabase.rpc("touch_last_seen");
+    const t = window.setInterval(() => { supabase.rpc("touch_last_seen"); }, 60000);
+    return () => window.clearInterval(t);
+  }, [user]);
 
   const handleSignOut = async () => {
     await signOut();
