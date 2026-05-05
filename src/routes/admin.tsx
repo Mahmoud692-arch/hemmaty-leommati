@@ -66,7 +66,9 @@ import FormsManager from "@/components/admin/FormsManager";
 import TaxonomyManager from "@/components/admin/TaxonomyManager";
 import AutomationManager from "@/components/admin/AutomationManager";
 import AchievementsManager from "@/components/admin/AchievementsManager";
-import { Sparkles, FileStack, Megaphone, Compass, ClipboardList, Tags, Zap, Award } from "lucide-react";
+import StoriesManager from "@/components/admin/StoriesManager";
+import LessonsManager from "@/components/admin/LessonsManager";
+import { Sparkles, FileStack, Megaphone, Compass, ClipboardList, Tags, Zap, Award, BookMarked, PlayCircle } from "lucide-react";
 
 interface AdminQuestion {
   id: string;
