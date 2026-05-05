@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Trophy, BookOpen, Scroll, Flame, Star, ArrowLeft } from "lucide-react";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
 import UserBadges from "@/components/UserBadges";
+import AvatarChanger from "@/components/AvatarChanger";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
