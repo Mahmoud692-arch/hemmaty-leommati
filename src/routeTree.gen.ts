@@ -19,6 +19,7 @@ import { Route as LessonsRouteImport } from './routes/lessons'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as HadithsRouteImport } from './routes/hadiths'
+import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ArticlesRouteImport } from './routes/articles'
@@ -79,6 +80,11 @@ const JourneyRoute = JourneyRouteImport.update({
 const HadithsRoute = HadithsRouteImport.update({
   id: '/hadiths',
   path: '/hadiths',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritesRoute = FavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -144,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/articles': typeof ArticlesRouteWithChildren
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
+  '/favorites': typeof FavoritesRoute
   '/hadiths': typeof HadithsRouteWithChildren
   '/journey': typeof JourneyRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -167,6 +174,7 @@ export interface FileRoutesByTo {
   '/articles': typeof ArticlesRouteWithChildren
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
+  '/favorites': typeof FavoritesRoute
   '/hadiths': typeof HadithsRouteWithChildren
   '/journey': typeof JourneyRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -191,6 +199,7 @@ export interface FileRoutesById {
   '/articles': typeof ArticlesRouteWithChildren
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
+  '/favorites': typeof FavoritesRoute
   '/hadiths': typeof HadithsRouteWithChildren
   '/journey': typeof JourneyRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -216,6 +225,7 @@ export interface FileRouteTypes {
     | '/articles'
     | '/auth'
     | '/dashboard'
+    | '/favorites'
     | '/hadiths'
     | '/journey'
     | '/leaderboard'
@@ -239,6 +249,7 @@ export interface FileRouteTypes {
     | '/articles'
     | '/auth'
     | '/dashboard'
+    | '/favorites'
     | '/hadiths'
     | '/journey'
     | '/leaderboard'
@@ -262,6 +273,7 @@ export interface FileRouteTypes {
     | '/articles'
     | '/auth'
     | '/dashboard'
+    | '/favorites'
     | '/hadiths'
     | '/journey'
     | '/leaderboard'
@@ -286,6 +298,7 @@ export interface RootRouteChildren {
   ArticlesRoute: typeof ArticlesRouteWithChildren
   AuthRoute: typeof AuthRoute
   DashboardRoute: typeof DashboardRoute
+  FavoritesRoute: typeof FavoritesRoute
   HadithsRoute: typeof HadithsRouteWithChildren
   JourneyRoute: typeof JourneyRoute
   LeaderboardRoute: typeof LeaderboardRoute
@@ -368,6 +381,13 @@ declare module '@tanstack/react-router' {
       path: '/hadiths'
       fullPath: '/hadiths'
       preLoaderRoute: typeof HadithsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favorites': {
+      id: '/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof FavoritesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -513,6 +533,7 @@ const rootRouteChildren: RootRouteChildren = {
   ArticlesRoute: ArticlesRouteWithChildren,
   AuthRoute: AuthRoute,
   DashboardRoute: DashboardRoute,
+  FavoritesRoute: FavoritesRoute,
   HadithsRoute: HadithsRouteWithChildren,
   JourneyRoute: JourneyRoute,
   LeaderboardRoute: LeaderboardRoute,
@@ -527,3 +548,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
