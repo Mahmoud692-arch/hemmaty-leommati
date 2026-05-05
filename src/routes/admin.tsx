@@ -300,6 +300,8 @@ function AdminPage() {
         <TabsContent value="taxonomy"><TaxonomyManager /></TabsContent>
         <TabsContent value="automation"><AutomationManager /></TabsContent>
         <TabsContent value="achievements"><AchievementsManager /></TabsContent>
+        <TabsContent value="stories"><StoriesManager /></TabsContent>
+        <TabsContent value="lessons"><LessonsManager /></TabsContent>
         <TabsContent value="settings"><SettingsManager /></TabsContent>
         <TabsContent value="roles"><RolesManager currentUserId={user!.id} /></TabsContent>
         <TabsContent value="audit"><AuditLogViewer /></TabsContent>
