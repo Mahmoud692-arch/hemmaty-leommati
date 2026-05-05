@@ -231,6 +231,11 @@ export default function UsersManager() {
                       <span className="text-[10px] text-muted-foreground">عضو</span>
                     )}
                   </td>
+                  <td className="p-2 text-xs text-muted-foreground" dir="ltr">
+                    {(u as any).last_seen_at
+                      ? new Date((u as any).last_seen_at).toLocaleString("ar-EG")
+                      : "—"}
+                  </td>
                   <td className="p-2">
                     <Button size="sm" variant="outline" onClick={() => openDetail(u)}>
                       <Eye className="h-3 w-3 ml-1" /> تفاصيل
