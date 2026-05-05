@@ -207,6 +207,7 @@ export default function UsersManager() {
                 <th className="p-2 text-right">النقاط</th>
                 <th className="p-2 text-right">المستوى</th>
                 <th className="p-2 text-right">الدور</th>
+                <th className="p-2 text-right">آخر ظهور</th>
                 <th className="p-2 text-right">إجراء</th>
               </tr>
             </thead>
