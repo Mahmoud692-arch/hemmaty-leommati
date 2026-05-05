@@ -23,7 +23,7 @@ export const Route = createFileRoute("/stories/$slug")({
           { property: "og:title", content: loaderData.story.title },
           { property: "og:description", content: loaderData.story.excerpt ?? loaderData.story.title },
           ...(loaderData.story.cover_image
-            ? [{ property: "og:image", content: loaderData.story.cover_image }]
+            ? [{ property: "og:image", content: loaderData.story.cover_image as string }]
             : []),
         ]
       : [],
