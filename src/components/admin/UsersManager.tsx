@@ -85,7 +85,7 @@ export default function UsersManager() {
   const load = async () => {
     setLoading(true);
     const [{ data: profs }, { data: roles }] = await Promise.all([
-      supabase.from("profiles").select("*").order("created_at", { ascending: false }),
+      supabase.from("profiles").select("*").order("last_seen_at", { ascending: false, nullsFirst: false }).order("created_at", { ascending: false }),
       supabase.from("user_roles").select("user_id, role"),
     ]);
     setUsers((profs ?? []) as ProfileFull[]);
