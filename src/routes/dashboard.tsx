@@ -142,11 +142,15 @@ function DashboardPage() {
         </div>
       </section>
 
-      <div className="text-center mt-8">
-        <Link to="/articles">
-          <button className="text-primary hover:underline font-semibold">
-            تابع القراءة لكسب المزيد <ArrowLeft className="h-4 w-4 inline mr-1" />
-          </button>
+      <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
+        <Link to="/articles" className="text-primary hover:underline font-semibold">
+          تابع القراءة لكسب المزيد <ArrowLeft className="h-4 w-4 inline mr-1" />
+        </Link>
+        <Link to="/leaderboard" className="text-primary hover:underline font-semibold">
+          لوحة المتصدّرين
+        </Link>
+        <Link to="/favorites" className="text-primary hover:underline font-semibold">
+          مفضّلتي
         </Link>
       </div>
     </div>
