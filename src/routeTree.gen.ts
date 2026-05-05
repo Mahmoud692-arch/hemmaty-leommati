@@ -23,6 +23,7 @@ import { Route as ArticlesRouteImport } from './routes/articles'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StoriesSlugRouteImport } from './routes/stories.$slug'
 import { Route as QuizzesIdRouteImport } from './routes/quizzes.$id'
 import { Route as HadithsNumberRouteImport } from './routes/hadiths.$number'
 import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
@@ -97,6 +98,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StoriesSlugRoute = StoriesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => StoriesRoute,
+} as any)
 const QuizzesIdRoute = QuizzesIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -127,10 +133,11 @@ export interface FileRoutesByFullPath {
   '/questions': typeof QuestionsRoute
   '/quizzes': typeof QuizzesRouteWithChildren
   '/quran': typeof QuranRoute
-  '/stories': typeof StoriesRoute
+  '/stories': typeof StoriesRouteWithChildren
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
   '/quizzes/$id': typeof QuizzesIdRoute
+  '/stories/$slug': typeof StoriesSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -146,10 +153,11 @@ export interface FileRoutesByTo {
   '/questions': typeof QuestionsRoute
   '/quizzes': typeof QuizzesRouteWithChildren
   '/quran': typeof QuranRoute
-  '/stories': typeof StoriesRoute
+  '/stories': typeof StoriesRouteWithChildren
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
   '/quizzes/$id': typeof QuizzesIdRoute
+  '/stories/$slug': typeof StoriesSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -166,10 +174,11 @@ export interface FileRoutesById {
   '/questions': typeof QuestionsRoute
   '/quizzes': typeof QuizzesRouteWithChildren
   '/quran': typeof QuranRoute
-  '/stories': typeof StoriesRoute
+  '/stories': typeof StoriesRouteWithChildren
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
   '/quizzes/$id': typeof QuizzesIdRoute
+  '/stories/$slug': typeof StoriesSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/articles/$slug'
     | '/hadiths/$number'
     | '/quizzes/$id'
+    | '/stories/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -210,6 +220,7 @@ export interface FileRouteTypes {
     | '/articles/$slug'
     | '/hadiths/$number'
     | '/quizzes/$id'
+    | '/stories/$slug'
   id:
     | '__root__'
     | '/'
@@ -229,6 +240,7 @@ export interface FileRouteTypes {
     | '/articles/$slug'
     | '/hadiths/$number'
     | '/quizzes/$id'
+    | '/stories/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -245,7 +257,7 @@ export interface RootRouteChildren {
   QuestionsRoute: typeof QuestionsRoute
   QuizzesRoute: typeof QuizzesRouteWithChildren
   QuranRoute: typeof QuranRoute
-  StoriesRoute: typeof StoriesRoute
+  StoriesRoute: typeof StoriesRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -348,6 +360,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/stories/$slug': {
+      id: '/stories/$slug'
+      path: '/$slug'
+      fullPath: '/stories/$slug'
+      preLoaderRoute: typeof StoriesSlugRouteImport
+      parentRoute: typeof StoriesRoute
+    }
     '/quizzes/$id': {
       id: '/quizzes/$id'
       path: '/$id'
@@ -406,6 +425,17 @@ const QuizzesRouteChildren: QuizzesRouteChildren = {
 const QuizzesRouteWithChildren =
   QuizzesRoute._addFileChildren(QuizzesRouteChildren)
 
+interface StoriesRouteChildren {
+  StoriesSlugRoute: typeof StoriesSlugRoute
+}
+
+const StoriesRouteChildren: StoriesRouteChildren = {
+  StoriesSlugRoute: StoriesSlugRoute,
+}
+
+const StoriesRouteWithChildren =
+  StoriesRoute._addFileChildren(StoriesRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -420,7 +450,7 @@ const rootRouteChildren: RootRouteChildren = {
   QuestionsRoute: QuestionsRoute,
   QuizzesRoute: QuizzesRouteWithChildren,
   QuranRoute: QuranRoute,
-  StoriesRoute: StoriesRoute,
+  StoriesRoute: StoriesRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
