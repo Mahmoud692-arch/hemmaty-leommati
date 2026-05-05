@@ -16,6 +16,7 @@ import { Route as QuestionsRouteImport } from './routes/questions'
 import { Route as PasswordResetRouteImport } from './routes/password-reset'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as LessonsRouteImport } from './routes/lessons'
+import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as HadithsRouteImport } from './routes/hadiths'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -63,6 +64,11 @@ const MeRoute = MeRouteImport.update({
 const LessonsRoute = LessonsRouteImport.update({
   id: '/lessons',
   path: '/lessons',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeaderboardRoute = LeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JourneyRoute = JourneyRouteImport.update({
@@ -140,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/hadiths': typeof HadithsRouteWithChildren
   '/journey': typeof JourneyRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/lessons': typeof LessonsRouteWithChildren
   '/me': typeof MeRoute
   '/password-reset': typeof PasswordResetRoute
@@ -162,6 +169,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/hadiths': typeof HadithsRouteWithChildren
   '/journey': typeof JourneyRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/lessons': typeof LessonsRouteWithChildren
   '/me': typeof MeRoute
   '/password-reset': typeof PasswordResetRoute
@@ -185,6 +193,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/hadiths': typeof HadithsRouteWithChildren
   '/journey': typeof JourneyRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/lessons': typeof LessonsRouteWithChildren
   '/me': typeof MeRoute
   '/password-reset': typeof PasswordResetRoute
@@ -209,6 +218,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/hadiths'
     | '/journey'
+    | '/leaderboard'
     | '/lessons'
     | '/me'
     | '/password-reset'
@@ -231,6 +241,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/hadiths'
     | '/journey'
+    | '/leaderboard'
     | '/lessons'
     | '/me'
     | '/password-reset'
@@ -253,6 +264,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/hadiths'
     | '/journey'
+    | '/leaderboard'
     | '/lessons'
     | '/me'
     | '/password-reset'
@@ -276,6 +288,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   HadithsRoute: typeof HadithsRouteWithChildren
   JourneyRoute: typeof JourneyRoute
+  LeaderboardRoute: typeof LeaderboardRoute
   LessonsRoute: typeof LessonsRouteWithChildren
   MeRoute: typeof MeRoute
   PasswordResetRoute: typeof PasswordResetRoute
@@ -334,6 +347,13 @@ declare module '@tanstack/react-router' {
       path: '/lessons'
       fullPath: '/lessons'
       preLoaderRoute: typeof LessonsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/leaderboard': {
+      id: '/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof LeaderboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/journey': {
@@ -495,6 +515,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   HadithsRoute: HadithsRouteWithChildren,
   JourneyRoute: JourneyRoute,
+  LeaderboardRoute: LeaderboardRoute,
   LessonsRoute: LessonsRouteWithChildren,
   MeRoute: MeRoute,
   PasswordResetRoute: PasswordResetRoute,
