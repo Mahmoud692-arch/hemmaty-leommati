@@ -229,6 +229,8 @@ function AdminPage() {
           <TabsTrigger value="taxonomy"><Tags className="h-4 w-4 ml-1" /> التصنيفات</TabsTrigger>
           <TabsTrigger value="automation"><Zap className="h-4 w-4 ml-1" /> الأتمتة</TabsTrigger>
           <TabsTrigger value="achievements"><Award className="h-4 w-4 ml-1" /> الإنجازات</TabsTrigger>
+          <TabsTrigger value="stories"><BookMarked className="h-4 w-4 ml-1" /> قصص الأنبياء</TabsTrigger>
+          <TabsTrigger value="lessons"><PlayCircle className="h-4 w-4 ml-1" /> الدروس</TabsTrigger>
           <TabsTrigger value="settings"><Settings className="h-4 w-4 ml-1" /> الإعدادات</TabsTrigger>
           <TabsTrigger value="roles"><ShieldCheck className="h-4 w-4 ml-1" /> الأدوار</TabsTrigger>
           <TabsTrigger value="audit"><History className="h-4 w-4 ml-1" /> السجل</TabsTrigger>
