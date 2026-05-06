@@ -15,23 +15,19 @@ export default function FavoriteButton({ entityType, entityId }: Props) {
   const [active, setActive] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  const table = entityType === "article" ? "article_favorites" : "lesson_favorites";
-  const colName = entityType === "article" ? "article_slug" : "lesson_id";
-
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
     (async () => {
-      const { data } = await supabase
-        .from(table)
-        .select("id")
-        .eq("user_id", user.id)
-        .eq(colName, entityId)
-        .maybeSingle();
+      const q =
+        entityType === "article"
+          ? supabase.from("article_favorites").select("id").eq("user_id", user.id).eq("article_slug", entityId)
+          : supabase.from("lesson_favorites").select("id").eq("user_id", user.id).eq("lesson_id", entityId);
+      const { data } = await q.maybeSingle();
       if (!cancelled) setActive(!!data);
     })();
     return () => { cancelled = true; };
-  }, [user, entityId, table, colName]);
+  }, [user, entityId, entityType]);
 
   const toggle = async () => {
     if (!user) {
@@ -41,13 +37,19 @@ export default function FavoriteButton({ entityType, entityId }: Props) {
     setBusy(true);
     try {
       if (active) {
-        await supabase.from(table).delete().eq("user_id", user.id).eq(colName, entityId);
+        if (entityType === "article") {
+          await supabase.from("article_favorites").delete().eq("user_id", user.id).eq("article_slug", entityId);
+        } else {
+          await supabase.from("lesson_favorites").delete().eq("user_id", user.id).eq("lesson_id", entityId);
+        }
         setActive(false);
         toast.success("أُزيل من المفضّلة");
       } else {
-        const row: Record<string, string> = { user_id: user.id };
-        row[colName] = entityId;
-        await supabase.from(table).insert(row);
+        if (entityType === "article") {
+          await supabase.from("article_favorites").insert({ user_id: user.id, article_slug: entityId });
+        } else {
+          await supabase.from("lesson_favorites").insert({ user_id: user.id, lesson_id: entityId });
+        }
         setActive(true);
         toast.success("أُضيف إلى المفضّلة 💛");
       }
