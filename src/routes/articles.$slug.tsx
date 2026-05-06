@@ -164,8 +164,11 @@ function ArticlePage() {
           </span>
           <span>{new Date(article.date).toLocaleDateString("ar-EG")}</span>
         </div>
-        <div className="inline-flex items-center gap-2 mt-4 text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary">
-          <ShieldCheck className="h-3.5 w-3.5" /> مُراجَعٌ علميًا ودينيًا
+        <div className="flex items-center gap-3 mt-4 flex-wrap">
+          <div className="inline-flex items-center gap-2 text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary">
+            <ShieldCheck className="h-3.5 w-3.5" /> مُراجَعٌ علميًا ودينيًا
+          </div>
+          <FavoriteButton entityType="article" entityId={article.slug} />
         </div>
       </header>
 
