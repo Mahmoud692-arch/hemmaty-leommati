@@ -64,10 +64,26 @@ function ArticlePage() {
   const awardedRef = useRef<boolean>(false);
 
   // Track scroll percent and seconds; award points when ≥85% via RPC (server-side enforced)
+  // Also upserts last_visits so the home page can show "Resume reading"
   useEffect(() => {
     if (!user) return;
     startTimeRef.current = Date.now();
     awardedRef.current = false;
+
+    // record visit (best-effort)
+    supabase
+      .from("last_visits")
+      .upsert(
+        {
+          user_id: user.id,
+          entity_type: "article",
+          entity_id: article.slug,
+          title: article.title,
+          scroll_percent: 0,
+        },
+        { onConflict: "user_id,entity_type,entity_id" },
+      )
+      .then(() => {});
 
     const sendProgress = async () => {
       if (awardedRef.current) return;
@@ -77,6 +93,20 @@ function ArticlePage() {
         ? Math.min(100, Math.round((window.scrollY / totalScrollable) * 100))
         : 100;
       const seconds = Math.floor((Date.now() - startTimeRef.current) / 1000);
+      // update visit progress
+      supabase
+        .from("last_visits")
+        .upsert(
+          {
+            user_id: user.id,
+            entity_type: "article",
+            entity_id: article.slug,
+            title: article.title,
+            scroll_percent: scrollPct,
+          },
+          { onConflict: "user_id,entity_type,entity_id" },
+        )
+        .then(() => {});
       try {
         const { data } = await supabase.rpc("award_reading_points", {
           _article_slug: article.slug,
