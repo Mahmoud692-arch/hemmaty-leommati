@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Shield, User as UserIcon, RefreshCcw, LogIn, LogOut } from "lucide-react";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
+import AvatarChanger from "@/components/AvatarChanger";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/me")({
