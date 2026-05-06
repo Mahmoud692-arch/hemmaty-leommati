@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
+import FavoriteButton from "@/components/FavoriteButton";
 
 export const Route = createFileRoute("/lessons/$slug")({
   loader: async ({ params }) => {
