@@ -628,6 +628,44 @@ const TOOLS = [
       },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "grant_badge",
+      description: "منح شارة لمستخدم آخر (لا يمكن منح نفسك).",
+      parameters: { type: "object", properties: { user_id: { type: "string" }, badge_key: { type: "string" } }, required: ["user_id", "badge_key"] },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "revoke_badge",
+      description: "سحب شارة من مستخدم.",
+      parameters: { type: "object", properties: { user_id: { type: "string" }, badge_key: { type: "string" } }, required: ["user_id", "badge_key"] },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "bulk_import_articles",
+      description: "استيراد عدة مقالات دفعة واحدة كمسودات (مصفوفة JSON).",
+      parameters: {
+        type: "object",
+        properties: {
+          items: { type: "array", items: { type: "object", properties: { slug: { type: "string" }, title: { type: "string" }, excerpt: { type: "string" }, content: { type: "string" }, category: { type: "string" }, read_minutes: { type: "number" } }, required: ["slug", "title", "content"] } },
+        },
+        required: ["items"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "upsert_quote",
+      description: "إنشاء/تعديل اقتباس ملهم.",
+      parameters: { type: "object", properties: { id: { type: "string" }, text: { type: "string" }, source: { type: "string" }, type: { type: "string" }, is_published: { type: "boolean" } }, required: ["text"] },
+    },
+  },
 ];
 
 // Operations that require explicit admin confirmation in chat (preview only on first call)
