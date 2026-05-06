@@ -679,6 +679,7 @@ const SENSITIVE_OPS = new Set([
   "upsert_taxonomy", "upsert_automation", "upsert_achievement_rule",
   "adjust_points", "upsert_ad", "upsert_page",
   "upsert_prophet_story", "upsert_lesson", "send_user_notification",
+  "grant_badge", "revoke_badge", "bulk_import_articles", "upsert_quote",
 ]);
 
 // Map tool name → entity type + arg key holding the id, for diff preview
