@@ -901,6 +901,29 @@ async function executeTool(name: string, args: Record<string, any>, supabase: Sb
       if (error) return { success: false, error: error.message };
       return { success: true, id: data, message: "تم حفظ الصفحة" };
     }
+    if (name === "upsert_prophet_story") {
+      const payload = { ...args, is_published: args.is_published === true };
+      const { data, error } = await supabase.rpc("admin_upsert_prophet_story", { _payload: payload });
+      if (error) return { success: false, error: error.message };
+      return { success: true, id: data, message: "تم حفظ القصة" };
+    }
+    if (name === "upsert_lesson") {
+      const payload = { ...args, status: args.status || "draft" };
+      const { data, error } = await supabase.rpc("admin_upsert_lesson", { _payload: payload });
+      if (error) return { success: false, error: error.message };
+      return { success: true, id: data, message: "تم حفظ الدرس" };
+    }
+    if (name === "send_user_notification") {
+      const { data, error } = await supabase.from("notifications").insert({
+        user_id: args.user_id,
+        title: args.title,
+        message: args.message ?? null,
+        link: args.link ?? null,
+        type: args.type ?? "info",
+      }).select("id").single();
+      if (error) return { success: false, error: error.message };
+      return { success: true, id: data?.id, message: "تم إرسال الإشعار" };
+    }
 
     return { success: false, error: "أداة غير معروفة" };
   } catch (e) {
