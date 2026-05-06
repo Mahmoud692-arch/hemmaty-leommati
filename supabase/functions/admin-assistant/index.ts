@@ -539,6 +539,75 @@ const TOOLS = [
   {
     type: "function",
     function: {
+      name: "upsert_prophet_story",
+      description: "إنشاء/تعديل قصة نبي. is_published=false افتراضيًا.",
+      parameters: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          slug: { type: "string" },
+          title: { type: "string" },
+          excerpt: { type: "string" },
+          content: { type: "string", description: "Markdown" },
+          cover_image: { type: "string" },
+          prophet_name: { type: "string" },
+          order_index: { type: "number" },
+          is_published: { type: "boolean" },
+        },
+        required: ["slug", "title"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "upsert_lesson",
+      description: "إنشاء/تعديل درس فيديو (يوتيوب أو رفع). status=draft افتراضيًا.",
+      parameters: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          slug: { type: "string" },
+          title: { type: "string" },
+          description: { type: "string" },
+          source_type: { type: "string", enum: ["youtube", "upload"] },
+          youtube_url: { type: "string" },
+          video_url: { type: "string" },
+          thumbnail: { type: "string" },
+          cover_image: { type: "string" },
+          category: { type: "string" },
+          series: { type: "string" },
+          instructor: { type: "string" },
+          duration_seconds: { type: "number" },
+          status: { type: "string", enum: ["draft", "published"] },
+          is_featured: { type: "boolean" },
+          order_index: { type: "number" },
+        },
+        required: ["slug", "title"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "send_user_notification",
+      description: "إرسال إشعار داخلي لمستخدم واحد بعينه.",
+      parameters: {
+        type: "object",
+        properties: {
+          user_id: { type: "string" },
+          title: { type: "string" },
+          message: { type: "string" },
+          link: { type: "string" },
+          type: { type: "string", enum: ["info", "success", "warning", "achievement"] },
+        },
+        required: ["user_id", "title"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
       name: "upsert_page",
       description: "إنشاء/تعديل صفحة CMS (about/contact/...).",
       parameters: {
@@ -571,6 +640,7 @@ const SENSITIVE_OPS = new Set([
   "upsert_dynamic_content", "upsert_program", "upsert_form",
   "upsert_taxonomy", "upsert_automation", "upsert_achievement_rule",
   "adjust_points", "upsert_ad", "upsert_page",
+  "upsert_prophet_story", "upsert_lesson", "send_user_notification",
 ]);
 
 // Map tool name → entity type + arg key holding the id, for diff preview
@@ -830,6 +900,29 @@ async function executeTool(name: string, args: Record<string, any>, supabase: Sb
       const { data, error } = await supabase.rpc("admin_upsert_page", { _payload: args });
       if (error) return { success: false, error: error.message };
       return { success: true, id: data, message: "تم حفظ الصفحة" };
+    }
+    if (name === "upsert_prophet_story") {
+      const payload = { ...args, is_published: args.is_published === true };
+      const { data, error } = await supabase.rpc("admin_upsert_prophet_story", { _payload: payload });
+      if (error) return { success: false, error: error.message };
+      return { success: true, id: data, message: "تم حفظ القصة" };
+    }
+    if (name === "upsert_lesson") {
+      const payload = { ...args, status: args.status || "draft" };
+      const { data, error } = await supabase.rpc("admin_upsert_lesson", { _payload: payload });
+      if (error) return { success: false, error: error.message };
+      return { success: true, id: data, message: "تم حفظ الدرس" };
+    }
+    if (name === "send_user_notification") {
+      const { data, error } = await supabase.from("notifications").insert({
+        user_id: args.user_id,
+        title: args.title,
+        message: args.message ?? null,
+        link: args.link ?? null,
+        type: args.type ?? "info",
+      }).select("id").single();
+      if (error) return { success: false, error: error.message };
+      return { success: true, id: data?.id, message: "تم إرسال الإشعار" };
     }
 
     return { success: false, error: "أداة غير معروفة" };
