@@ -1800,6 +1800,7 @@ export type Database = {
         Args: { _link?: string; _message: string; _title: string }
         Returns: number
       }
+      admin_bulk_import_articles: { Args: { _items: Json }; Returns: number }
       admin_create_article: { Args: { _payload: Json }; Returns: string }
       admin_create_hadith: { Args: { _payload: Json }; Returns: string }
       admin_create_quiz_with_questions: {
@@ -1815,6 +1816,10 @@ export type Database = {
       admin_delete_quiz: { Args: { _quiz_id: string }; Returns: boolean }
       admin_engagement_metrics: { Args: { _days?: number }; Returns: Json }
       admin_get_user_info: { Args: { _user_id: string }; Returns: Json }
+      admin_grant_badge: {
+        Args: { _badge_key: string; _target_user: string }
+        Returns: boolean
+      }
       admin_list_hadiths: {
         Args: {
           _category?: string
@@ -1839,6 +1844,10 @@ export type Database = {
       admin_respond_to_question: {
         Args: { _answer_text: string; _publish?: boolean; _question_id: string }
         Returns: string
+      }
+      admin_revoke_badge: {
+        Args: { _badge_key: string; _target_user: string }
+        Returns: boolean
       }
       admin_run_rls_smoke_tests: { Args: never; Returns: Json }
       admin_schedule_content: {
@@ -1876,6 +1885,7 @@ export type Database = {
       admin_upsert_page: { Args: { _payload: Json }; Returns: string }
       admin_upsert_program: { Args: { _payload: Json }; Returns: string }
       admin_upsert_prophet_story: { Args: { _payload: Json }; Returns: string }
+      admin_upsert_quote: { Args: { _payload: Json }; Returns: string }
       admin_upsert_taxonomy: { Args: { _payload: Json }; Returns: string }
       award_badge: {
         Args: { _badge_key: string; _user_id: string }

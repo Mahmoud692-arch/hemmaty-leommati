@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Shield, User as UserIcon, RefreshCcw, LogIn, LogOut } from "lucide-react";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
+import AvatarChanger from "@/components/AvatarChanger";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/me")({
@@ -97,6 +98,13 @@ function MePage() {
               مرّةً أخرى لتفعيل الصلاحية.
             </p>
           )}
+        </div>
+      )}
+
+      {user && (
+        <div className="card-elegant rounded-2xl p-6 mt-6">
+          <h2 className="font-display text-lg mb-3">صورتي الشخصية</h2>
+          <AvatarChanger />
         </div>
       )}
 

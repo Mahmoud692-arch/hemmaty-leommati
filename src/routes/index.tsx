@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import QuoteCard from "@/components/QuoteCard";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
 import HomepageAds from "@/components/HomepageAds";
+import ResumeReading from "@/components/ResumeReading";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { articles as staticArticles } from "@/data/articles";
@@ -134,6 +135,8 @@ function HomePage() {
       <section className="relative z-10 mt-8">
         <HomepageAds position="top" />
       </section>
+
+      <ResumeReading />
 
       {/* Levels */}
       <section className="container mx-auto px-4 py-20">
