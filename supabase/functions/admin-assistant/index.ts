@@ -539,6 +539,75 @@ const TOOLS = [
   {
     type: "function",
     function: {
+      name: "upsert_prophet_story",
+      description: "إنشاء/تعديل قصة نبي. is_published=false افتراضيًا.",
+      parameters: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          slug: { type: "string" },
+          title: { type: "string" },
+          excerpt: { type: "string" },
+          content: { type: "string", description: "Markdown" },
+          cover_image: { type: "string" },
+          prophet_name: { type: "string" },
+          order_index: { type: "number" },
+          is_published: { type: "boolean" },
+        },
+        required: ["slug", "title"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "upsert_lesson",
+      description: "إنشاء/تعديل درس فيديو (يوتيوب أو رفع). status=draft افتراضيًا.",
+      parameters: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          slug: { type: "string" },
+          title: { type: "string" },
+          description: { type: "string" },
+          source_type: { type: "string", enum: ["youtube", "upload"] },
+          youtube_url: { type: "string" },
+          video_url: { type: "string" },
+          thumbnail: { type: "string" },
+          cover_image: { type: "string" },
+          category: { type: "string" },
+          series: { type: "string" },
+          instructor: { type: "string" },
+          duration_seconds: { type: "number" },
+          status: { type: "string", enum: ["draft", "published"] },
+          is_featured: { type: "boolean" },
+          order_index: { type: "number" },
+        },
+        required: ["slug", "title"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "send_user_notification",
+      description: "إرسال إشعار داخلي لمستخدم واحد بعينه.",
+      parameters: {
+        type: "object",
+        properties: {
+          user_id: { type: "string" },
+          title: { type: "string" },
+          message: { type: "string" },
+          link: { type: "string" },
+          type: { type: "string", enum: ["info", "success", "warning", "achievement"] },
+        },
+        required: ["user_id", "title"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
       name: "upsert_page",
       description: "إنشاء/تعديل صفحة CMS (about/contact/...).",
       parameters: {
