@@ -93,8 +93,9 @@ function LessonPage() {
       </Link>
       <h1 className="font-display text-2xl md:text-4xl mb-4 leading-tight">{lesson.title}</h1>
       {lesson.instructor && (
-        <div className="text-sm text-muted-foreground mb-4">{lesson.instructor}</div>
+        <div className="text-sm text-muted-foreground mb-2">{lesson.instructor}</div>
       )}
+      <div className="mb-4"><FavoriteButton entityType="lesson" entityId={lesson.id} /></div>
 
       <div className="rounded-2xl overflow-hidden bg-black aspect-video mb-6">
         {lesson.source_type === "youtube" && ytId ? (
