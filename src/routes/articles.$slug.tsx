@@ -9,6 +9,7 @@ import { ArrowRight, BookOpen, ShieldCheck, Award } from "lucide-react";
 import { toast } from "sonner";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
 import ArticleAudioPlayer from "@/components/ArticleAudioPlayer";
+import FavoriteButton from "@/components/FavoriteButton";
 
 export const Route = createFileRoute("/articles/$slug")({
   loader: async ({ params }) => {
