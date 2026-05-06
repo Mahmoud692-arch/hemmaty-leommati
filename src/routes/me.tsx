@@ -101,6 +101,13 @@ function MePage() {
         </div>
       )}
 
+      {user && (
+        <div className="card-elegant rounded-2xl p-6 mt-6">
+          <h2 className="font-display text-lg mb-3">صورتي الشخصية</h2>
+          <AvatarChanger />
+        </div>
+      )}
+
       <div className="text-center mt-8">
         <Link to="/" className="text-sm text-muted-foreground hover:text-primary">
           العودة للرئيسية
