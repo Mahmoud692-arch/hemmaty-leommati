@@ -38,6 +38,8 @@ function AuthPage() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const [submitting, setSubmitting] = useState(false);
+  const [loginAttempts, setLoginAttempts] = useState(0);
+  const [lockedUntil, setLockedUntil] = useState<Date | null>(null);
 
   useEffect(() => {
     if (!loading && user) navigate({ to: "/dashboard" });
@@ -72,6 +74,11 @@ function AuthPage() {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (lockedUntil && new Date() < lockedUntil) {
+      const mins = Math.ceil((lockedUntil.getTime() - Date.now()) / 60000);
+      toast.error(`تم تجميد الدخول مؤقتًا، حاول بعد ${mins} دقيقة`);
+      return;
+    }
     const fd = new FormData(e.currentTarget);
     const parsed = loginSchema.safeParse(Object.fromEntries(fd));
     if (!parsed.success) {
@@ -82,9 +89,19 @@ function AuthPage() {
     const { error } = await supabase.auth.signInWithPassword(parsed.data);
     setSubmitting(false);
     if (error) {
-      toast.error("بيانات الدخول غير صحيحة");
+      const next = loginAttempts + 1;
+      setLoginAttempts(next);
+      if (next >= 5) {
+        setLockedUntil(new Date(Date.now() + 5 * 60_000));
+        setLoginAttempts(0);
+        toast.error("محاولات كثيرة — تم تجميد الدخول لمدة 5 دقائق");
+      } else {
+        toast.error(`بيانات الدخول غير صحيحة (${next}/5)`);
+      }
       return;
     }
+    setLoginAttempts(0);
+    setLockedUntil(null);
     toast.success("أهلًا بعودتك 💚");
     navigate({ to: "/dashboard" });
   };

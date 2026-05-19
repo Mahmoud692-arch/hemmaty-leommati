@@ -27,10 +27,14 @@ function PasswordResetPage() {
   const [confirm, setConfirm] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  // إذا وصل المستخدم عبر رابط استرجاع، Supabase يضع هاش في الـ URL
+  // Supabase v2 قد يضع الـ token في hash أو query params حسب الإعداد
   useEffect(() => {
-    const hash = window.location.hash;
-    if (hash.includes("type=recovery") || hash.includes("access_token")) {
+    const hash   = window.location.hash;
+    const search = window.location.search;
+    if (
+      hash.includes("type=recovery")   || hash.includes("access_token") ||
+      search.includes("type=recovery") || search.includes("access_token")
+    ) {
       setMode("reset");
     }
   }, []);

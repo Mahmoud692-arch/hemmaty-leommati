@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       supabase.from("user_roles").select("role").eq("user_id", uid),
     ]);
     setProfile((prof as Profile) ?? null);
-    setIsAdmin(!!roles?.some((r) => r.role === "admin" || r.role === "super_admin"));
+    setIsAdmin(!!roles?.some((r) => r.role === "admin"));
   };
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(sess);
       setUser(sess?.user ?? null);
       if (sess?.user) {
-        setTimeout(() => loadProfileAndRole(sess.user.id), 0);
+        loadProfileAndRole(sess.user.id);
       } else {
         setProfile(null);
         setIsAdmin(false);
