@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { allHadiths as staticHadiths, type Hadith } from "@/data/hadiths";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { POINTS } from "@/lib/journey";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowLeft, Heart, Sparkles, BookOpen, Lightbulb } from "lucide-react";
@@ -60,6 +59,12 @@ export const Route = createFileRoute("/hadiths/$number")({
   component: HadithPage,
 });
 
+async function getActionPointValue(key: string) {
+  const { data } = await supabase.from("site_settings").select("value").eq("key", key).maybeSingle();
+  const value = Number(data?.value);
+  return Number.isFinite(value) ? value : 5;
+}
+
 function HadithPage() {
   const { hadith } = Route.useLoaderData();
   const { user, refreshProfile } = useAuth();
@@ -69,6 +74,7 @@ function HadithPage() {
   useEffect(() => {
     if (!user) return;
     const run = async () => {
+      const points = await getActionPointValue("points_hadith_read");
       const { data: existing } = await supabase
         .from("hadith_reads")
         .select("id")
@@ -91,10 +97,10 @@ function HadithPage() {
           .from("profiles")
           .update({
             hadiths_read: (prof.hadiths_read ?? 0) + 1,
-            total_points: (prof.total_points ?? 0) + POINTS.HADITH_READ,
+            total_points: (prof.total_points ?? 0) + points,
           })
           .eq("user_id", user.id);
-        toast.success(`+${POINTS.HADITH_READ} نقاط 🎉`);
+        toast.success(`+${points} نقاط 🎉`);
         refreshProfile();
       }
     };

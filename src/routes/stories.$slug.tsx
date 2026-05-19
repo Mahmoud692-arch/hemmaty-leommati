@@ -1,19 +1,14 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import ReactMarkdown from "react-markdown";
 import { ArrowRight } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { stories as staticStories, type Story } from "@/data/stories";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
 
 export const Route = createFileRoute("/stories/$slug")({
   loader: async ({ params }) => {
-    const { data } = await supabase
-      .from("prophet_stories")
-      .select("*")
-      .eq("slug", params.slug)
-      .eq("is_published", true)
-      .maybeSingle();
-    if (!data) throw notFound();
-    return { story: data };
+    const story = staticStories.find((item) => item.slug === params.slug);
+    if (!story) throw notFound();
+    return { story };
   },
   head: ({ loaderData }) => ({
     meta: loaderData

@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { articles as staticArticles } from "@/data/articles";
 import { allHadiths as hadiths } from "@/data/hadiths";
-import { LEVELS } from "@/lib/journey";
 import { BookOpen, Trophy, Heart, ArrowLeft, Star, Flame, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -138,43 +137,6 @@ function HomePage() {
 
       <ResumeReading />
 
-      {/* Levels */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="text-center mb-12">
-          <h2 className="font-display text-3xl md:text-4xl mb-3">الرحلةُ الإيمانية</h2>
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            أربعةُ مستوياتٍ تأخذ بيدك من بدايات الالتزام إلى مرحلة التأثير في الناس.
-          </p>
-          <OrnamentalDivider />
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {LEVELS.map((lv, idx) => (
-            <div key={lv.level} className="card-elegant rounded-2xl p-6 relative">
-              <div className="absolute -top-3 right-6 w-10 h-10 rounded-full bg-[var(--gradient-gold)] flex items-center justify-center text-[var(--gold-foreground)] font-bold shadow-[var(--shadow-gold)]">
-                {idx + 1}
-              </div>
-              <div className="pt-4">
-                <h3 className="font-display text-xl mb-1">{lv.title}</h3>
-                <p className="text-sm text-[var(--gold)] mb-3">{lv.subtitle}</p>
-                <ul className="text-xs text-muted-foreground space-y-1">
-                  {lv.themes.map((t) => (
-                    <li key={t} className="flex items-center gap-1.5">
-                      <span className="text-[var(--gold)]">•</span> {t}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="text-center mt-8">
-          <Link to="/journey">
-            <Button variant="outline">
-              اعرف المزيد عن الرحلة <ArrowLeft className="h-4 w-4 mr-2" />
-            </Button>
-          </Link>
-        </div>
-      </section>
 
       {/* Latest + Most-read (real data) */}
       <section className="bg-card/40 border-y border-border py-16">

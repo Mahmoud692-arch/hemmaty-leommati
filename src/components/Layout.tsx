@@ -44,7 +44,6 @@ const navItems = [
   { to: "/hadiths", label: "الأحاديث النبوية", icon: BookOpen },
   { to: "/stories", label: "قصص الأنبياء", icon: BookOpen },
   { to: "/lessons", label: "الدروس", icon: BookOpen },
-  { to: "/journey", label: "الرحلة الإيمانية", icon: Trophy },
   { to: "/leaderboard", label: "المتصدّرون", icon: Trophy },
   { to: "/questions", label: "الأسئلة", icon: MessageCircleQuestion },
   { to: "/quizzes", label: "الاختبارات", icon: Trophy },
@@ -226,11 +225,6 @@ export default function Layout({ children }: { children: ReactNode }) {
               <li>
                 <Link to="/hadiths" className="hover:text-primary">
                   الأحاديث النبوية
-                </Link>
-              </li>
-              <li>
-                <Link to="/journey" className="hover:text-primary">
-                  الرحلة الإيمانية
                 </Link>
               </li>
               <li>

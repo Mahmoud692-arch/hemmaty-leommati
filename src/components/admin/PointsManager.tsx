@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Search, Plus, Minus, History, Trophy } from "lucide-react";
+import { Search, Plus, Minus, History, Trophy, Star } from "lucide-react";
 import { toast } from "sonner";
 
 interface ProfileLite {
@@ -32,7 +32,14 @@ export default function PointsManager() {
   const [reason, setReason] = useState("");
   const [notify, setNotify] = useState("");
   const [history, setHistory] = useState<Adjustment[]>([]);
+  const [actionPoints, setActionPoints] = useState<Record<string, number>>({
+    points_article_read: 10,
+    points_hadith_read: 5,
+    points_quiz_passed: 20,
+    points_lesson_complete: 5,
+  });
   const [submitting, setSubmitting] = useState(false);
+  const [loadingActions, setLoadingActions] = useState(true);
 
   const load = async () => {
     const { data } = await supabase
@@ -51,13 +58,53 @@ export default function PointsManager() {
     setHistory((data ?? []) as Adjustment[]);
   };
 
-  useEffect(() => { load(); loadHistory(); }, []);
+  const loadActionPoints = async () => {
+    const keys = [
+      "points_article_read",
+      "points_hadith_read",
+      "points_quiz_passed",
+      "points_lesson_complete",
+    ];
+    const { data } = await supabase
+      .from("site_settings")
+      .select("key,value")
+      .in("key", keys);
+
+    const next = {
+      points_article_read: 10,
+      points_hadith_read: 5,
+      points_quiz_passed: 20,
+      points_lesson_complete: 5,
+    } as Record<string, number>;
+
+    (data ?? []).forEach((row) => {
+      const value = Number(row.value);
+      if (!Number.isNaN(value)) {
+        next[row.key] = value;
+      }
+    });
+
+    setActionPoints(next);
+    setLoadingActions(false);
+  };
+
+  useEffect(() => { load(); loadHistory(); loadActionPoints(); }, []);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return users.slice(0, 50);
     return users.filter((u) => u.full_name?.toLowerCase().includes(q) || u.email?.toLowerCase().includes(q));
   }, [users, search]);
+
+  const saveActionPoints = async () => {
+    const rows = Object.entries(actionPoints).map(([key, value]) => ({ key, value: String(value) as never }));
+    const { error } = await supabase.from("site_settings").upsert(rows);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("تم حفظ نقاط الأفعال");
+  };
 
   const submit = async (sign: 1 | -1) => {
     if (!selected) return;
@@ -92,6 +139,55 @@ export default function PointsManager() {
         <p className="text-xs text-muted-foreground mb-3">
           أضف أو اخصم نقاطًا من أي مستخدم مع سبب مكتوب وإشعار اختياري له.
         </p>
+
+        <div className="rounded-2xl border border-border p-4 mb-6 bg-background">
+          <div className="flex items-center gap-2 mb-3">
+            <Star className="h-4 w-4 text-[var(--gold)]" />
+            <h4 className="font-semibold">نقاط الأفعال</h4>
+          </div>
+          <p className="text-xs text-muted-foreground mb-4">
+            يمكن تعديل النقاط التي تمنحها المنصة تلقائيًا عند إنجاز الأفعال التالية.
+          </p>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <Label className="text-xs">قراءة مقال</Label>
+              <Input
+                type="number"
+                value={actionPoints.points_article_read}
+                onChange={(e) => setActionPoints((p) => ({ ...p, points_article_read: Number(e.target.value) }))}
+              />
+            </div>
+            <div>
+              <Label className="text-xs">قراءة حديث</Label>
+              <Input
+                type="number"
+                value={actionPoints.points_hadith_read}
+                onChange={(e) => setActionPoints((p) => ({ ...p, points_hadith_read: Number(e.target.value) }))}
+              />
+            </div>
+            <div>
+              <Label className="text-xs">اجتياز اختبار</Label>
+              <Input
+                type="number"
+                value={actionPoints.points_quiz_passed}
+                onChange={(e) => setActionPoints((p) => ({ ...p, points_quiz_passed: Number(e.target.value) }))}
+              />
+            </div>
+            <div>
+              <Label className="text-xs">إكمال درس</Label>
+              <Input
+                type="number"
+                value={actionPoints.points_lesson_complete}
+                onChange={(e) => setActionPoints((p) => ({ ...p, points_lesson_complete: Number(e.target.value) }))}
+              />
+            </div>
+          </div>
+          <div className="mt-4">
+            <Button onClick={saveActionPoints} disabled={loadingActions}>
+              حفظ إعدادات نقاط الأفعال
+            </Button>
+          </div>
+        </div>
 
         <div className="relative mb-3">
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

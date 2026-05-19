@@ -1,6 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { stories as staticStories } from "@/data/stories";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
 import { BookOpen } from "lucide-react";
 
@@ -16,30 +15,15 @@ export const Route = createFileRoute("/stories")({
   component: StoriesPage,
 });
 
-interface Story {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string | null;
-  cover_image: string | null;
-  prophet_name: string | null;
-}
 
 function StoriesPage() {
-  const [stories, setStories] = useState<Story[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { location } = useRouterState();
+  const stories = staticStories;
+  const loading = false;
 
-  useEffect(() => {
-    (async () => {
-      const { data } = await supabase
-        .from("prophet_stories")
-        .select("id,slug,title,excerpt,cover_image,prophet_name")
-        .eq("is_published", true)
-        .order("order_index");
-      setStories(data ?? []);
-      setLoading(false);
-    })();
-  }, []);
+  if (location.pathname !== "/stories") {
+    return <Outlet />;
+  }
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-6xl">
@@ -60,8 +44,7 @@ function StoriesPage() {
           {stories.map((s) => (
             <Link
               key={s.id}
-              to="/stories/$slug"
-              params={{ slug: s.slug }}
+              to={`/stories/${s.slug}`}
               className="card-elegant rounded-2xl overflow-hidden hover:shadow-[var(--shadow-gold)] transition-all"
             >
               {s.cover_image ? (

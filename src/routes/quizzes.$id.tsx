@@ -151,12 +151,26 @@ function QuizRunPage() {
   }, [id, user?.id, authLoading]);
 
   const startAttempt = async () => {
+    // debug: log invocation
+    // eslint-disable-next-line no-console
+    console.log("startAttempt invoked", { user: !!user, quiz: !!quiz });
     if (!user || !quiz) return;
-    const { data, error } = await supabase
+    let data: any = null;
+    let error: any = null;
+    try {
+      const res = await supabase
       .from("quiz_attempts")
       .insert({ quiz_id: quiz.id, user_id: user.id })
       .select()
       .single();
+      data = res.data;
+      error = res.error;
+    } catch (e) {
+      error = e;
+    }
+    // debug log
+    // eslint-disable-next-line no-console
+    console.log("startAttempt result", { data, error });
     if (error) {
       // RLS rejects unconfirmed emails — surface a clear message
       const msg = (error.message || "").toLowerCase();

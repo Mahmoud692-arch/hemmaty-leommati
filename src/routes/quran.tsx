@@ -44,6 +44,16 @@ interface SearchHit {
   surah: { number: number; name: string; englishName: string };
 }
 
+const normalizeArabic = (text: string) =>
+  text
+    .normalize("NFC")
+    .replace(/\p{M}/gu, "")
+    .replace(/[ٱإأآ]/gu, "ا")
+    .replace(/ـ/gu, "")
+    .replace(/\s+/g, "");
+
+const BASMALA_PREFIX = normalizeArabic("بسم الله الرحمن الرحيم");
+
 function QuranPage() {
   const { user } = useAuth();
   const [surahs, setSurahs] = useState<SurahMeta[]>([]);
@@ -155,15 +165,41 @@ function QuranPage() {
 
   const currentSurah = surahs.find((s) => s.number === selected);
 
-  // Filter out the API-returned Basmala that appears as the first ayah of every
-  // surah except 1 (الفاتحة) and 9 (التوبة). We render the Basmala header ourselves.
+  const isBasmala = (text: string) =>
+    normalizeArabic(text).startsWith(BASMALA_PREFIX);
+
+  const removeBasmalaPrefix = (text: string) => {
+    const trimmed = text.replace(/^\s+/u, "");
+    if (!normalizeArabic(trimmed).startsWith(BASMALA_PREFIX)) return text;
+
+    let accumulated = "";
+    let index = 0;
+
+    while (index < trimmed.length && accumulated.length < BASMALA_PREFIX.length) {
+      const char = trimmed[index];
+      const normalizedChar = normalizeArabic(char);
+      if (normalizedChar) {
+        accumulated += normalizedChar;
+        if (!BASMALA_PREFIX.startsWith(accumulated)) break;
+      }
+      index += 1;
+    }
+
+    return accumulated === BASMALA_PREFIX ? trimmed.slice(index).trimStart() : text;
+  };
+
+  // Keep the crafted Basmala header, but strip the duplicate Basmala prefix from
+  // the first ayah when the API returns it inside ayah 1.
   const renderedAyahs = useMemo(() => {
     if (!currentSurah || !ayahs.length) return ayahs;
     if (currentSurah.number === 1 || currentSurah.number === 9) return ayahs;
     const first = ayahs[0];
-    const isApiBasmala = first && first.numberInSurah === 1 &&
-      first.text.replace(/\s+/g, "").startsWith("بِسْمِ");
-    return isApiBasmala ? ayahs.slice(1) : ayahs;
+    if (!first || first.numberInSurah !== 1 || !isBasmala(first.text)) return ayahs;
+
+    const trimmedText = removeBasmalaPrefix(first.text);
+    if (!trimmedText) return ayahs.slice(1);
+
+    return [{ ...first, text: trimmedText }, ...ayahs.slice(1)];
   }, [currentSurah, ayahs]);
 
   return (

@@ -57,7 +57,7 @@ function AuthPage() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+        emailRedirectTo: `${window.location.origin}/verify-email`,
         data: { full_name, phone, date_of_birth, country },
       },
     });
@@ -66,8 +66,8 @@ function AuthPage() {
       toast.error(error.message.includes("registered") ? "هذا البريد مسجّل بالفعل" : error.message);
       return;
     }
-    toast.success("تم إنشاء حسابك بنجاح! 🌙");
-    navigate({ to: "/dashboard" });
+    toast.success("تم إنشاء الحساب! راجع بريدك الإلكتروني للتفعيل 📩");
+    navigate({ to: "/verify-email" });
   };
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
