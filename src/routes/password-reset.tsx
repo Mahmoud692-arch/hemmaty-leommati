@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+﻿import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -98,7 +98,7 @@ function PasswordResetPage() {
               <Input id="email" type="email" required dir="ltr" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <Button type="submit" className="w-full" disabled={submitting}>
-              <Mail className="h-4 w-4 ml-2" />
+              <Mail className="h-4 w-4 ms-2" />
               {submitting ? "جارٍ الإرسال…" : "أرسل رابط إعادة التعيين"}
             </Button>
             <Link to="/auth" className="block text-center text-sm text-primary hover:underline">

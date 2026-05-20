@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
+﻿import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import Layout from "@/components/Layout";
 import { supabase } from "@/integrations/supabase/client";
@@ -124,7 +124,7 @@ function QuizzesListPage() {
                     <div className="shrink-0">
                       {!user ? (
                         <Button disabled variant="outline">
-                          <Lock className="h-4 w-4 ml-1" /> تسجيل الدخول مطلوب
+                          <Lock className="h-4 w-4 ms-1" /> تسجيل الدخول مطلوب
                         </Button>
                       ) : notStarted ? (
                         <Button disabled variant="outline">لم يبدأ بعد</Button>
@@ -141,7 +141,7 @@ function QuizzesListPage() {
                       ) : (
                         <Link to="/quizzes/$id" params={{ id: q.id }}>
                           <Button>
-                            <PlayCircle className="h-4 w-4 ml-1" />
+                            <PlayCircle className="h-4 w-4 ms-1" />
                             {inProgress && q.attempt_policy === "resume_allowed" ? "استئناف" : "ابدأ"}
                           </Button>
                         </Link>

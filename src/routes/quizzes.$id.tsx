@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+﻿import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Layout from "@/components/Layout";
 import { supabase } from "@/integrations/supabase/client";
@@ -412,7 +412,7 @@ function QuizRunPage() {
 
         <div className="mt-8 text-center">
           <Button size="lg" onClick={submit} disabled={submitting}>
-            <Send className="h-4 w-4 ml-2" />
+            <Send className="h-4 w-4 ms-2" />
             {submitting ? "جارٍ التسليم…" : "تسليم الاختبار"}
           </Button>
         </div>

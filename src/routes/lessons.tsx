@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+﻿import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
@@ -87,7 +87,7 @@ function LessonsPage() {
                     <PlayCircle className="h-14 w-14 text-white" />
                   </div>
                   {l.duration_seconds && (
-                    <span className="absolute bottom-2 left-2 text-xs px-2 py-0.5 rounded bg-black/70 text-white">
+                    <span className="absolute bottom-2 start-2 text-xs px-2 py-0.5 rounded bg-black/70 text-white">
                       {fmt(l.duration_seconds)}
                     </span>
                   )}

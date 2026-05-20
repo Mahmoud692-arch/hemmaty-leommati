@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -65,7 +65,7 @@ export default function AvatarChanger() {
           <input type="file" accept="image/*" className="hidden" onChange={onPick} disabled={busy} />
           <Button asChild size="sm" variant="outline" disabled={busy}>
             <span>
-              {busy ? <Loader2 className="h-4 w-4 ml-1 animate-spin" /> : <Camera className="h-4 w-4 ml-1" />}
+              {busy ? <Loader2 className="h-4 w-4 ms-1 animate-spin" /> : <Camera className="h-4 w-4 ms-1" />}
               تغيير الصورة
             </span>
           </Button>

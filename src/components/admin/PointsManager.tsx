@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -190,8 +190,8 @@ export default function PointsManager() {
         </div>
 
         <div className="relative mb-3">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="ابحث عن مستخدم بالاسم أو البريد…" className="pr-9" />
+          <Search className="absolute end-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="ابحث عن مستخدم بالاسم أو البريد…" className="pe-9" />
         </div>
 
         <div className="max-h-48 overflow-y-auto rounded-lg border bg-background">
@@ -214,7 +214,7 @@ export default function PointsManager() {
           <div className="mt-4 p-3 rounded-lg border bg-background space-y-3">
             <div className="text-sm">
               المختار: <span className="font-bold">{selected.full_name}</span>
-              <span className="text-xs text-muted-foreground mr-2">({selected.total_points} نقطة)</span>
+              <span className="text-xs text-muted-foreground me-2">({selected.total_points} نقطة)</span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <div>
@@ -232,10 +232,10 @@ export default function PointsManager() {
             </div>
             <div className="flex gap-2">
               <Button onClick={() => submit(1)} disabled={submitting} className="bg-emerald-600 hover:bg-emerald-700">
-                <Plus className="h-3 w-3 ml-1" /> إضافة {delta} نقطة
+                <Plus className="h-3 w-3 ms-1" /> إضافة {delta} نقطة
               </Button>
               <Button onClick={() => submit(-1)} disabled={submitting} variant="destructive">
-                <Minus className="h-3 w-3 ml-1" /> خصم {delta} نقطة
+                <Minus className="h-3 w-3 ms-1" /> خصم {delta} نقطة
               </Button>
             </div>
           </div>

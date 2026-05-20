@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,7 +94,7 @@ export default function TaxonomyManager() {
     <div>
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-bold flex items-center gap-2"><Tags className="h-4 w-4 text-[var(--gold)]" /> التصنيفات والوسوم</h2>
-        <Button onClick={openNew}><Plus className="h-3 w-3 ml-1" /> تصنيف جديد</Button>
+        <Button onClick={openNew}><Plus className="h-3 w-3 ms-1" /> تصنيف جديد</Button>
       </div>
 
       {loading ? <p className="text-muted-foreground">جارٍ التحميل…</p> : (
@@ -120,7 +120,7 @@ export default function TaxonomyManager() {
           <div className="md:col-span-2 space-y-2">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold">العناصر</h3>
-              {activeTax && <Button size="sm" onClick={openNewItem}><Plus className="h-3 w-3 ml-1" /> عنصر</Button>}
+              {activeTax && <Button size="sm" onClick={openNewItem}><Plus className="h-3 w-3 ms-1" /> عنصر</Button>}
             </div>
             {!activeTax ? <p className="text-xs text-muted-foreground">اختر تصنيفًا.</p> :
               taxItems.length === 0 ? <p className="text-xs text-muted-foreground">لا عناصر.</p> :

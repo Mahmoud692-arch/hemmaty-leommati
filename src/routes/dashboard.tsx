@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+﻿import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { getLevel, getNextLevel, getLevelProgress, LEVELS } from "@/lib/journey";
@@ -164,7 +164,7 @@ function DashboardPage() {
 
       <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
         <Link to="/articles" className="text-primary hover:underline font-semibold">
-          تابع القراءة <ArrowLeft className="h-4 w-4 inline mr-1" />
+          تابع القراءة <ArrowLeft className="h-4 w-4 inline me-1" />
         </Link>
         <Link to="/leaderboard" className="text-primary hover:underline font-semibold">
           لوحة المتصدّرين

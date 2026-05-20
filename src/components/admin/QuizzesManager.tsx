@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -113,7 +113,7 @@ export default function QuizzesManager() {
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-display text-2xl">الاختبارات</h2>
         <Button onClick={() => setEditing(emptyQuiz())}>
-          <Plus className="h-4 w-4 ml-1" /> اختبار جديد
+          <Plus className="h-4 w-4 ms-1" /> اختبار جديد
         </Button>
       </div>
 
@@ -139,10 +139,10 @@ export default function QuizzesManager() {
               </div>
               <div className="flex gap-1">
                 <Button size="sm" variant="outline" onClick={() => setQuestionsFor(q)}>
-                  <ListChecks className="h-3 w-3 ml-1" /> أسئلة
+                  <ListChecks className="h-3 w-3 ms-1" /> أسئلة
                 </Button>
                 <Button size="sm" variant="outline" onClick={() => setAttemptsFor(q)}>
-                  <Trophy className="h-3 w-3 ml-1" /> النتائج
+                  <Trophy className="h-3 w-3 ms-1" /> النتائج
                 </Button>
                 <Button size="sm" variant="ghost" onClick={() => setEditing(q)}>
                   <Pencil className="h-3 w-3" />
@@ -362,7 +362,7 @@ function QuestionsEditor({ quizId }: { quizId: string }) {
               <Button size="sm" variant="outline" onClick={() => {
                 setItems((p) => p.map((x) => (x.id === q.id ? { ...x, options: [...x.options, { text: "خيار جديد" }] } : x)));
               }}>
-                <Plus className="h-3 w-3 ml-1" /> خيار
+                <Plus className="h-3 w-3 ms-1" /> خيار
               </Button>
             </div>
           )}
@@ -370,7 +370,7 @@ function QuestionsEditor({ quizId }: { quizId: string }) {
         </div>
       ))}
       <Button onClick={addNew}>
-        <Plus className="h-4 w-4 ml-1" /> إضافة سؤال
+        <Plus className="h-4 w-4 ms-1" /> إضافة سؤال
       </Button>
     </div>
   );
@@ -438,7 +438,7 @@ function AttemptsViewer({ quizId }: { quizId: string }) {
             </div>
           </div>
           <Button size="sm" variant="ghost" onClick={() => allowRetry(a)}>
-            <Trash2 className="h-3 w-3 ml-1" /> سماح بمحاولة
+            <Trash2 className="h-3 w-3 ms-1" /> سماح بمحاولة
           </Button>
         </div>
       ))}

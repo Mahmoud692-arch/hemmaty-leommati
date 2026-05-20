@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -187,7 +187,7 @@ export default function AdminAssistant() {
         <div className="flex items-center gap-2">
           <div className="relative">
             <Sparkles className="h-5 w-5 text-[var(--gold)]" />
-            <Zap className="h-2.5 w-2.5 text-emerald-500 absolute -bottom-0.5 -right-0.5" />
+            <Zap className="h-2.5 w-2.5 text-emerald-500 absolute -bottom-0.5 -end-0.5" />
           </div>
           <div>
             <div className="font-semibold flex items-center gap-2">
@@ -203,7 +203,7 @@ export default function AdminAssistant() {
         </div>
         {messages.length > 0 && (
           <Button size="sm" variant="ghost" onClick={clearHistory}>
-            <Trash2 className="h-3 w-3 ml-1" /> مسح
+            <Trash2 className="h-3 w-3 ms-1" /> مسح
           </Button>
         )}
       </div>

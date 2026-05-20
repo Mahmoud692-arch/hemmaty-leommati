@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+﻿import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { allHadiths as staticHadiths, type Hadith } from "@/data/hadiths";
 import { useAuth } from "@/hooks/useAuth";
@@ -164,7 +164,7 @@ function HadithPage() {
         </p>
         <div className="mt-4 flex items-center justify-center gap-2">
           <Button variant={isFav ? "default" : "outline"} size="sm" onClick={toggleFav}>
-            <Heart className={`h-4 w-4 ml-2 ${isFav ? "fill-current" : ""}`} />
+            <Heart className={`h-4 w-4 ms-2 ${isFav ? "fill-current" : ""}`} />
             {isFav ? "في المفضّلة" : "أضف للمفضّلة"}
           </Button>
         </div>
@@ -216,7 +216,7 @@ function HadithPage() {
       )}
 
       {hadith.practical && (
-        <section className="my-8 card-elegant rounded-2xl p-6 bg-primary/5 border-r-4 border-[var(--gold)]">
+        <section className="my-8 card-elegant rounded-2xl p-6 bg-primary/5 border-e-4 border-[var(--gold)]">
           <h2 className="font-display text-xl mb-2">تطبيقٌ عملي</h2>
           <p className="text-foreground/90 leading-loose">{hadith.practical}</p>
         </section>
@@ -228,7 +228,7 @@ function HadithPage() {
         {prev ? (
           <Link to="/hadiths/$number" params={{ number: String(prev.number) }}>
             <Button variant="outline" size="sm">
-              <ArrowRight className="h-4 w-4 ml-1" /> الحديث {prev.number}
+              <ArrowRight className="h-4 w-4 ms-1" /> الحديث {prev.number}
             </Button>
           </Link>
         ) : (
@@ -237,7 +237,7 @@ function HadithPage() {
         {next ? (
           <Link to="/hadiths/$number" params={{ number: String(next.number) }}>
             <Button variant="outline" size="sm">
-              الحديث {next.number} <ArrowLeft className="h-4 w-4 mr-1" />
+              الحديث {next.number} <ArrowLeft className="h-4 w-4 me-1" />
             </Button>
           </Link>
         ) : (

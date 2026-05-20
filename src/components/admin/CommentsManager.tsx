@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Check, EyeOff, Trash2 } from "lucide-react";
@@ -74,12 +74,12 @@ export default function CommentsManager() {
               <div className="flex gap-1">
                 {!c.is_approved && (
                   <Button size="sm" onClick={() => approve(c.id)}>
-                    <Check className="h-3 w-3 ml-1" /> اعتماد
+                    <Check className="h-3 w-3 ms-1" /> اعتماد
                   </Button>
                 )}
                 {!c.is_hidden && (
                   <Button size="sm" variant="outline" onClick={() => hide(c.id)}>
-                    <EyeOff className="h-3 w-3 ml-1" /> إخفاء
+                    <EyeOff className="h-3 w-3 ms-1" /> إخفاء
                   </Button>
                 )}
                 <Button size="sm" variant="ghost" onClick={() => remove(c.id)}>

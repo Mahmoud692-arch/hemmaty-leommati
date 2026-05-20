@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+﻿import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Shield, User as UserIcon, RefreshCcw, LogIn, LogOut } from "lucide-react";
@@ -49,7 +49,7 @@ function MePage() {
           <p className="text-muted-foreground">لم تقم بتسجيل الدخول بعد.</p>
           <Button asChild>
             <Link to="/auth">
-              <LogIn className="h-4 w-4 ml-1" /> تسجيل الدخول
+              <LogIn className="h-4 w-4 ms-1" /> تسجيل الدخول
             </Link>
           </Button>
         </div>
@@ -78,17 +78,17 @@ function MePage() {
 
           <div className="flex flex-wrap gap-2 pt-2">
             <Button onClick={handleRefresh} variant="secondary" size="sm">
-              <RefreshCcw className="h-4 w-4 ml-1" /> إعادة التحقق
+              <RefreshCcw className="h-4 w-4 ms-1" /> إعادة التحقق
             </Button>
             {isAdmin && (
               <Button asChild size="sm">
                 <Link to="/admin">
-                  <Shield className="h-4 w-4 ml-1" /> لوحة الإدارة
+                  <Shield className="h-4 w-4 ms-1" /> لوحة الإدارة
                 </Link>
               </Button>
             )}
             <Button onClick={handleSignOut} variant="outline" size="sm">
-              <LogOut className="h-4 w-4 ml-1" /> خروج
+              <LogOut className="h-4 w-4 ms-1" /> خروج
             </Button>
           </div>
 

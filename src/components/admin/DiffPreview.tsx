@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 
 interface DiffPreviewProps {
   before: Record<string, unknown> | null;
@@ -81,15 +81,15 @@ export default function DiffPreview({ before, after, toolName }: DiffPreviewProp
   return (
     <div className="rounded-lg border bg-background/70 overflow-hidden">
       <div className="grid grid-cols-[auto_1fr_1fr] text-[10px] font-semibold bg-muted px-2 py-1 border-b">
-        <div className="pl-2">الحقل</div>
+        <div className="ps-2">الحقل</div>
         <div className="text-rose-700 dark:text-rose-300">قبل</div>
         <div className="text-emerald-700 dark:text-emerald-300">بعد</div>
       </div>
       <div className="max-h-64 overflow-y-auto">
         {rows.map((r) => (
           <div key={r.key} className="grid grid-cols-[auto_1fr_1fr] text-[11px] border-b last:border-b-0 hover:bg-accent/20">
-            <div className="px-2 py-1.5 font-semibold text-muted-foreground border-l">{r.label}</div>
-            <div className="px-2 py-1.5 bg-rose-500/5 text-rose-900 dark:text-rose-200 break-words border-l whitespace-pre-wrap">
+            <div className="px-2 py-1.5 font-semibold text-muted-foreground border-s">{r.label}</div>
+            <div className="px-2 py-1.5 bg-rose-500/5 text-rose-900 dark:text-rose-200 break-words border-s whitespace-pre-wrap">
               {formatValue(r.before)}
             </div>
             <div className="px-2 py-1.5 bg-emerald-500/5 text-emerald-900 dark:text-emerald-200 break-words whitespace-pre-wrap">

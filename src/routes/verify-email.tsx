@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+﻿import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { MailCheck, MailWarning, Loader2 } from "lucide-react";
@@ -85,7 +85,7 @@ function VerifyEmailPage() {
             <br />افتح البريد واضغط على الرابط لتفعيل حسابك.
           </p>
           <Button onClick={resend} disabled={resending} variant="outline" className="w-full">
-            <MailCheck className="h-4 w-4 ml-2" />
+            <MailCheck className="h-4 w-4 ms-2" />
             {resending ? "جارٍ الإرسال…" : "إعادة إرسال رابط التأكيد"}
           </Button>
           <Link to="/auth" className="block text-sm text-primary hover:underline mt-2">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { MailCheck, MailWarning } from "lucide-react";
@@ -43,7 +43,7 @@ export default function EmailConfirmGate({ feature = "هذا الإجراء", cl
         </p>
         <div className="mt-3 flex gap-2 items-center flex-wrap">
           <Button size="sm" variant="outline" onClick={resend} disabled={sending || sent}>
-            <MailCheck className="h-3 w-3 ml-1" />
+            <MailCheck className="h-3 w-3 ms-1" />
             {sent ? "تم الإرسال" : sending ? "جارٍ الإرسال…" : "إعادة إرسال"}
           </Button>
         </div>

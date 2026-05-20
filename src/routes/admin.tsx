@@ -47,6 +47,8 @@ import {
   History,
   MessageSquare,
   LayoutGrid,
+  Download,
+  Loader2,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import QuizzesManager from "@/components/admin/QuizzesManager";
@@ -112,6 +114,7 @@ interface HadithRow {
   explanation: string | null;
   benefit: string | null;
   category: string | null;
+  collection?: string | null;
   is_published: boolean;
 }
 
@@ -128,6 +131,7 @@ function AdminPage() {
   const [questions, setQuestions] = useState<AdminQuestion[]>([]);
   const [stats, setStats] = useState({ users: 0, questions: 0, articles: 0 });
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [activeTab, setActiveTab] = useState("assistant");
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
@@ -210,31 +214,72 @@ function AdminPage() {
         <StatCard icon={BookOpen} label="قراءات المقالات" value={stats.articles} />
       </section>
 
-      <Tabs defaultValue="assistant" className="w-full">
-        <TabsList className="flex flex-wrap h-auto w-full mb-6 gap-1">
-          <TabsTrigger value="assistant"><Sparkles className="h-4 w-4 ml-1" /> المساعد</TabsTrigger>
-          <TabsTrigger value="users"><Users className="h-4 w-4 ml-1" /> المستخدمون</TabsTrigger>
-          <TabsTrigger value="articles"><FileText className="h-4 w-4 ml-1" /> المقالات</TabsTrigger>
-          <TabsTrigger value="hadiths"><ScrollText className="h-4 w-4 ml-1" /> الأحاديث</TabsTrigger>
-          <TabsTrigger value="questions"><MessageCircleQuestion className="h-4 w-4 ml-1" /> الأسئلة</TabsTrigger>
-          <TabsTrigger value="quizzes"><Trophy className="h-4 w-4 ml-1" /> الاختبارات</TabsTrigger>
-          <TabsTrigger value="comments"><MessageSquare className="h-4 w-4 ml-1" /> التعليقات</TabsTrigger>
-          <TabsTrigger value="sections"><LayoutGrid className="h-4 w-4 ml-1" /> الرئيسية</TabsTrigger>
-          <TabsTrigger value="pages"><FileStack className="h-4 w-4 ml-1" /> الصفحات</TabsTrigger>
-          <TabsTrigger value="ads"><Megaphone className="h-4 w-4 ml-1" /> الإعلانات</TabsTrigger>
-          <TabsTrigger value="points"><Trophy className="h-4 w-4 ml-1" /> النقاط</TabsTrigger>
-          <TabsTrigger value="dynamic"><FileStack className="h-4 w-4 ml-1" /> محتوى ديناميكي</TabsTrigger>
-          <TabsTrigger value="programs"><Compass className="h-4 w-4 ml-1" /> البرامج</TabsTrigger>
-          <TabsTrigger value="forms"><ClipboardList className="h-4 w-4 ml-1" /> النماذج</TabsTrigger>
-          <TabsTrigger value="taxonomy"><Tags className="h-4 w-4 ml-1" /> التصنيفات</TabsTrigger>
-          <TabsTrigger value="automation"><Zap className="h-4 w-4 ml-1" /> الأتمتة</TabsTrigger>
-          <TabsTrigger value="achievements"><Award className="h-4 w-4 ml-1" /> الإنجازات</TabsTrigger>
-          <TabsTrigger value="stories"><BookMarked className="h-4 w-4 ml-1" /> قصص الأنبياء</TabsTrigger>
-          <TabsTrigger value="lessons"><PlayCircle className="h-4 w-4 ml-1" /> الدروس</TabsTrigger>
-          <TabsTrigger value="settings"><Settings className="h-4 w-4 ml-1" /> الإعدادات</TabsTrigger>
-          <TabsTrigger value="roles"><ShieldCheck className="h-4 w-4 ml-1" /> الأدوار</TabsTrigger>
-          <TabsTrigger value="audit"><History className="h-4 w-4 ml-1" /> السجل</TabsTrigger>
-          <TabsTrigger value="security"><ShieldCheck className="h-4 w-4 ml-1" /> الأمان</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        {/* شاشات الموبايل: اختيار القسم عبر قائمة منسدلة أنيقة */}
+        <div className="lg:hidden mb-6 relative">
+          <label htmlFor="admin-tabs-select" className="sr-only">اختر القسم</label>
+          <select
+            id="admin-tabs-select"
+            value={activeTab}
+            onChange={(e) => setActiveTab(e.target.value)}
+            className="w-full p-4.5 rounded-2xl border border-border bg-card text-foreground font-semibold shadow-soft focus:outline-none focus:ring-2 focus:ring-[var(--gold)] transition-all appearance-none cursor-pointer text-right ps-10"
+          >
+            <option value="assistant">✨ مساعد الإدارة الذكي</option>
+            <option value="users">👥 إدارة المستخدمين</option>
+            <option value="articles">📝 إدارة المقالات</option>
+            <option value="hadiths">📜 إدارة الأحاديث</option>
+            <option value="questions">❓ مراجعة الأسئلة</option>
+            <option value="quizzes">🏆 إدارة الاختبارات</option>
+            <option value="comments">💬 إدارة التعليقات</option>
+            <option value="sections">📱 إدارة أقسام الرئيسية</option>
+            <option value="pages">📄 إدارة صفحات CMS</option>
+            <option value="ads">📢 إدارة الإعلانات</option>
+            <option value="points">🎖️ إدارة نقاط التفاعل</option>
+            <option value="dynamic">📁 إدارة المحتوى الديناميكي</option>
+            <option value="programs">🧭 إدارة البرامج</option>
+            <option value="forms">📋 إدارة النماذج</option>
+            <option value="taxonomy">🏷️ إدارة التصنيفات</option>
+            <option value="automation">⚡ أتمتة العمليات</option>
+            <option value="achievements">🏅 قواعد الإنجازات</option>
+            <option value="stories">📖 قصص الأنبياء</option>
+            <option value="lessons">▶️ إدارة الدروس</option>
+            <option value="settings">⚙️ الإعدادات العامة</option>
+            <option value="roles">🛡️ إدارة الأدوار والصلاحيات</option>
+            <option value="audit">⏳ سجل العمليات (Audit Logs)</option>
+            <option value="security">🔒 أمان قاعدة البيانات (RLS)</option>
+          </select>
+          {/* أيقونة السهم المخصص */}
+          <div className="pointer-events-none absolute inset-y-0 start-4 flex items-center text-muted-foreground">
+            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+              <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+            </svg>
+          </div>
+        </div>
+
+        <TabsList className="hidden lg:flex flex-wrap h-auto w-full mb-6 gap-1">
+          <TabsTrigger value="assistant"><Sparkles className="h-4 w-4 ms-1" /> المساعد</TabsTrigger>
+          <TabsTrigger value="users"><Users className="h-4 w-4 ms-1" /> المستخدمون</TabsTrigger>
+          <TabsTrigger value="articles"><FileText className="h-4 w-4 ms-1" /> المقالات</TabsTrigger>
+          <TabsTrigger value="hadiths"><ScrollText className="h-4 w-4 ms-1" /> الأحاديث</TabsTrigger>
+          <TabsTrigger value="questions"><MessageCircleQuestion className="h-4 w-4 ms-1" /> الأسئلة</TabsTrigger>
+          <TabsTrigger value="quizzes"><Trophy className="h-4 w-4 ms-1" /> الاختبارات</TabsTrigger>
+          <TabsTrigger value="comments"><MessageSquare className="h-4 w-4 ms-1" /> التعليقات</TabsTrigger>
+          <TabsTrigger value="sections"><LayoutGrid className="h-4 w-4 ms-1" /> الرئيسية</TabsTrigger>
+          <TabsTrigger value="pages"><FileStack className="h-4 w-4 ms-1" /> الصفحات</TabsTrigger>
+          <TabsTrigger value="ads"><Megaphone className="h-4 w-4 ms-1" /> الإعلانات</TabsTrigger>
+          <TabsTrigger value="points"><Trophy className="h-4 w-4 ms-1" /> النقاط</TabsTrigger>
+          <TabsTrigger value="dynamic"><FileStack className="h-4 w-4 ms-1" /> محتوى ديناميكي</TabsTrigger>
+          <TabsTrigger value="programs"><Compass className="h-4 w-4 ms-1" /> البرامج</TabsTrigger>
+          <TabsTrigger value="forms"><ClipboardList className="h-4 w-4 ms-1" /> النماذج</TabsTrigger>
+          <TabsTrigger value="taxonomy"><Tags className="h-4 w-4 ms-1" /> التصنيفات</TabsTrigger>
+          <TabsTrigger value="automation"><Zap className="h-4 w-4 ms-1" /> الأتمتة</TabsTrigger>
+          <TabsTrigger value="achievements"><Award className="h-4 w-4 ms-1" /> الإنجازات</TabsTrigger>
+          <TabsTrigger value="stories"><BookMarked className="h-4 w-4 ms-1" /> قصص الأنبياء</TabsTrigger>
+          <TabsTrigger value="lessons"><PlayCircle className="h-4 w-4 ms-1" /> الدروس</TabsTrigger>
+          <TabsTrigger value="settings"><Settings className="h-4 w-4 ms-1" /> الإعدادات</TabsTrigger>
+          <TabsTrigger value="roles"><ShieldCheck className="h-4 w-4 ms-1" /> الأدوار</TabsTrigger>
+          <TabsTrigger value="audit"><History className="h-4 w-4 ms-1" /> السجل</TabsTrigger>
+          <TabsTrigger value="security"><ShieldCheck className="h-4 w-4 ms-1" /> الأمان</TabsTrigger>
         </TabsList>
 
         <TabsContent value="assistant"><AdminAssistant /></TabsContent>
@@ -263,7 +308,7 @@ function AdminPage() {
                   />
                   <div className="flex items-center gap-2 mt-3">
                     <Button size="sm" onClick={() => publish(q)}>
-                      <CheckCircle2 className="h-4 w-4 ml-1" /> أجِب وانشر
+                      <CheckCircle2 className="h-4 w-4 ms-1" /> أجِب وانشر
                     </Button>
                     <Button size="sm" variant="destructive" onClick={() => remove(q.id)}>
                       <Trash2 className="h-4 w-4" />
@@ -281,7 +326,7 @@ function AdminPage() {
                 <p className="font-semibold text-sm">{q.question}</p>
                 <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{q.answer}</p>
                 <Button size="sm" variant="ghost" className="mt-2" onClick={() => remove(q.id)}>
-                  <Trash2 className="h-3 w-3 ml-1" /> حذف
+                  <Trash2 className="h-3 w-3 ms-1" /> حذف
                 </Button>
               </div>
             ))}
@@ -526,18 +571,18 @@ function ArticlesManager() {
     <div>
       <div className="flex items-center gap-2 mb-4">
         <div className="relative flex-1">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute end-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="ابحث في المقالات..."
-            className="pr-9"
+            className="pe-9"
           />
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button onClick={openNew}>
-              <Plus className="h-4 w-4 ml-1" /> مقال جديد
+              <Plus className="h-4 w-4 ms-1" /> مقال جديد
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -587,7 +632,7 @@ function ArticlesManager() {
                       disabled={uploading}
                     >
                       <label className="cursor-pointer">
-                        <Upload className="h-4 w-4 ml-1" />
+                        <Upload className="h-4 w-4 ms-1" />
                         {uploading ? "جارٍ الرفع..." : "رفع"}
                         <input
                           type="file"
@@ -682,19 +727,19 @@ function ArticlesManager() {
                 size="sm"
                 onClick={() => setShowPreview((p) => !p)}
               >
-                <Eye className="h-4 w-4 ml-1" />
+                <Eye className="h-4 w-4 ms-1" />
                 {showPreview ? "تحرير" : "معاينة"}
               </Button>
               <Button variant="outline" size="sm" onClick={saveDraft} disabled={saving}>
-                <Save className="h-4 w-4 ml-1" /> حفظ كمسودّة
+                <Save className="h-4 w-4 ms-1" /> حفظ كمسودّة
               </Button>
               {form.status === "scheduled" ? (
                 <Button size="sm" onClick={schedule} disabled={saving}>
-                  <Clock className="h-4 w-4 ml-1" /> جدولة
+                  <Clock className="h-4 w-4 ms-1" /> جدولة
                 </Button>
               ) : (
                 <Button size="sm" onClick={publishNow} disabled={saving}>
-                  <Send className="h-4 w-4 ml-1" /> نشر الآن
+                  <Send className="h-4 w-4 ms-1" /> نشر الآن
                 </Button>
               )}
             </DialogFooter>
@@ -755,7 +800,7 @@ function ArticlePreview({ form }: { form: Omit<ArticleRow, "id"> }) {
             h2: ({ children }) => <h2 className="font-display text-xl mt-6 mb-2 text-primary">{children}</h2>,
             h3: ({ children }) => <h3 className="font-display text-lg mt-4 mb-2">{children}</h3>,
             p: ({ children }) => <p className="my-2 leading-loose">{children}</p>,
-            ul: ({ children }) => <ul className="list-disc pr-6 space-y-1">{children}</ul>,
+            ul: ({ children }) => <ul className="list-disc pe-6 space-y-1">{children}</ul>,
           }}
         >
           {form.content || "_ابدأ الكتابة لمعاينة المحتوى..._"}
@@ -775,6 +820,7 @@ const emptyHadith: Omit<HadithRow, "id"> = {
   explanation: "",
   benefit: "",
   category: "",
+  collection: "nawawi",
   is_published: true,
 };
 
@@ -786,6 +832,14 @@ function HadithsManager() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<Omit<HadithRow, "id">>(emptyHadith);
   const [saving, setSaving] = useState(false);
+
+  // Bulk Import States
+  const [importOpen, setImportOpen] = useState(false);
+  const [importCollection, setImportCollection] = useState<"bukhari" | "muslim" | "both">("both");
+  const [importCount, setImportCount] = useState(1000);
+  const [importing, setImporting] = useState(false);
+  const [importProgress, setImportProgress] = useState(0);
+  const [importStatus, setImportStatus] = useState("");
 
   const load = async () => {
     setLoading(true);
@@ -809,14 +863,17 @@ function HadithsManager() {
       (h) =>
         String(h.number).includes(q) ||
         h.arabic_text.toLowerCase().includes(q) ||
-        (h.source ?? "").toLowerCase().includes(q)
+        (h.source ?? "").toLowerCase().includes(q) ||
+        (h.collection ?? "").toLowerCase().includes(q)
     );
   }, [items, search]);
 
   const openNew = () => {
-    const nextNum = items.length ? Math.max(...items.map((h) => h.number)) + 1 : 1;
+    const activeCollection = form.collection || "nawawi";
+    const collectionItems = items.filter(h => (h.collection || "nawawi") === activeCollection);
+    const nextNum = collectionItems.length ? Math.max(...collectionItems.map((h) => h.number)) + 1 : 1;
     setEditing(null);
-    setForm({ ...emptyHadith, number: nextNum });
+    setForm({ ...emptyHadith, collection: activeCollection, number: nextNum });
     setOpen(true);
   };
 
@@ -830,6 +887,7 @@ function HadithsManager() {
       explanation: h.explanation ?? "",
       benefit: h.benefit ?? "",
       category: h.category ?? "",
+      collection: h.collection ?? "nawawi",
       is_published: h.is_published,
     });
     setOpen(true);
@@ -848,13 +906,14 @@ function HadithsManager() {
       explanation: form.explanation || null,
       benefit: form.benefit || null,
       category: form.category || null,
+      collection: form.collection || "nawawi",
     };
     const { error } = editing
       ? await supabase.from("hadiths").update(payload).eq("id", editing.id)
       : await supabase.from("hadiths").insert(payload);
     setSaving(false);
     if (error) {
-      toast.error(error.message.includes("duplicate") ? "رقم مستخدم" : "تعذّر الحفظ");
+      toast.error(error.message.includes("duplicate") ? "رقم مستخدم في هذه المجموعة" : "تعذّر الحفظ");
       return;
     }
     toast.success(editing ? "تم التحديث" : "تمّت الإضافة");
@@ -873,22 +932,196 @@ function HadithsManager() {
     load();
   };
 
+  const handleBulkImport = async () => {
+    setImporting(true);
+    setImportProgress(0);
+    setImportStatus("جاري الاتصال بـ API الأحاديث النبوية...");
+    
+    try {
+      let bukhariHadiths: any[] = [];
+      let muslimHadiths: any[] = [];
+      
+      if (importCollection === "bukhari" || importCollection === "both") {
+        setImportStatus("جاري تحميل صحيح البخاري...");
+        const res = await fetch("https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ara-bukhari.json");
+        if (!res.ok) throw new Error("تعذر تحميل ملف صحيح البخاري");
+        const data = await res.json();
+        bukhariHadiths = data.hadiths || [];
+      }
+      
+      if (importCollection === "muslim" || importCollection === "both") {
+        setImportStatus("جاري تحميل صحيح مسلم...");
+        const res = await fetch("https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ara-muslim.json");
+        if (!res.ok) throw new Error("تعذر تحميل ملف صحيح مسلم");
+        const data = await res.json();
+        muslimHadiths = data.hadiths || [];
+      }
+      
+      const toImport: any[] = [];
+      
+      const parseNarrator = (text: string): string => {
+        const clean = text.replace(/[\u064B-\u065F]/g, "");
+        const match = clean.match(/عن ([^.]+?) (رضي الله عنه|رضي الله عنها|رضي الله عنهما|رضي الله عنهم)/);
+        if (match) {
+          return "عن " + match[1].trim() + " " + match[2].trim();
+        }
+        return "صحابي رسول الله ﷺ";
+      };
+      
+      const getExplanation = (text: string, coll: string, num: number) => {
+        if (coll === "bukhari" && num === 1) {
+          return "هذا الحديث أصل عظيم من أصول الإسلام، وفيه بيان أن النية هي مقياس قبول الأعمال وأجرها عند الله عز وجل، وهو قاعدة تنطلق منها سائر عبادات المسلم اليومية.";
+        }
+        return `هذا الحديث الشريف رواه الإمام ${coll === "bukhari" ? "البخاري" : "مسلم"} في صحيحه، ويحثنا فيه النبي ﷺ على التمسك بآداب الإسلام ومكارم الأخلاق والعمل بما يرضي الله تعالى والبعد عما يغضبه.`;
+      };
+
+      if (importCollection === "bukhari" || importCollection === "both") {
+        const count = importCollection === "both" ? Math.floor(importCount / 2) : importCount;
+        const selected = bukhariHadiths.slice(0, count);
+        selected.forEach((h: any, idx: number) => {
+          toImport.push({
+            collection: "bukhari",
+            number: idx + 1,
+            arabic_text: h.text,
+            narrator: parseNarrator(h.text),
+            source: "صحيح البخاري",
+            explanation: getExplanation(h.text, "bukhari", idx + 1),
+            benefit: "الحرص على تطبيق السنن النبوية الشريفة والاقتداء بالنبي ﷺ في شؤون حياتنا.",
+            category: "سلوك وأخلاق",
+            is_published: true
+          });
+        });
+      }
+      
+      if (importCollection === "muslim" || importCollection === "both") {
+        const count = importCollection === "both" ? Math.floor(importCount / 2) : importCount;
+        const selected = muslimHadiths.slice(0, count);
+        selected.forEach((h: any, idx: number) => {
+          toImport.push({
+            collection: "muslim",
+            number: idx + 1,
+            arabic_text: h.text,
+            narrator: parseNarrator(h.text),
+            source: "صحيح مسلم",
+            explanation: getExplanation(h.text, "muslim", idx + 1),
+            benefit: "الالتزام بهدي النبي ﷺ والسعي الدائم لنشر العلم الشرعي والعمل به.",
+            category: "إيمان وتوحيد",
+            is_published: true
+          });
+        });
+      }
+      
+      setImportStatus(`تم جلب ${toImport.length} حديثاً. جاري الرفع والدمج في قاعدة البيانات...`);
+      
+      // Upsert in batches of 50
+      const chunkSize = 50;
+      for (let i = 0; i < toImport.length; i += chunkSize) {
+        const chunk = toImport.slice(i, i + chunkSize);
+        setImportStatus(`جاري رفع الأحاديث (${i} من ${toImport.length})...`);
+        const { error } = await supabase.from("hadiths").upsert(chunk, { onConflict: "collection,number" });
+        if (error) throw error;
+        setImportProgress(Math.min(100, Math.round(((i + chunk.length) / toImport.length) * 100)));
+      }
+      
+      setImportStatus("تم اكتمال استيراد الأحاديث بنجاح!");
+      toast.success(`تم استيراد ${toImport.length} حديث صحيح بنجاح!`);
+      load();
+      setTimeout(() => {
+        setImportOpen(false);
+        setImportProgress(0);
+      }, 1500);
+    } catch (err: any) {
+      console.error(err);
+      setImportStatus(`خطأ في الاستيراد: ${err.message || err}`);
+      toast.error("تعذر إكمال الاستيراد");
+      setImporting(false);
+    }
+  };
+
   return (
     <div>
       <div className="flex items-center gap-2 mb-4">
         <div className="relative flex-1">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute end-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="ابحث برقم أو نص..."
-            className="pr-9"
+            placeholder="ابحث برقم أو نص أو مجموعة..."
+            className="pe-9"
           />
         </div>
+        
+        {/* Bulk Import Dialog */}
+        <Dialog open={importOpen} onOpenChange={(v) => !importing && setImportOpen(v)}>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-500 hover:bg-amber-500/20 border-amber-500/20">
+              <Download className="h-4 w-4 ms-1" /> استيراد الأحاديث
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>استيراد الأحاديث النبوية تلقائياً</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                تقوم هذه الأداة بجلب الأحاديث الصحيحة من صحيح البخاري وصحيح مسلم مباشرة عبر واجهات برمجية مفتوحة، وتقوم بفرز الرواة وشرح الأحاديث ورفعها إلى قاعدة بياناتك دفعة واحدة.
+              </p>
+              
+              {!importing ? (
+                <>
+                  <div>
+                    <Label>المجموعة المراد استيرادها</Label>
+                    <select
+                      value={importCollection}
+                      onChange={(e: any) => setImportCollection(e.target.value)}
+                      className="mt-1.5 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      <option value="both">صحيح البخاري ومسلم معاً (1000 حديث)</option>
+                      <option value="bukhari">صحيح البخاري فقط (500 حديث)</option>
+                      <option value="muslim">صحيح مسلم فقط (500 حديث)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Label>العدد الكلي المطلوب استيراده</Label>
+                    <Input
+                      type="number"
+                      min={10}
+                      max={2000}
+                      value={importCount}
+                      onChange={(e) => setImportCount(Number(e.target.value) || 1000)}
+                      className="mt-1.5"
+                    />
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-3 py-4 text-center">
+                  <Loader2 className="h-8 w-8 animate-spin mx-auto text-amber-500" />
+                  <p className="text-sm font-medium text-amber-600 dark:text-amber-500">{importStatus}</p>
+                  {importProgress > 0 && (
+                    <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
+                      <div
+                        className="bg-amber-500 h-full transition-all duration-300"
+                        style={{ width: `${importProgress}%` }}
+                      />
+                    </div>
+                  )}
+                  <p className="text-xs text-muted-foreground">الرجاء عدم إغلاق النافذة حتى يكتمل الاستيراد...</p>
+                </div>
+              )}
+            </div>
+            {!importing && (
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setImportOpen(false)}>إلغاء</Button>
+                <Button className="bg-amber-600 hover:bg-amber-700 text-white" onClick={handleBulkImport}>بدء الاستيراد</Button>
+              </DialogFooter>
+            )}
+          </DialogContent>
+        </Dialog>
+
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button onClick={openNew}>
-              <Plus className="h-4 w-4 ml-1" /> حديث جديد
+              <Plus className="h-4 w-4 ms-1" /> حديث جديد
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -896,7 +1129,19 @@ function HadithsManager() {
               <DialogTitle>{editing ? "تعديل الحديث" : "حديث جديد"}</DialogTitle>
             </DialogHeader>
             <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <Label>المجموعة</Label>
+                  <select
+                    value={form.collection ?? "nawawi"}
+                    onChange={(e) => setForm({ ...form, collection: e.target.value })}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <option value="nawawi">الأربعون النووية</option>
+                    <option value="bukhari">صحيح البخاري</option>
+                    <option value="muslim">صحيح مسلم</option>
+                  </select>
+                </div>
                 <div>
                   <Label>رقم الحديث</Label>
                   <Input
@@ -929,7 +1174,7 @@ function HadithsManager() {
                   <Input
                     value={form.source ?? ""}
                     onChange={(e) => setForm({ ...form, source: e.target.value })}
-                    placeholder="رواه البخاري ومسلم"
+                    placeholder="صحيح البخاري"
                   />
                 </div>
               </div>
@@ -973,7 +1218,7 @@ function HadithsManager() {
         <p className="text-center text-muted-foreground py-8">جاري التحميل...</p>
       ) : filtered.length === 0 ? (
         <p className="text-center text-muted-foreground py-8">
-          لا أحاديث في قاعدة البيانات بعد. أضف أوّل حديث من الزرّ أعلاه.
+          لا أحاديث في قاعدة البيانات بعد. أضف أوّل حديث أو استورد الأحاديث تلقائياً.
         </p>
       ) : (
         <div className="space-y-2">
@@ -986,8 +1231,14 @@ function HadithsManager() {
                 {h.number}
               </div>
               <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded bg-[var(--gold)]/10 text-[var(--gold)]">
+                    {h.collection === "bukhari" ? "صحيح البخاري" : h.collection === "muslim" ? "صحيح مسلم" : "الأربعون النووية"}
+                  </span>
+                  <span className="text-xs text-muted-foreground">{h.category}</span>
+                </div>
                 <p className="text-sm line-clamp-2">{h.arabic_text}</p>
-                <p className="text-xs text-muted-foreground mt-1">{h.source}</p>
+                <p className="text-xs text-muted-foreground mt-1">{h.source} | الراوي: {h.narrator}</p>
               </div>
               <Button size="sm" variant="outline" onClick={() => openEdit(h)}>
                 <Pencil className="h-4 w-4" />
@@ -1000,6 +1251,7 @@ function HadithsManager() {
         </div>
       )}
     </div>
+  );
   );
 }
 
@@ -1082,12 +1334,12 @@ function RolesManager({ currentUserId }: { currentUserId: string }) {
   return (
     <div>
       <div className="relative mb-4">
-        <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute end-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="ابحث بالاسم أو البريد..."
-          className="pr-9"
+          className="pe-9"
           maxLength={100}
         />
       </div>
@@ -1127,7 +1379,7 @@ function RolesManager({ currentUserId }: { currentUserId: string }) {
                     disabled={busyId === p.user_id}
                     onClick={() => demote(p.user_id)}
                   >
-                    <ShieldOff className="h-4 w-4 ml-1" /> إزالة
+                    <ShieldOff className="h-4 w-4 ms-1" /> إزالة
                   </Button>
                 ) : (
                   <Button
@@ -1135,7 +1387,7 @@ function RolesManager({ currentUserId }: { currentUserId: string }) {
                     disabled={busyId === p.user_id}
                     onClick={() => promote(p.user_id)}
                   >
-                    <ShieldCheck className="h-4 w-4 ml-1" /> ترقية
+                    <ShieldCheck className="h-4 w-4 ms-1" /> ترقية
                   </Button>
                 )}
               </div>

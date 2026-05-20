@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
@@ -177,12 +177,12 @@ export default function UsersManager() {
 
       <div className="flex items-center gap-2 mb-4 flex-wrap">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute end-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={isAdmin ? "ابحث بالاسم، البريد، الهاتف، البلد..." : "ابحث بالاسم أو البلد..."}
-            className="pr-9"
+            className="pe-9"
           />
         </div>
         <Button variant="outline" onClick={exportCsv} disabled={!isAdmin} title={isAdmin ? "" : "للأدمن فقط"}>
@@ -238,7 +238,7 @@ export default function UsersManager() {
                   </td>
                   <td className="p-2">
                     <Button size="sm" variant="outline" onClick={() => openDetail(u)}>
-                      <Eye className="h-3 w-3 ml-1" /> تفاصيل
+                      <Eye className="h-3 w-3 ms-1" /> تفاصيل
                     </Button>
                   </td>
                 </tr>

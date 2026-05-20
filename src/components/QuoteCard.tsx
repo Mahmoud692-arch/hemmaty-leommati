@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+﻿import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Sparkles, Shuffle, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -98,7 +98,7 @@ export default function QuoteCard() {
 
         <div className="mt-6">
           <Button size="sm" variant="outline" onClick={() => fetchQuote(filter)} disabled={loading}>
-            <Shuffle className="h-3.5 w-3.5 ml-1" /> اقتباس آخر
+            <Shuffle className="h-3.5 w-3.5 ms-1" /> اقتباس آخر
           </Button>
         </div>
       </div>

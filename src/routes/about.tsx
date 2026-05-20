@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+﻿import { createFileRoute } from "@tanstack/react-router";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
 import { Facebook, Send, MessageCircle, Heart, Target, Compass } from "lucide-react";
 
@@ -76,7 +76,7 @@ function AboutPage() {
           في رحلةٍ إيمانيةٍ منظّمة.
         </p>
         <h2 className="font-display text-2xl mt-6 mb-3">ما يميّزنا</h2>
-        <ul className="list-disc pr-6 space-y-1.5">
+        <ul className="list-disc pe-6 space-y-1.5">
           <li>محتوى عميقٌ ومُراجَعٌ علميًا ودينيًا.</li>
           <li>تجربةٌ تفاعليّة عبر نظام النقاط والمستويات.</li>
           <li>ربطٌ دائمٌ بين النصّ الشرعي والتطبيق العملي.</li>

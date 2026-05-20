@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+﻿import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import ReactMarkdown from "react-markdown";
 import { useEffect, useRef } from "react";
 import { articles as staticArticles, type Article } from "@/data/articles";
@@ -184,12 +184,12 @@ function ArticlePage() {
             ),
             h3: ({ children }) => <h3 className="font-display text-xl mt-6 mb-3">{children}</h3>,
             p: ({ children }) => <p className="leading-loose my-3">{children}</p>,
-            ul: ({ children }) => <ul className="list-disc pr-6 space-y-1.5 my-3">{children}</ul>,
+            ul: ({ children }) => <ul className="list-disc pe-6 space-y-1.5 my-3">{children}</ul>,
             ol: ({ children }) => (
-              <ol className="list-decimal pr-6 space-y-1.5 my-3">{children}</ol>
+              <ol className="list-decimal pe-6 space-y-1.5 my-3">{children}</ol>
             ),
             blockquote: ({ children }) => (
-              <blockquote className="border-r-4 border-[var(--gold)] pr-4 bg-accent/20 py-2 rounded-r-lg my-4 italic">
+              <blockquote className="border-e-4 border-[var(--gold)] pe-4 bg-accent/20 py-2 rounded-e-lg my-4 italic">
                 {children}
               </blockquote>
             ),

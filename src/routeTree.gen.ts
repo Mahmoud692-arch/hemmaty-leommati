@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as StoriesRouteImport } from './routes/stories'
 import { Route as QuranRouteImport } from './routes/quran'
 import { Route as QuizzesRouteImport } from './routes/quizzes'
@@ -32,6 +33,11 @@ import { Route as LessonsSlugRouteImport } from './routes/lessons.$slug'
 import { Route as HadithsNumberRouteImport } from './routes/hadiths.$number'
 import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
 
+const VerifyEmailRoute = VerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StoriesRoute = StoriesRouteImport.update({
   id: '/stories',
   path: '/stories',
@@ -161,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/quizzes': typeof QuizzesRouteWithChildren
   '/quran': typeof QuranRoute
   '/stories': typeof StoriesRouteWithChildren
+  '/verify-email': typeof VerifyEmailRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
   '/lessons/$slug': typeof LessonsSlugRoute
@@ -185,6 +192,7 @@ export interface FileRoutesByTo {
   '/quizzes': typeof QuizzesRouteWithChildren
   '/quran': typeof QuranRoute
   '/stories': typeof StoriesRouteWithChildren
+  '/verify-email': typeof VerifyEmailRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
   '/lessons/$slug': typeof LessonsSlugRoute
@@ -210,6 +218,7 @@ export interface FileRoutesById {
   '/quizzes': typeof QuizzesRouteWithChildren
   '/quran': typeof QuranRoute
   '/stories': typeof StoriesRouteWithChildren
+  '/verify-email': typeof VerifyEmailRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
   '/lessons/$slug': typeof LessonsSlugRoute
@@ -236,6 +245,7 @@ export interface FileRouteTypes {
     | '/quizzes'
     | '/quran'
     | '/stories'
+    | '/verify-email'
     | '/articles/$slug'
     | '/hadiths/$number'
     | '/lessons/$slug'
@@ -260,6 +270,7 @@ export interface FileRouteTypes {
     | '/quizzes'
     | '/quran'
     | '/stories'
+    | '/verify-email'
     | '/articles/$slug'
     | '/hadiths/$number'
     | '/lessons/$slug'
@@ -284,6 +295,7 @@ export interface FileRouteTypes {
     | '/quizzes'
     | '/quran'
     | '/stories'
+    | '/verify-email'
     | '/articles/$slug'
     | '/hadiths/$number'
     | '/lessons/$slug'
@@ -309,10 +321,18 @@ export interface RootRouteChildren {
   QuizzesRoute: typeof QuizzesRouteWithChildren
   QuranRoute: typeof QuranRoute
   StoriesRoute: typeof StoriesRouteWithChildren
+  VerifyEmailRoute: typeof VerifyEmailRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verify-email': {
+      id: '/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof VerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/stories': {
       id: '/stories'
       path: '/stories'
@@ -544,6 +564,7 @@ const rootRouteChildren: RootRouteChildren = {
   QuizzesRoute: QuizzesRouteWithChildren,
   QuranRoute: QuranRoute,
   StoriesRoute: StoriesRouteWithChildren,
+  VerifyEmailRoute: VerifyEmailRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

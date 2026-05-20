@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -77,8 +77,8 @@ export default function StoriesManager() {
           <div className="flex items-center gap-2"><Label className="text-xs">ترتيب</Label><Input type="number" className="w-20" value={editing.order_index} onChange={(e) => setEditing({ ...editing, order_index: Number(e.target.value) })} /></div>
         </div>
         <div className="flex gap-2">
-          <Button onClick={save} disabled={busy}><Save className="h-4 w-4 ml-1" /> حفظ</Button>
-          {editing.id && <Button variant="outline" onClick={() => setEditing(empty)}><Plus className="h-4 w-4 ml-1" /> جديد</Button>}
+          <Button onClick={save} disabled={busy}><Save className="h-4 w-4 ms-1" /> حفظ</Button>
+          {editing.id && <Button variant="outline" onClick={() => setEditing(empty)}><Plus className="h-4 w-4 ms-1" /> جديد</Button>}
         </div>
       </div>
 

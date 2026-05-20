@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+﻿import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Volume2, Pause, Play, Loader2, RotateCcw, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -58,13 +58,13 @@ export default function ArticleAudioPlayer({ articleSlug, text }: Props) {
     <div className="card-elegant rounded-xl p-4 my-6 flex items-center gap-3 flex-wrap">
       <Button onClick={onClick} disabled={loading} size="sm" variant="outline">
         {loading ? (
-          <Loader2 className="h-4 w-4 animate-spin ml-1" />
+          <Loader2 className="h-4 w-4 animate-spin ms-1" />
         ) : playing ? (
-          <Pause className="h-4 w-4 ml-1" />
+          <Pause className="h-4 w-4 ms-1" />
         ) : audioUrl ? (
-          <Play className="h-4 w-4 ml-1" />
+          <Play className="h-4 w-4 ms-1" />
         ) : (
-          <Volume2 className="h-4 w-4 ml-1" />
+          <Volume2 className="h-4 w-4 ms-1" />
         )}
         {loading ? "جارٍ التحضير…" : playing ? "إيقاف" : audioUrl ? "تشغيل" : "استمع للمقال"}
       </Button>
@@ -75,7 +75,7 @@ export default function ArticleAudioPlayer({ articleSlug, text }: Props) {
             <AlertCircle className="h-3 w-3" /> {error}
           </span>
           <Button onClick={generate} disabled={loading} size="sm" variant="ghost">
-            <RotateCcw className="h-3 w-3 ml-1" /> إعادة المحاولة
+            <RotateCcw className="h-3 w-3 ms-1" /> إعادة المحاولة
           </Button>
         </>
       )}

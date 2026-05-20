@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -69,7 +69,7 @@ export default function FavoriteButton({ entityType, entityId }: Props) {
       aria-pressed={active}
       aria-label={active ? "إزالة من المفضّلة" : "إضافة إلى المفضّلة"}
     >
-      <Heart className={`h-4 w-4 ml-1 ${active ? "fill-current" : ""}`} />
+      <Heart className={`h-4 w-4 ms-1 ${active ? "fill-current" : ""}`} />
       {active ? "في المفضّلة" : "أضف للمفضّلة"}
     </Button>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { Bell, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -101,7 +101,7 @@ export default function NotificationBell() {
         <Button variant="ghost" size="icon" className="relative">
           <Bell className="h-4 w-4" />
           {unread > 0 && (
-            <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center">
+            <span className="absolute -top-1 -end-1 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center">
               {unread > 9 ? "9+" : unread}
             </span>
           )}
@@ -114,7 +114,7 @@ export default function NotificationBell() {
 
           {unread > 0 && (
             <Button variant="ghost" size="sm" onClick={markAllRead}>
-              <Check className="w-3 h-3 ml-1" />
+              <Check className="w-3 h-3 ms-1" />
               قراءة الكل
             </Button>
           )}

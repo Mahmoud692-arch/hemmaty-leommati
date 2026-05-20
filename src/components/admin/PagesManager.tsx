@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -93,7 +93,7 @@ export default function PagesManager() {
     <div>
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-bold flex items-center gap-2"><FileStack className="h-4 w-4 text-[var(--gold)]" /> إدارة الصفحات</h2>
-        <Button onClick={() => openNew()}><Plus className="h-3 w-3 ml-1" /> صفحة جديدة</Button>
+        <Button onClick={() => openNew()}><Plus className="h-3 w-3 ms-1" /> صفحة جديدة</Button>
       </div>
 
       {loading ? <p className="text-muted-foreground">جارٍ التحميل…</p> : top.length === 0 ? (
@@ -104,7 +104,7 @@ export default function PagesManager() {
             <div key={p.id} className="card-elegant rounded-xl p-3">
               <PageRow p={p} onEdit={() => openEdit(p)} onDelete={() => remove(p.id)} onAddChild={() => openNew(p.id)} />
               {childrenOf(p.id).map((c) => (
-                <div key={c.id} className="ms-6 mt-2 border-r-2 border-[var(--gold)]/30 pr-3">
+                <div key={c.id} className="ms-6 mt-2 border-e-2 border-[var(--gold)]/30 pe-3">
                   <PageRow p={c} onEdit={() => openEdit(c)} onDelete={() => remove(c.id)} onAddChild={null} />
                 </div>
               ))}

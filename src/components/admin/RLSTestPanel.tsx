@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, ShieldAlert, Loader2, Play, RefreshCw } from "lucide-react";
@@ -56,11 +56,11 @@ export default function RLSTestPanel() {
           </div>
           <Button onClick={run} disabled={running}>
             {running ? (
-              <><Loader2 className="h-4 w-4 ml-1 animate-spin" /> جارٍ الفحص…</>
+              <><Loader2 className="h-4 w-4 ms-1 animate-spin" /> جارٍ الفحص…</>
             ) : data ? (
-              <><RefreshCw className="h-4 w-4 ml-1" /> إعادة الفحص</>
+              <><RefreshCw className="h-4 w-4 ms-1" /> إعادة الفحص</>
             ) : (
-              <><Play className="h-4 w-4 ml-1" /> تشغيل الاختبارات</>
+              <><Play className="h-4 w-4 ms-1" /> تشغيل الاختبارات</>
             )}
           </Button>
         </div>

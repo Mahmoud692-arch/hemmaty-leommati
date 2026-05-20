@@ -1,4 +1,4 @@
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+﻿import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import {
   Moon,
@@ -134,7 +134,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             ) : (
               <Link to="/auth" className="hidden sm:block">
                 <Button size="sm" className="bg-primary hover:bg-primary/90">
-                  <User className="h-4 w-4 ml-1" /> دخول
+                  <User className="h-4 w-4 ms-1" /> دخول
                 </Button>
               </Link>
             )}

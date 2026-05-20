@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Megaphone, X } from "lucide-react";
 
@@ -53,7 +53,7 @@ export default function HomepageAds({ position = "top" }: { position?: string })
           <div key={ad.id} className="card-elegant rounded-2xl p-4 relative flex items-center gap-4 overflow-hidden">
             <button
               onClick={() => dismiss(ad.id)}
-              className="absolute top-2 left-2 text-muted-foreground hover:text-foreground"
+              className="absolute top-2 start-2 text-muted-foreground hover:text-foreground"
               aria-label="إخفاء الإعلان"
             >
               <X className="h-4 w-4" />

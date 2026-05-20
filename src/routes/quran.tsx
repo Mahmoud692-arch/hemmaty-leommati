@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+﻿import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
 import { Input } from "@/components/ui/input";
@@ -69,10 +69,25 @@ function QuranPage() {
   const [highlightAyah, setHighlightAyah] = useState<number | null>(null);
 
   useEffect(() => {
+    const cached = localStorage.getItem("quran_surahs_list");
+    if (cached) {
+      try {
+        setSurahs(JSON.parse(cached));
+        setLoading(false);
+        return;
+      } catch (e) {
+        console.error("Error parsing cached surahs list", e);
+      }
+    }
+
     fetch("https://api.alquran.cloud/v1/surah")
       .then((r) => r.json())
       .then((d) => {
-        setSurahs(d?.data ?? []);
+        const list = d?.data ?? [];
+        if (list.length > 0) {
+          localStorage.setItem("quran_surahs_list", JSON.stringify(list));
+        }
+        setSurahs(list);
         setLoading(false);
       })
       .catch(() => {
@@ -80,6 +95,7 @@ function QuranPage() {
         setLoading(false);
       });
   }, []);
+
 
   useEffect(() => {
     if (!user) return;
@@ -98,10 +114,34 @@ function QuranPage() {
     setAyahs([]);
     setHighlightAyah(focusAyah);
     window.scrollTo({ top: 0, behavior: "smooth" });
+
+    const cacheKey = `quran_surah_${n}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        const list = JSON.parse(cached);
+        setAyahs(list);
+        setLoadingAyahs(false);
+        if (focusAyah) {
+          setTimeout(() => {
+            const el = document.getElementById(`ayah-${focusAyah}`);
+            if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+          }, 200);
+        }
+        return;
+      } catch (e) {
+        console.error(`Error parsing cached surah ${n}`, e);
+      }
+    }
+
     try {
       const r = await fetch(`https://api.alquran.cloud/v1/surah/${n}/quran-uthmani`);
       const d = await r.json();
-      setAyahs(d?.data?.ayahs ?? []);
+      const list = d?.data?.ayahs ?? [];
+      if (list.length > 0) {
+        localStorage.setItem(cacheKey, JSON.stringify(list));
+      }
+      setAyahs(list);
     } catch {
       toast.error("تعذّر تحميل السورة");
     }
@@ -217,14 +257,14 @@ function QuranPage() {
         <div>
           <div className="flex items-center gap-2 mb-4">
             <Button variant="ghost" size="sm" onClick={() => { setSelected(null); setAyahs([]); setHighlightAyah(null); }}>
-              <ChevronLeft className="h-4 w-4 ml-1" /> السور
+              <ChevronLeft className="h-4 w-4 ms-1" /> السور
             </Button>
             <h2 className="font-display text-2xl flex-1 text-center">
               سورة {currentSurah.name}
-              <span className="text-xs text-muted-foreground mr-2">({currentSurah.numberOfAyahs} آية · {currentSurah.revelationType === "Meccan" ? "مكية" : "مدنية"})</span>
+              <span className="text-xs text-muted-foreground me-2">({currentSurah.numberOfAyahs} آية · {currentSurah.revelationType === "Meccan" ? "مكية" : "مدنية"})</span>
             </h2>
             <Button variant="outline" size="sm" onClick={() => toggleBookmark(currentSurah.number)}>
-              <Bookmark className={`h-4 w-4 ml-1 ${bookmarks.has(`${currentSurah.number}:`) ? "fill-current text-[var(--gold)]" : ""}`} />
+              <Bookmark className={`h-4 w-4 ms-1 ${bookmarks.has(`${currentSurah.number}:`) ? "fill-current text-[var(--gold)]" : ""}`} />
               {bookmarks.has(`${currentSurah.number}:`) ? "محفوظة" : "حفظ"}
             </Button>
           </div>
@@ -283,16 +323,16 @@ function QuranPage() {
               </Button>
             </div>
             <div className="relative">
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute end-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter" && searchMode === "ayah") runAyahSearch(); }}
                 placeholder={searchMode === "surah" ? "ابحث عن سورة بالاسم أو الرقم…" : "ابحث في نص الآيات (مثلاً: الرحمن، الصبر)…"}
-                className="pr-9 pl-9"
+                className="pe-9 ps-9"
               />
               {search && (
-                <button onClick={() => { setSearch(""); setSearchHits([]); }} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                <button onClick={() => { setSearch(""); setSearchHits([]); }} className="absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                   <X className="h-4 w-4" />
                 </button>
               )}
@@ -300,7 +340,7 @@ function QuranPage() {
             {searchMode === "ayah" && (
               <div className="text-center">
                 <Button size="sm" onClick={runAyahSearch} disabled={searching}>
-                  {searching ? <Loader2 className="h-4 w-4 animate-spin ml-1" /> : <Search className="h-4 w-4 ml-1" />}
+                  {searching ? <Loader2 className="h-4 w-4 animate-spin ms-1" /> : <Search className="h-4 w-4 ms-1" />}
                   ابحث في الآيات
                 </Button>
               </div>

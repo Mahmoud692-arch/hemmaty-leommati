@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -79,7 +79,7 @@ export default function AutomationManager() {
     <div>
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-bold flex items-center gap-2"><Zap className="h-4 w-4 text-[var(--gold)]" /> قواعد الأتمتة</h2>
-        <Button onClick={openNew}><Plus className="h-3 w-3 ml-1" /> قاعدة جديدة</Button>
+        <Button onClick={openNew}><Plus className="h-3 w-3 ms-1" /> قاعدة جديدة</Button>
       </div>
 
       {loading ? <p className="text-muted-foreground">جارٍ التحميل…</p> : items.length === 0 ? (

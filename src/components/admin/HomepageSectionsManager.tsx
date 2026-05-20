@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -89,7 +89,7 @@ export default function HomepageSectionsManager() {
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-display text-2xl">أقسام الصفحة الرئيسية</h2>
         <Button onClick={addNew}>
-          <Plus className="h-4 w-4 ml-1" /> قسم جديد
+          <Plus className="h-4 w-4 ms-1" /> قسم جديد
         </Button>
       </div>
 

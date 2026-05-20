@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+﻿import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import QuoteCard from "@/components/QuoteCard";
 import OrnamentalDivider from "@/components/OrnamentalDivider";
@@ -107,7 +107,7 @@ function HomePage() {
                 size="lg"
                 className="bg-[var(--gold)] text-[var(--gold-foreground)] hover:bg-[var(--gold)]/90 shadow-[var(--shadow-gold)]"
               >
-                ابدأ القراءة <ArrowLeft className="h-4 w-4 mr-2" />
+                ابدأ القراءة <ArrowLeft className="h-4 w-4 me-2" />
               </Button>
             </Link>
             <Link to="/auth">
@@ -199,7 +199,7 @@ function HomePage() {
         <div className="text-center mt-8">
           <Link to="/hadiths">
             <Button variant="outline">
-              جميع الأحاديث <ArrowLeft className="h-4 w-4 mr-2" />
+              جميع الأحاديث <ArrowLeft className="h-4 w-4 me-2" />
             </Button>
           </Link>
         </div>
@@ -220,7 +220,7 @@ function HomePage() {
                 size="lg"
                 className="bg-primary hover:bg-primary/90 shadow-[var(--shadow-elegant)]"
               >
-                <Trophy className="h-4 w-4 ml-2" /> ابدأ الآن مجانًا
+                <Trophy className="h-4 w-4 ms-2" /> ابدأ الآن مجانًا
               </Button>
             </Link>
           </div>
