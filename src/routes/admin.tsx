@@ -1252,7 +1252,6 @@ function HadithsManager() {
       )}
     </div>
   );
-  );
 }
 
 /* ============== ROLES MANAGER ============== */
