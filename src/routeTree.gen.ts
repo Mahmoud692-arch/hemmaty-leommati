@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as StoriesRouteImport } from './routes/stories'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as QuranRouteImport } from './routes/quran'
 import { Route as QuizzesRouteImport } from './routes/quizzes'
 import { Route as QuestionsRouteImport } from './routes/questions'
@@ -30,8 +31,12 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as StoriesSlugRouteImport } from './routes/stories.$slug'
 import { Route as QuizzesIdRouteImport } from './routes/quizzes.$id'
 import { Route as LessonsSlugRouteImport } from './routes/lessons.$slug'
+import { Route as HadithsNawawiRouteImport } from './routes/hadiths.nawawi'
+import { Route as HadithsMuslimRouteImport } from './routes/hadiths.muslim'
+import { Route as HadithsBukhariRouteImport } from './routes/hadiths.bukhari'
 import { Route as HadithsNumberRouteImport } from './routes/hadiths.$number'
 import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
+import { Route as HadithsCollectionNumberRouteImport } from './routes/hadiths.$collection.$number'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -41,6 +46,11 @@ const VerifyEmailRoute = VerifyEmailRouteImport.update({
 const StoriesRoute = StoriesRouteImport.update({
   id: '/stories',
   path: '/stories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const QuranRoute = QuranRouteImport.update({
@@ -138,6 +148,21 @@ const LessonsSlugRoute = LessonsSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => LessonsRoute,
 } as any)
+const HadithsNawawiRoute = HadithsNawawiRouteImport.update({
+  id: '/nawawi',
+  path: '/nawawi',
+  getParentRoute: () => HadithsRoute,
+} as any)
+const HadithsMuslimRoute = HadithsMuslimRouteImport.update({
+  id: '/muslim',
+  path: '/muslim',
+  getParentRoute: () => HadithsRoute,
+} as any)
+const HadithsBukhariRoute = HadithsBukhariRouteImport.update({
+  id: '/bukhari',
+  path: '/bukhari',
+  getParentRoute: () => HadithsRoute,
+} as any)
 const HadithsNumberRoute = HadithsNumberRouteImport.update({
   id: '/$number',
   path: '/$number',
@@ -147,6 +172,11 @@ const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => ArticlesRoute,
+} as any)
+const HadithsCollectionNumberRoute = HadithsCollectionNumberRouteImport.update({
+  id: '/$collection/$number',
+  path: '/$collection/$number',
+  getParentRoute: () => HadithsRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -166,13 +196,18 @@ export interface FileRoutesByFullPath {
   '/questions': typeof QuestionsRoute
   '/quizzes': typeof QuizzesRouteWithChildren
   '/quran': typeof QuranRoute
+  '/search': typeof SearchRoute
   '/stories': typeof StoriesRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
+  '/hadiths/bukhari': typeof HadithsBukhariRoute
+  '/hadiths/muslim': typeof HadithsMuslimRoute
+  '/hadiths/nawawi': typeof HadithsNawawiRoute
   '/lessons/$slug': typeof LessonsSlugRoute
   '/quizzes/$id': typeof QuizzesIdRoute
   '/stories/$slug': typeof StoriesSlugRoute
+  '/hadiths/$collection/$number': typeof HadithsCollectionNumberRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -191,13 +226,18 @@ export interface FileRoutesByTo {
   '/questions': typeof QuestionsRoute
   '/quizzes': typeof QuizzesRouteWithChildren
   '/quran': typeof QuranRoute
+  '/search': typeof SearchRoute
   '/stories': typeof StoriesRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
+  '/hadiths/bukhari': typeof HadithsBukhariRoute
+  '/hadiths/muslim': typeof HadithsMuslimRoute
+  '/hadiths/nawawi': typeof HadithsNawawiRoute
   '/lessons/$slug': typeof LessonsSlugRoute
   '/quizzes/$id': typeof QuizzesIdRoute
   '/stories/$slug': typeof StoriesSlugRoute
+  '/hadiths/$collection/$number': typeof HadithsCollectionNumberRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -217,13 +257,18 @@ export interface FileRoutesById {
   '/questions': typeof QuestionsRoute
   '/quizzes': typeof QuizzesRouteWithChildren
   '/quran': typeof QuranRoute
+  '/search': typeof SearchRoute
   '/stories': typeof StoriesRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/hadiths/$number': typeof HadithsNumberRoute
+  '/hadiths/bukhari': typeof HadithsBukhariRoute
+  '/hadiths/muslim': typeof HadithsMuslimRoute
+  '/hadiths/nawawi': typeof HadithsNawawiRoute
   '/lessons/$slug': typeof LessonsSlugRoute
   '/quizzes/$id': typeof QuizzesIdRoute
   '/stories/$slug': typeof StoriesSlugRoute
+  '/hadiths/$collection/$number': typeof HadithsCollectionNumberRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -244,13 +289,18 @@ export interface FileRouteTypes {
     | '/questions'
     | '/quizzes'
     | '/quran'
+    | '/search'
     | '/stories'
     | '/verify-email'
     | '/articles/$slug'
     | '/hadiths/$number'
+    | '/hadiths/bukhari'
+    | '/hadiths/muslim'
+    | '/hadiths/nawawi'
     | '/lessons/$slug'
     | '/quizzes/$id'
     | '/stories/$slug'
+    | '/hadiths/$collection/$number'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -269,13 +319,18 @@ export interface FileRouteTypes {
     | '/questions'
     | '/quizzes'
     | '/quran'
+    | '/search'
     | '/stories'
     | '/verify-email'
     | '/articles/$slug'
     | '/hadiths/$number'
+    | '/hadiths/bukhari'
+    | '/hadiths/muslim'
+    | '/hadiths/nawawi'
     | '/lessons/$slug'
     | '/quizzes/$id'
     | '/stories/$slug'
+    | '/hadiths/$collection/$number'
   id:
     | '__root__'
     | '/'
@@ -294,13 +349,18 @@ export interface FileRouteTypes {
     | '/questions'
     | '/quizzes'
     | '/quran'
+    | '/search'
     | '/stories'
     | '/verify-email'
     | '/articles/$slug'
     | '/hadiths/$number'
+    | '/hadiths/bukhari'
+    | '/hadiths/muslim'
+    | '/hadiths/nawawi'
     | '/lessons/$slug'
     | '/quizzes/$id'
     | '/stories/$slug'
+    | '/hadiths/$collection/$number'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -320,6 +380,7 @@ export interface RootRouteChildren {
   QuestionsRoute: typeof QuestionsRoute
   QuizzesRoute: typeof QuizzesRouteWithChildren
   QuranRoute: typeof QuranRoute
+  SearchRoute: typeof SearchRoute
   StoriesRoute: typeof StoriesRouteWithChildren
   VerifyEmailRoute: typeof VerifyEmailRoute
 }
@@ -338,6 +399,13 @@ declare module '@tanstack/react-router' {
       path: '/stories'
       fullPath: '/stories'
       preLoaderRoute: typeof StoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/quran': {
@@ -473,6 +541,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LessonsSlugRouteImport
       parentRoute: typeof LessonsRoute
     }
+    '/hadiths/nawawi': {
+      id: '/hadiths/nawawi'
+      path: '/nawawi'
+      fullPath: '/hadiths/nawawi'
+      preLoaderRoute: typeof HadithsNawawiRouteImport
+      parentRoute: typeof HadithsRoute
+    }
+    '/hadiths/muslim': {
+      id: '/hadiths/muslim'
+      path: '/muslim'
+      fullPath: '/hadiths/muslim'
+      preLoaderRoute: typeof HadithsMuslimRouteImport
+      parentRoute: typeof HadithsRoute
+    }
+    '/hadiths/bukhari': {
+      id: '/hadiths/bukhari'
+      path: '/bukhari'
+      fullPath: '/hadiths/bukhari'
+      preLoaderRoute: typeof HadithsBukhariRouteImport
+      parentRoute: typeof HadithsRoute
+    }
     '/hadiths/$number': {
       id: '/hadiths/$number'
       path: '/$number'
@@ -486,6 +575,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/articles/$slug'
       preLoaderRoute: typeof ArticlesSlugRouteImport
       parentRoute: typeof ArticlesRoute
+    }
+    '/hadiths/$collection/$number': {
+      id: '/hadiths/$collection/$number'
+      path: '/$collection/$number'
+      fullPath: '/hadiths/$collection/$number'
+      preLoaderRoute: typeof HadithsCollectionNumberRouteImport
+      parentRoute: typeof HadithsRoute
     }
   }
 }
@@ -504,10 +600,18 @@ const ArticlesRouteWithChildren = ArticlesRoute._addFileChildren(
 
 interface HadithsRouteChildren {
   HadithsNumberRoute: typeof HadithsNumberRoute
+  HadithsBukhariRoute: typeof HadithsBukhariRoute
+  HadithsMuslimRoute: typeof HadithsMuslimRoute
+  HadithsNawawiRoute: typeof HadithsNawawiRoute
+  HadithsCollectionNumberRoute: typeof HadithsCollectionNumberRoute
 }
 
 const HadithsRouteChildren: HadithsRouteChildren = {
   HadithsNumberRoute: HadithsNumberRoute,
+  HadithsBukhariRoute: HadithsBukhariRoute,
+  HadithsMuslimRoute: HadithsMuslimRoute,
+  HadithsNawawiRoute: HadithsNawawiRoute,
+  HadithsCollectionNumberRoute: HadithsCollectionNumberRoute,
 }
 
 const HadithsRouteWithChildren =
@@ -563,6 +667,7 @@ const rootRouteChildren: RootRouteChildren = {
   QuestionsRoute: QuestionsRoute,
   QuizzesRoute: QuizzesRouteWithChildren,
   QuranRoute: QuranRoute,
+  SearchRoute: SearchRoute,
   StoriesRoute: StoriesRouteWithChildren,
   VerifyEmailRoute: VerifyEmailRoute,
 }

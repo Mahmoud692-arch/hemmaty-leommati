@@ -1,4 +1,4 @@
-﻿import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import {
   Moon,
@@ -13,6 +13,7 @@ import {
   Shield,
   MessageCircleQuestion,
   Trophy,
+  Search,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
@@ -101,6 +102,12 @@ export default function Layout({ children }: { children: ReactNode }) {
           </nav>
 
           <div className="flex items-center gap-2">
+            <Link to="/search">
+              <Button variant="ghost" size="icon" aria-label="البحث الشامل">
+                <Search className="h-4 w-4" />
+              </Button>
+            </Link>
+
             <Button variant="ghost" size="icon" onClick={toggle} aria-label="تبديل الوضع">
               {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>

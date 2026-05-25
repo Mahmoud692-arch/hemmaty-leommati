@@ -977,9 +977,9 @@ serve(async (req) => {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_ANON = Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ??
       Deno.env.get("SUPABASE_ANON_KEY")!;
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      return new Response(JSON.stringify({ error: "LOVABLE_API_KEY غير مهيّأ" }), {
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) {
+      return new Response(JSON.stringify({ error: "GEMINI_API_KEY غير مهيّأ" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -1025,14 +1025,14 @@ serve(async (req) => {
     const toolCallsExecuted: Array<{ name: string; args: unknown; result: unknown }> = [];
 
     for (let iter = 0; iter < 6; iter++) {
-      const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      const aiResp = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          Authorization: `Bearer ${GEMINI_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
+          model: "gemini-2.0-flash",
           messages: conversation,
           ...(allow_tools !== false ? { tools: TOOLS, tool_choice: "auto" } : {}),
         }),
@@ -1045,7 +1045,7 @@ serve(async (req) => {
           });
         }
         if (aiResp.status === 402) {
-          return new Response(JSON.stringify({ error: "نفدت أرصدة Lovable AI" }), {
+          return new Response(JSON.stringify({ error: "نفدت أرصدة Gemini API" }), {
             status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
