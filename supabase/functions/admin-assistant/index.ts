@@ -1039,8 +1039,10 @@ serve(async (req) => {
       });
 
       if (!aiResp.ok) {
+        const t = await aiResp.text();
+        console.error("AI gateway error:", aiResp.status, t);
         if (aiResp.status === 429) {
-          return new Response(JSON.stringify({ error: "تجاوزت الحد المسموح، حاول لاحقًا" }), {
+          return new Response(JSON.stringify({ error: `تجاوزت الحد المسموح لـ Gemini API: ${t}` }), {
             status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
@@ -1049,9 +1051,7 @@ serve(async (req) => {
             status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
-        const t = await aiResp.text();
-        console.error("AI gateway error:", aiResp.status, t);
-        return new Response(JSON.stringify({ error: "خطأ في بوّابة الذكاء الاصطناعي" }), {
+        return new Response(JSON.stringify({ error: `خطأ في بوّابة الذكاء الاصطناعي: ${t}` }), {
           status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }

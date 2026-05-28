@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -92,6 +92,15 @@ export default function AdminAssistant() {
     });
 
     if (!resp.ok) {
+      try {
+        const errData = await resp.json() as { error?: string };
+        if (errData?.error) {
+          toast.error(errData.error);
+          return null;
+        }
+      } catch (e) {
+        // fallback to generic error message
+      }
       if (resp.status === 429) toast.error("تجاوزت الحدّ المسموح، حاول لاحقًا");
       else if (resp.status === 402) toast.error("نفدت أرصدة الذكاء الاصطناعي");
       else toast.error("تعذّر الاتصال بالمساعد");
