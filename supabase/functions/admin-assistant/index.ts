@@ -978,11 +978,8 @@ serve(async (req) => {
     const SUPABASE_ANON = Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ??
       Deno.env.get("SUPABASE_ANON_KEY")!;
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    const preferLovable = Boolean(LOVABLE_API_KEY);
-    const aiApiKey = preferLovable ? LOVABLE_API_KEY : GEMINI_API_KEY;
-    if (!aiApiKey) {
-      return new Response(JSON.stringify({ error: "GEMINI_API_KEY أو LOVABLE_API_KEY غير مهيّأ" }), {
+    if (!GEMINI_API_KEY) {
+      return new Response(JSON.stringify({ error: "GEMINI_API_KEY غير مهيّأ" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -1026,57 +1023,20 @@ serve(async (req) => {
     ];
 
     const toolCallsExecuted: Array<{ name: string; args: unknown; result: unknown }> = [];
-    const GEMINI_MODELS = ["gemini-1.5", "gemini-1.5-pro"];
 
     for (let iter = 0; iter < 6; iter++) {
-      let useLovable = preferLovable;
-      let apiKey = aiApiKey!;
-      let aiEndpoint = useLovable
-        ? "https://ai.gateway.lovable.dev/v1/chat/completions"
-        : "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
-      let modelCandidates = useLovable
-        ? ["google/gemini-1.5"]
-        : [...GEMINI_MODELS];
-      let currentModelIndex = 0;
-      let modelName = modelCandidates[currentModelIndex];
-
-      const sendRequest = async () => {
-        return fetch(aiEndpoint, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: modelName,
-            messages: conversation,
-            ...(allow_tools !== false ? { tools: TOOLS, tool_choice: "auto" } : {}),
-          }),
-        });
-      };
-
-      let aiResp = await sendRequest();
-      if (!aiResp.ok && !useLovable) {
-        const text = await aiResp.text();
-        if (/not found|unsupported|generateContent|v1main/i.test(text) || aiResp.status === 404) {
-          while (currentModelIndex < modelCandidates.length - 1) {
-            currentModelIndex += 1;
-            modelName = modelCandidates[currentModelIndex];
-            aiResp = await sendRequest();
-            if (aiResp.ok) break;
-            const retryText = await aiResp.text();
-            if (!(/not found|unsupported|generateContent|v1main/i.test(retryText) || aiResp.status === 404)) break;
-          }
-
-          if (!aiResp.ok && LOVABLE_API_KEY) {
-            useLovable = true;
-            apiKey = LOVABLE_API_KEY;
-            aiEndpoint = "https://ai.gateway.lovable.dev/v1/chat/completions";
-            modelName = "google/gemini-1.5";
-            aiResp = await sendRequest();
-          }
-        }
-      }
+      const aiResp = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${GEMINI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gemini-2.0-flash-lite",
+          messages: conversation,
+          ...(allow_tools !== false ? { tools: TOOLS, tool_choice: "auto" } : {}),
+        }),
+      });
 
       if (!aiResp.ok) {
         const t = await aiResp.text();
@@ -1091,9 +1051,7 @@ serve(async (req) => {
             status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
-        const additionalHint = aiResp.status === 404 && !LOVABLE_API_KEY && !useLovable
-          ? " هذا يعني أن مفتاح GEMINI_API_KEY الحالي لا يدعم النموذج المستخدم. إذا أردت النسخة المجانية، أضف LOVABLE_API_KEY في بيئة الدالة." : "";
-        return new Response(JSON.stringify({ error: `خطأ في بوّابة الذكاء الاصطناعي: ${t}${additionalHint}` }), {
+        return new Response(JSON.stringify({ error: `خطأ في بوّابة الذكاء الاصطناعي: ${t}` }), {
           status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
