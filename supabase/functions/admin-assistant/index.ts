@@ -1025,18 +1025,25 @@ serve(async (req) => {
     const toolCallsExecuted: Array<{ name: string; args: unknown; result: unknown }> = [];
 
     for (let iter = 0; iter < 6; iter++) {
-      const aiResp = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${GEMINI_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "gemini-2.0-flash-lite",
-          messages: conversation,
-          ...(allow_tools !== false ? { tools: TOOLS, tool_choice: "auto" } : {}),
-        }),
-      });
+      const aiResp = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: conversation
+              .filter((m: any) => m.role !== "system")
+              .map((m: any) => ({
+                role: m.role === "assistant" ? "model" : "user",
+                parts: [{ text: typeof m.content === "string" ? m.content : JSON.stringify(m.content) }],
+              })),
+            systemInstruction: {
+              parts: [{ text: SYSTEM_PROMPT }],
+            },
+            generationConfig: { temperature: 0.7, maxOutputTokens: 2048 },
+          }),
+        }
+      );
 
       if (!aiResp.ok) {
         const t = await aiResp.text();
@@ -1057,60 +1064,17 @@ serve(async (req) => {
       }
 
       const data = await aiResp.json();
-      const choice = data.choices?.[0];
-      const msg = choice?.message;
-      if (!msg) {
+      const content = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+      if (!content) {
         return new Response(JSON.stringify({ error: "ردّ فارغ" }), {
           status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
 
-      const toolCalls = msg.tool_calls as Array<{ id: string; function: { name: string; arguments: string } }> | undefined;
-
-      if (!toolCalls || toolCalls.length === 0) {
-        return new Response(
-          JSON.stringify({ content: msg.content ?? "", tool_calls_executed: toolCallsExecuted }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-        );
-      }
-
-      // Detect sensitive ops requiring approval
-      if (!confirmed) {
-        const pending = toolCalls.filter((tc) => SENSITIVE_OPS.has(tc.function.name));
-        if (pending.length > 0) {
-          const pendingDetailed = await Promise.all(pending.map(async (tc) => {
-            let parsed: Record<string, unknown> = {};
-            try { parsed = JSON.parse(tc.function.arguments); } catch { /* ignore */ }
-            const before = await fetchBeforeSnapshot(tc.function.name, parsed, supabase);
-            return {
-              name: tc.function.name,
-              args: parsed,
-              before, // current state of the record (or null)
-            };
-          }));
-          return new Response(
-            JSON.stringify({
-              content: msg.content ?? "هذه العملية تحتاج تأكيدًا منك. راجع المقارنة (قبل/بعد) ثم اضغط «نفّذ» أو «إلغاء».",
-              tool_calls_executed: toolCallsExecuted,
-              pending_confirmation: pendingDetailed,
-            }),
-            { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-          );
-        }
-      }
-
-      conversation.push(msg);
-      for (const tc of toolCalls) {
-        let parsed: Record<string, unknown> = {};
-        try { parsed = JSON.parse(tc.function.arguments); } catch { /* ignore */ }
-        const result = await executeTool(tc.function.name, parsed, supabase);
-        toolCallsExecuted.push({ name: tc.function.name, args: parsed, result });
-        conversation.push({
-          role: "tool",
-          tool_call_id: tc.id,
-          content: JSON.stringify(result),
-        });
-      }
+      return new Response(
+        JSON.stringify({ content: content, tool_calls_executed: toolCallsExecuted }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
     }
 
     return new Response(
