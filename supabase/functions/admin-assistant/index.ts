@@ -978,11 +978,7 @@ serve(async (req) => {
     const SUPABASE_ANON = Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ??
       Deno.env.get("SUPABASE_ANON_KEY")!;
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-    if (!GEMINI_API_KEY) {
-      return new Response(JSON.stringify({ error: "GEMINI_API_KEY غير مهيّأ" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
     const authHeader = req.headers.get("Authorization") ?? "";
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON, {
@@ -1024,36 +1020,79 @@ serve(async (req) => {
 
     const toolCallsExecuted: Array<{ name: string; args: unknown; result: unknown }> = [];
 
-    const aiResp = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: conversation
-            .filter((m: any) => m.role !== "system")
-            .map((m: any) => ({
-              role: m.role === "assistant" ? "model" : "user",
-              parts: [{ text: typeof m.content === "string" ? m.content : JSON.stringify(m.content) }],
-            })),
-          systemInstruction: {
-            parts: [{ text: SYSTEM_PROMPT }],
-          },
-          generationConfig: { temperature: 0.7, maxOutputTokens: 2048 },
-        }),
+    // حاول Gemini أولاً، ثم Lovable كـ fallback
+    let aiResp;
+    let usedLovable = false;
+
+    if (GEMINI_API_KEY) {
+      aiResp = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: conversation
+              .filter((m: any) => m.role !== "system")
+              .map((m: any) => ({
+                role: m.role === "assistant" ? "model" : "user",
+                parts: [{ text: typeof m.content === "string" ? m.content : JSON.stringify(m.content) }],
+              })),
+            systemInstruction: {
+              parts: [{ text: SYSTEM_PROMPT }],
+            },
+            generationConfig: { temperature: 0.7, maxOutputTokens: 2048 },
+          }),
+        }
+      );
+
+      if (aiResp.ok) {
+        const data = await aiResp.json();
+        const content = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+        if (content) {
+          return new Response(
+            JSON.stringify({ content: content, tool_calls_executed: toolCallsExecuted }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          );
+        }
       }
-    );
+    }
+
+    // Fallback إلى Lovable
+    if (!LOVABLE_API_KEY) {
+      const errorMsg = GEMINI_API_KEY ? "فشل Gemini ولم يتم توفير LOVABLE_API_KEY" : "لم يتم توفير GEMINI_API_KEY أو LOVABLE_API_KEY";
+      return new Response(JSON.stringify({ error: errorMsg }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-4o",
+        messages: conversation.map((m: any) => ({
+          role: m.role === "system" ? "system" : m.role === "assistant" ? "assistant" : "user",
+          content: typeof m.content === "string" ? m.content : JSON.stringify(m.content),
+        })),
+        temperature: 0.7,
+        max_tokens: 2048,
+      }),
+    });
+    usedLovable = true;
 
     if (!aiResp.ok) {
       const t = await aiResp.text();
       console.error("AI gateway error:", aiResp.status, t);
       if (aiResp.status === 429) {
-        return new Response(JSON.stringify({ error: `تجاوزت الحد المسموح لـ Gemini API: ${t}` }), {
+        return new Response(JSON.stringify({ error: `تجاوزت الحد المسموح: ${t}` }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       if (aiResp.status === 402) {
-        return new Response(JSON.stringify({ error: "نفدت أرصدة Gemini API" }), {
+        return new Response(JSON.stringify({ error: "نفدت أرصدة الذكاء الاصطناعي" }), {
           status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
@@ -1063,7 +1102,10 @@ serve(async (req) => {
     }
 
     const data = await aiResp.json();
-    const content = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+    const content = usedLovable
+      ? (data.choices?.[0]?.message?.content ?? "")
+      : (data.candidates?.[0]?.content?.parts?.[0]?.text ?? "");
+
     if (!content) {
       return new Response(JSON.stringify({ error: "ردّ فارغ" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
