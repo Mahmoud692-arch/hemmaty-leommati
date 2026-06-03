@@ -1024,61 +1024,54 @@ serve(async (req) => {
 
     const toolCallsExecuted: Array<{ name: string; args: unknown; result: unknown }> = [];
 
-    for (let iter = 0; iter < 6; iter++) {
-      const aiResp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: conversation
-              .filter((m: any) => m.role !== "system")
-              .map((m: any) => ({
-                role: m.role === "assistant" ? "model" : "user",
-                parts: [{ text: typeof m.content === "string" ? m.content : JSON.stringify(m.content) }],
-              })),
-            systemInstruction: {
-              parts: [{ text: SYSTEM_PROMPT }],
-            },
-            generationConfig: { temperature: 0.7, maxOutputTokens: 2048 },
-          }),
-        }
-      );
+    const aiResp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: conversation
+            .filter((m: any) => m.role !== "system")
+            .map((m: any) => ({
+              role: m.role === "assistant" ? "model" : "user",
+              parts: [{ text: typeof m.content === "string" ? m.content : JSON.stringify(m.content) }],
+            })),
+          systemInstruction: {
+            parts: [{ text: SYSTEM_PROMPT }],
+          },
+          generationConfig: { temperature: 0.7, maxOutputTokens: 2048 },
+        }),
+      }
+    );
 
-      if (!aiResp.ok) {
-        const t = await aiResp.text();
-        console.error("AI gateway error:", aiResp.status, t);
-        if (aiResp.status === 429) {
-          return new Response(JSON.stringify({ error: `تجاوزت الحد المسموح لـ Gemini API: ${t}` }), {
-            status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-        if (aiResp.status === 402) {
-          return new Response(JSON.stringify({ error: "نفدت أرصدة Gemini API" }), {
-            status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-        return new Response(JSON.stringify({ error: `خطأ في بوّابة الذكاء الاصطناعي: ${t}` }), {
-          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    if (!aiResp.ok) {
+      const t = await aiResp.text();
+      console.error("AI gateway error:", aiResp.status, t);
+      if (aiResp.status === 429) {
+        return new Response(JSON.stringify({ error: `تجاوزت الحد المسموح لـ Gemini API: ${t}` }), {
+          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-
-      const data = await aiResp.json();
-      const content = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-      if (!content) {
-        return new Response(JSON.stringify({ error: "ردّ فارغ" }), {
-          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      if (aiResp.status === 402) {
+        return new Response(JSON.stringify({ error: "نفدت أرصدة Gemini API" }), {
+          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
+      return new Response(JSON.stringify({ error: `خطأ في بوّابة الذكاء الاصطناعي: ${t}` }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
-      return new Response(
-        JSON.stringify({ content: content, tool_calls_executed: toolCallsExecuted }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+    const data = await aiResp.json();
+    const content = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+    if (!content) {
+      return new Response(JSON.stringify({ error: "ردّ فارغ" }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     return new Response(
-      JSON.stringify({ content: "تجاوزت عدد محاولات استدعاء الأدوات", tool_calls_executed: toolCallsExecuted }),
+      JSON.stringify({ content: content, tool_calls_executed: toolCallsExecuted }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (e) {
