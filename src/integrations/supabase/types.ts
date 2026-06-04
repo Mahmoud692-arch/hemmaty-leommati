@@ -557,21 +557,18 @@ export type Database = {
       hadith_favorites: {
         Row: {
           created_at: string
-          hadith_collection: string
           hadith_number: number
           id: string
           user_id: string
         }
         Insert: {
           created_at?: string
-          hadith_collection?: string
           hadith_number: number
           id?: string
           user_id: string
         }
         Update: {
           created_at?: string
-          hadith_collection?: string
           hadith_number?: number
           id?: string
           user_id?: string
@@ -580,21 +577,18 @@ export type Database = {
       }
       hadith_reads: {
         Row: {
-          hadith_collection: string
           hadith_number: number
           id: string
           read_at: string
           user_id: string
         }
         Insert: {
-          hadith_collection?: string
           hadith_number: number
           id?: string
           read_at?: string
           user_id: string
         }
         Update: {
-          hadith_collection?: string
           hadith_number?: number
           id?: string
           read_at?: string
@@ -607,7 +601,6 @@ export type Database = {
           arabic_text: string
           benefit: string | null
           category: string | null
-          collection: string | null
           created_at: string
           explanation: string | null
           id: string
@@ -621,7 +614,6 @@ export type Database = {
           arabic_text: string
           benefit?: string | null
           category?: string | null
-          collection?: string | null
           created_at?: string
           explanation?: string | null
           id?: string
@@ -635,7 +627,6 @@ export type Database = {
           arabic_text?: string
           benefit?: string | null
           category?: string | null
-          collection?: string | null
           created_at?: string
           explanation?: string | null
           id?: string
