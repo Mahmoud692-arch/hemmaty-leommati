@@ -50,9 +50,9 @@ function createManager(userId: string) {
     // subscribe and ignore errors; if subscribe returns a Promise attach a
     // catch handler, otherwise ignore synchronous result.
     try {
-      const subRes = ch.subscribe();
-      if (subRes && typeof (subRes as any).then === "function") {
-        (subRes as Promise<any>).catch(() => {});
+      const subRes: unknown = ch.subscribe();
+      if (subRes && typeof (subRes as { then?: unknown }).then === "function") {
+        (subRes as Promise<unknown>).catch(() => {});
       }
     } catch (e) {
       // ignore
