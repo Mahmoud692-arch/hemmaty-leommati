@@ -76,7 +76,7 @@ function PasswordResetPage() {
       return;
     }
     toast.success("تم تحديث كلمة المرور بنجاح ✓");
-    navigate({ to: "/dashboard" });
+    navigate({ to: "/me" });
   };
 
   return (

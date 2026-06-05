@@ -37,7 +37,7 @@ function VerifyEmailPage() {
 
       if (isConfirmed) {
         setStatus("confirmed");
-        setTimeout(() => navigate({ to: "/dashboard" }), 2000);
+        setTimeout(() => navigate({ to: "/me" }), 2000);
       } else {
         setStatus("pending");
       }

@@ -42,7 +42,7 @@ function AuthPage() {
   const [lockedUntil, setLockedUntil] = useState<Date | null>(null);
 
   useEffect(() => {
-    if (!loading && user) navigate({ to: "/dashboard" });
+    if (!loading && user) navigate({ to: "/me" });
   }, [user, loading, navigate]);
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -103,7 +103,7 @@ function AuthPage() {
     setLoginAttempts(0);
     setLockedUntil(null);
     toast.success("أهلًا بعودتك 💚");
-    navigate({ to: "/dashboard" });
+    navigate({ to: "/me" });
   };
 
   return (
